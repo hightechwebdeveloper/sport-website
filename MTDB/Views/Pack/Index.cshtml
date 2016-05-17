@@ -1,0 +1,40 @@
+﻿@using MTDB.Core.Services
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<!-- main header -->
+<div class="bg-light lter b-b wrapper-md">
+    <div class="row">
+        <div class="col-sm-6 col-xs-12">
+            <h1 class="m-n font-thin h3 text-black">NBA 2K16 Pack Simulator</h1>
+            <small class="text-muted">Choose Your Pack</small>
+        </div>
+        <div class="col-sm-6 col-xs-12 text-right">
+            <div class="inline m-r text-left">
+                @Html.ActionLink("Pack Leaderboard", "LeaderboardDefault", "Pack", null, new { @class = "btn btn-primary" })
+            </div>
+        </div>
+    </div>
+</div>
+<!-- / main header -->
+<div class="wrapper-md">
+
+    <div class="row">
+        <div class="col-md-12">
+            <ul class="list-inline text-center packCard">
+                <li>
+                    <a href="@Url.Action("CreateMtdb")"><img src="~/Content/Images/mtdbpack.jpg" class="img-full"></a>
+                    <p class="packP">5 Players per pack. Test your luck with odds based on NBA 2K16's My Team Packs</p>
+                    @Html.ActionLink("Open Pack", "CreateMtdb", null, new { @class = "btn btn-primary" })
+                </li>
+                <li>
+                    <a href="@Url.Action("CreateDraft")"><img src="~/Content/Images/draftpack.jpg" class="img-full"></a>
+                    <p class="packP">13 rounds to draft your team. The last two rounds guarantee a gold or better player. Double your leaderboard score by drafting 2 players at each position.</p>
+                    @Html.ActionLink("Open Pack", "CreateDraft", null, new { @class = "btn btn-primary" })
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>

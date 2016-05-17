@@ -1,0 +1,256 @@
+﻿@using MTDB.Core.ViewModels
+@using MTDB.Core.ViewModels.Lineups
+@using MTDB.Helpers
+@model CreateLineupDto
+
+@{
+    ViewBag.Title = "Create";
+    var players = new SelectList(Model.Players, "Id", "Name");
+}
+
+<style>
+    .chosen-container {
+        width: 100% !important;
+    }
+</style>
+
+@helper LineupTemplate(MvcHtmlString dropDownList, MvcHtmlString text, LineupPlayerDto player = null)
+{
+    <li class="lineup-player@(player != null ? " chosen" : string.Empty)">
+        <div class="details whitebg" draggable="true">
+            <div class="remove">
+                <i class="fa fa-remove fa-lg"></i>
+            </div>
+            <div class="picture">
+                <img src="@(player != null ? player.ImageUri : "/Content/Images/card-guest.png")" class="img-responsive center-block">
+            </div>
+            <div class="lineup-player-details">
+                <span class="player-position">- @text -</span>
+                <ul class="list-unstyled list-inline lineup-stats">
+                    <li><span class="statNum playerOv">@(player != null ? player.Overall : 0)</span><small><strong>OVR</strong></small></li>
+                    <li><span class="statNum playerOut">@(player != null ? player.OutsideScoring : 0)</span><small><strong>OUT</strong></small></li>
+                    <li><span class="statNum playerIn">@(player != null ? player.InsideScoring : 0)</span><small><strong>INS</strong></small></li>
+                    <li><span class="statNum playerPl">@(player != null ? player.Playmaking : 0)</span><small><strong>PLA</strong></small></li>
+                    <li><span class="statNum playerAt">@(player != null ? player.Athleticism : 0)</span><small><strong>ATH</strong></small></li>
+                    <li><span class="statNum playerDe">@(player != null ? player.Defending : 0)</span><small><strong>DEF</strong></small></li>
+                    <li><span class="statNum playerRe">@(player != null ? player.Rebounding : 0)</span><small><strong>REB</strong></small></li>
+                </ul>
+            </div>
+        </div>
+        <div class="guest whitebg">
+            <div class="picture">
+                <img src="/Content/Images/card-guest.png" class="img-responsive center-block">
+            </div>
+            <div class="lineup-player-details">
+                <span class="player-position">- @text -</span>
+                <div class="lineup-players">@dropDownList</div>
+            </div>
+        </div>
+
+    </li>
+}
+
+@using (Html.BeginForm("Edit", "Lineup", FormMethod.Post, new { @id = "submitForm" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.HiddenFor(model => model.Id)
+    <!-- / hero -->
+    <div class="wrapper-lg">
+        <div class="row">
+            <br>
+            <div class="col-md-12">
+                <ul class="list-unstyled lineup-starters text-center">
+                    @LineupTemplate(@Html.ChosenDropBoxFor(model => model.PointGuardId, players), @Html.DisplayNameFor(model => model.PointGuardId), Model.PointGuard)
+                    @LineupTemplate(@Html.ChosenDropBoxFor(model => model.ShootingGuardId, players), @Html.DisplayNameFor(model => model.ShootingGuardId), Model.ShootingGuard)
+                    @LineupTemplate(@Html.ChosenDropBoxFor(model => model.SmallForwardId, players), @Html.DisplayNameFor(model => model.SmallForwardId), Model.SmallForward)
+                    @LineupTemplate(@Html.ChosenDropBoxFor(model => model.PowerForwardId, players), @Html.DisplayNameFor(model => model.PowerForwardId), Model.PowerForward)
+                    @LineupTemplate(@Html.ChosenDropBoxFor(model => model.CenterId, players), @Html.DisplayNameFor(model => model.CenterId), Model.Center)
+                </ul>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col-md-12">
+                <ul class="list-unstyled lineup-benched text-center">
+                    @LineupTemplate(@Html.ChosenDropBoxFor(model => model.Bench1Id, players), @Html.DisplayNameFor(model => model.Bench1Id), Model.Bench1)
+                    @LineupTemplate(@Html.ChosenDropBoxFor(model => model.Bench2Id, players), @Html.DisplayNameFor(model => model.Bench2Id), Model.Bench2)
+                    @LineupTemplate(@Html.ChosenDropBoxFor(model => model.Bench3Id, players), @Html.DisplayNameFor(model => model.Bench3Id), Model.Bench3)
+                    @LineupTemplate(@Html.ChosenDropBoxFor(model => model.Bench4Id, players), @Html.DisplayNameFor(model => model.Bench4Id), Model.Bench4)
+                    @LineupTemplate(@Html.ChosenDropBoxFor(model => model.Bench5Id, players), @Html.DisplayNameFor(model => model.Bench5Id), Model.Bench5)
+                    @LineupTemplate(@Html.ChosenDropBoxFor(model => model.Bench6Id, players), @Html.DisplayNameFor(model => model.Bench6Id), Model.Bench6)
+                    @LineupTemplate(@Html.ChosenDropBoxFor(model => model.Bench7Id, players), @Html.DisplayNameFor(model => model.Bench7Id), Model.Bench7)
+                    @LineupTemplate(@Html.ChosenDropBoxFor(model => model.Bench8Id, players), @Html.DisplayNameFor(model => model.Bench8Id), Model.Bench8)
+                </ul>
+            </div>
+        </div>
+        <hr>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-inline">
+                    <div class="form-group">
+                        <div class="input-group">
+                            @Html.TextBoxFor(model => model.Name, new { @class = "form-control", placeholder = "Name" })
+                            <span class="input-group-btn">
+                                <button id="submitButton" class="btn btn-primary">Update Lineup</button>
+                            </span>
+                        </div>
+                        <span class="help-block">@Html.ValidationMessageFor(model => model.Name, "Name is required.", new { style = "display: none;" })</span>
+                    </div>
+                </div>
+
+                @*<button type="reset" class="btn btn-default">Cancel</button>*@
+            </div>
+        </div>
+    </div>
+}
+<!-- / Lineup -->
+
+@section scripts {
+    <script type="text/javascript">
+        $(function() {
+            $('.lineup-player .remove').click(function() {
+                var container = $(this).parents('.lineup-player');
+                container.find('select').val('');
+                container.find('select').trigger("chosen:updated");
+                container.removeClass('chosen');
+            });
+
+            $('.lineup-player .lineup-players select').change(function() {
+                var container = $(this).parents('.lineup-player');
+
+                var playerId = $(this).val();
+                if (playerId.length) {
+                    $.get("/players/" + playerId, function(data) {
+                        container.addClass('chosen');
+
+                        container.find('.details .picture img').attr("src", data.ImageUri);
+                        container.find('.playerOv').html(data.Overall);
+                        container.find('.playerOut').html(getAverageByName(data.GroupAverages, 'Outside Scoring'));
+                        container.find('.playerIn').html(getAverageByName(data.GroupAverages, 'Inside Scoring'));
+                        container.find('.playerPl').html(getAverageByName(data.GroupAverages, 'Playmaking'));
+                        container.find('.playerAt').html(getAverageByName(data.GroupAverages, 'Athleticism'));
+                        container.find('.playerDe').html(getAverageByName(data.GroupAverages, 'Defending'));
+                        container.find('.playerRe').html(getAverageByName(data.GroupAverages, 'Rebounding'));
+
+                        var cell = container.find('.statNum');
+                        SetColor(cell);
+                    });
+                } else {
+                    container.removeClass('chosen');
+                }
+
+            });
+            var cell = $('.lineup-player-details .statNum');
+            SetColor(cell);
+        });
+
+        function SetColor(cell) {
+            cell.each(function () {
+                var cell_value = $(this).html();
+                if ((cell_value >= 0) && (cell_value <= 59)) {
+                    $(this).css({ 'background': '#A52A2A' });
+                } else if ((cell_value >= 60) && (cell_value <= 69)) {
+                    $(this).css({ 'background': '#D2691E' });
+                } else if ((cell_value >= 70) && (cell_value <= 79)) {
+                    $(this).css({ 'background': '#DAA520' });
+                } else if ((cell_value >= 80) && (cell_value <= 89)) {
+                    $(this).css({ 'background': '#008000' });
+                } else if (cell_value >= 90) {
+                    $(this).css({ 'background': '#32CD32' });
+                }
+            });
+        }
+
+        [].forEach.call(document.querySelectorAll('.lineup-player .details'), function(container) {
+            container.addEventListener('dragstart', handleDragStart, false);
+            container.addEventListener('dragover', handleDragOver, false);
+            container.addEventListener('drop', handleDrop, false);
+            container.addEventListener('dragend', handleDragEnd, false);
+        });
+        [].forEach.call(document.querySelectorAll('.lineup-player .guest'), function(container) {
+            container.addEventListener('dragover', handleDragOver, false);
+            container.addEventListener('drop', handleDrop, false);
+        });
+        [].forEach.call(document.querySelectorAll('.lineup-player .guest img'), function (img) {
+            img.addEventListener('dragstart', function (e) { e.preventDefault(); }, false);
+        });
+
+        var dragSrcEl = null;
+
+        function handleDragStart(e) {
+            this.classList.add('moving');
+            dragSrcEl = this;
+            e.dataTransfer.setData('text/plain', 'player'); //firefox require set dataTransfer
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            return false;
+        }
+
+        function handleDragEnd(e) {
+            this.classList.remove('moving');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            if (e.dataTransfer.getData('text/plain') != 'player')
+                return false;
+
+
+            if (dragSrcEl != this) {
+                var init = $(dragSrcEl);
+                var target = $(this);
+                var initSelect = init.parent().find('select');
+                var targetSelect = target.parent().find('select');
+
+                var tempValue = initSelect.val();
+                initSelect.val(targetSelect.val());
+                targetSelect.val(tempValue);
+                initSelect.trigger("chosen:updated");
+                targetSelect.trigger("chosen:updated");
+
+                if (target.hasClass('details')) {
+                    var data = target.clone();
+                    target.find('.picture img').attr('src', init.find('.picture img').attr('src'));
+                    target.find('.lineup-stats').html(init.find('.lineup-stats').html());
+
+                    init.find('.picture img').attr('src', data.find('.picture img').attr('src'));
+                    init.find('.lineup-stats').html(data.find('.lineup-stats').html());
+                } else {
+                    target.parent().addClass('chosen');
+                    target = target.parent().find('.details');
+
+                    target.find('.picture img').attr('src', init.find('.picture img').attr('src'));
+                    target.find('.lineup-stats').html(init.find('.lineup-stats').html());
+
+                    init.parent().removeClass('chosen');
+                }
+            }
+
+            return false;
+        }
+
+        function getAverageByName(data, name) {
+            var toReturn = '';
+            $.each(data, function(i, value) {
+                if (value.Name == name) {
+                    toReturn = value.Average;
+                    return false;
+                }
+            });
+            return toReturn;
+        }
+
+        $('#submitButton').click(function() {
+            if ($("#@Html.IdFor(model => model.Name)").val().length == 0) {
+                $('[data-valmsg-for=@Html.IdFor(model => model.Name)').show();
+            } else {
+                $('#submitForm').submit();
+                $('#submitButton').prop('disabled', true);
+            }
+            return false;
+        })
+    </script>
+}
+

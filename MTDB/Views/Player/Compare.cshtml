@@ -1,0 +1,160 @@
+﻿@using MTDB.Core
+@using MTDB.Helpers
+@model MTDB.Core.Services.CompareDto
+
+@{
+    ViewBag.Title = "Compare Players";
+    var players = new SelectList(Model.Players, "Uri", "Name");
+}
+<div class="bg-light lter b-b wrapper-md">
+    <div class="row">
+        <div class="col-sm-6 col-xs-12">
+            <h1 class="m-n font-thin h3 text-black">NBA 2K16 Compare Players</h1>
+        </div>
+    </div>
+</div>
+<div class="wrapper-lg">
+    <!-- Players -->
+    <div class="row">
+        <!-- form goes here -->
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-heading font-bold">Choose Players</div>
+                <div class="panel-body">
+                    @using (Html.BeginForm("Compare", "Player", FormMethod.Get))
+                    {
+                        <div class="row">
+                            <div class="form-group col-xs-4">
+                                <label>Player 1:</label>
+                                @Html.ChosenDropBoxFor(m => m.Player1, players, "Enter Player Name")
+                            </div>
+                            <div class="form-group col-xs-4">
+                                <label>Player 2:</label>
+                                @Html.ChosenDropBoxFor(m => m.Player2, players, "Enter Player Name")
+                            </div>
+                            <div class="form-group col-xs-4">
+                                <label>Player 3:</label>
+                                @Html.ChosenDropBoxFor(m => m.Player3, players, "Enter Player Name")
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <button type="submit" class="btn btn-primary">Compare</button>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (Model.ComparedPlayers != null && Model.ComparedPlayers.Any())
+    {
+        <div class="row">
+
+            @foreach (var player in Model.ComparedPlayers)
+            {
+                <div class="col-xs-4">
+                    <div class="panel panel-default">
+                        <div class="panel-heading font-bold">@player.Name</div>
+                        <div class="panel-body">
+                            <a href="@Url.Action("Details", "Player", new { playerUri = player.UriName})">
+                                <img src="@player.ImageUri" class="img-responsive center-block compareCard" />
+                            </a>
+                            <table class="table unstyled text-center playerO">
+                                <tr>
+                                    <td class="playerOText"><h4>Overall</h4></td>
+                                </tr>
+                                <tr>
+                                    <td class="statNum playerONum" style="display: block;">@player.Overall</td>
+                                </tr>
+                            </table>
+                            <table class="table table-condensed text-right" style="margin: 0;">
+                                <tbody>
+                                    <tr>
+                                        <td colspan="2" class="text-center">@Html.ActionLink(player.CollectionName, "Details", new { controller = "collection", groupName = player.GroupName.ToUri(), name = player.CollectionName.ToUri()}, new { @class = "authorLink" })</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Position</th>
+                                        <td>@player.PrimaryPosition / @player.SecondaryPosition</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Age</th>
+                                        <td>@player.Age yrs</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Weight</th>
+                                        <td>@player.Weight lbs</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Height</th>
+                                        <td>@player.Height</td>
+                                    </tr>
+                                    <tr>
+                                        <th><i class="fa fa-shield" style="color: #FFD700;"></i> Gold</th>
+                                        <td>@player.GoldBadges</td>
+                                    </tr>
+                                    <tr>
+                                        <th><i class="fa fa-shield" style="color: #C0C0C0"></i> Silver</th>
+                                        <td>@player.SilverBadges</td>
+                                    </tr>
+                                    <tr>
+                                        <th><i class="fa fa-shield" style="color: #D2691E"></i> Bronze</th>
+                                        <td>@player.BronzeBadges</td>
+                                    </tr>
+                                    <tr>
+                                        <th>XBOX</th>
+                                        <td>@player.Xbox</td>
+                                    </tr>
+                                    <tr>
+                                        <th>PS4</th>
+                                        <td>@player.PS4</td>
+                                    </tr>
+                                    <tr>
+                                        <th>PC</th>
+                                        <td>@player.PC</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                            @foreach (var category in player.GroupAverages)
+                            {
+                                <h4>
+                                    <span class="statNum">@category.Average</span> @category.Name
+                                </h4>
+                                <ul class="statList">
+                                    @foreach (var attribute in player.Attributes.Where(t => t.CategoryId == category.Id))
+                                    {
+                                        <li>
+                                            <span class="statNum" style="">@attribute.Value</span> @attribute.Name
+                                        </li>
+                                    }
+                                </ul>
+                            }
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>
+@section scripts {
+    <!-- color of stats -->
+    <script type="text/javascript">
+        var cell = $('.statNum');
+        cell.each(function () {
+            var cell_value = $(this).html();
+            if ((cell_value >= 0) && (cell_value <= 59)) {
+                $(this).css({ 'background': '#A52A2A' });
+            } else if ((cell_value >= 60) && (cell_value <= 69)) {
+                $(this).css({ 'background': '#D2691E' });
+            } else if ((cell_value >= 70) && (cell_value <= 79)) {
+                $(this).css({ 'background': '#DAA520' });
+            } else if ((cell_value >= 80) && (cell_value <= 89)) {
+                $(this).css({ 'background': '#008000' });
+            } else if (cell_value >= 90) {
+                $(this).css({ 'background': '#32CD32' });
+            }
+        });
+    </script>
+}

@@ -1,0 +1,163 @@
+﻿@using MTDB.Core
+@model MTDB.Core.Services.ProfileDto
+
+@{
+    ViewBag.Title = "Profile";
+}
+
+<!-- main header -->
+<div class="bg-light lter b-b wrapper-md">
+    <div class="row">
+        <div class="col-sm-6 col-xs-12">
+            <h1 class="m-n font-thin h3 text-black">@Model.Name</h1>
+            <small class="text-muted">Member</small>
+        </div>
+    </div>
+</div>
+<!-- / main header -->
+<div class="wrapper-md">
+
+    <div class="row">
+        <div class="col-md-12">
+
+            <!-- players -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Packs
+                </div>
+                <div class="table-responsive">
+                    <table ui-jq="dataTable" class="table table-striped b-t b-b">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Card 1</th>
+                                <th>Card 2</th>
+                                <th>Card 3</th>
+                                <th>Card 4</th>
+                                <th>Card 5</th>
+                                <th>Pack</th>
+                                <th>Score</th>
+                                @*<th>XBOX</th>
+                                    <th>PS4</th>
+                                    <th>PC</th>*@
+                            </tr>
+                        </thead>
+                        <tbody>
+
+
+                            @if (Model.CardPacks != null && Model.CardPacks.Any())
+                            {
+                                foreach (var pack in Model.CardPacks)
+                                {
+                                    <tr>
+                                        <td>
+                                            @if (pack.PackType == "mtdb")
+                                            {
+                                                @Html.ActionLink(pack.Name, "MtdbDetails", new { controller = "Pack", id = pack.Id })
+                                            }
+                                            else
+                                            {
+                                                @Html.ActionLink(pack.Name, "DraftDetails", new { controller = "Pack", id = pack.Id })
+                                            }
+                                        </td>
+
+                                        @foreach (var playerName in pack.Players)
+                                        {
+                                            <td>
+                                                @playerName
+                                            </td>
+                                        }
+                                        <td>
+                                            @pack.PackType
+                                        </td>
+                                        <td>
+                                            @pack.Points
+                                        </td>
+                                    </tr>
+                                }
+
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!-- players -->
+
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <!-- players -->
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    Lineups
+                </div>
+                <table ui-jq="dataTable" class="table table-striped b-t b-b">
+                    <thead>
+                        <tr>
+                            <th>TITLE</th>
+                            <th># PLAYERS</th>
+                            <th>OVR</th>
+                            <th>OUT</th>
+                            <th>INS</th>
+                            <th>PLA</th>
+                            <th>ATH</th>
+                            <th>DEF</th>
+                            <th>REB</th>
+                            <th>XBOX</th>
+                            <th>PS4</th>
+                            <th>PC</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Lineups != null && Model.Lineups.HasItems())
+                        {
+                            foreach (var lineup in Model.Lineups)
+                            {
+                                <tr>
+                                    <td>
+                                        @Html.ActionLink(lineup.Name, "Details", new { controller = "Lineup", id = lineup.Id })
+                                    </td>
+                                    <td>
+                                        @lineup.PlayerCount
+                                    </td>
+                                    <td>
+                                        @lineup.Overall
+                                    </td>
+                                    <td>
+                                        @lineup.OutsideScoring
+                                    </td>
+                                    <td>
+                                        @lineup.InsideScoring
+                                    </td>
+                                    <td>
+                                        @lineup.Playmaking
+                                    </td>
+                                    <td>
+                                        @lineup.Athleticism
+                                    </td>
+                                    <td>
+                                        @lineup.Defending
+                                    </td>
+                                    <td>
+                                        @lineup.Rebounding
+                                    </td>
+                                    <td>
+                                        @lineup.Xbox
+                                    </td>
+                                    <td>
+                                        @lineup.PS4
+                                    </td>
+                                    <td>
+                                        @lineup.PC
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- players -->
+    </div>
+</div>

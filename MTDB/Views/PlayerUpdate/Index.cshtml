@@ -1,0 +1,75 @@
+﻿@using MTDB.Core
+@using MTDB.Helpers
+@model MTDB.Core.ViewModels.PagedResults<MTDB.Core.ViewModels.PlayerUpdates.PlayerUpdatesViewModel>
+
+<div class="bg-light lter b-b wrapper-md">
+    <div class="row">
+        <div class="col-sm-6 col-xs-12">
+            <h1 class="m-n font-thin h3 text-black">Player Updates</h1>
+        </div>
+        @if (User.IsInRole("Admin"))
+        {
+            <div class="col-sm-6 text-right">
+                <div class="inline m-r text-left">
+                    @using (Html.BeginForm("Create", "PlayerUpdate", FormMethod.Post, new { enctype = "multipart/form-data" }))
+                    {
+                        <input name="file" type="file" ui-jq="filestyle" data-icon="false" data-classButton="btn btn-default" data-classInput="form-control inline v-middle input-s" />
+                        <button type="submit">Upload Player Updates</button>
+                    }
+                </div>
+            </div>
+        }
+    </div>
+</div>
+<div class="wrapper-md">
+    <!-- updates -->
+    <div class="list-group">
+        @foreach (var update in Model.Results)
+        {
+            if (update.Visible || User.IsInRole("Admin"))
+            {
+                <a href="@Url.Action("Details", new {month = update.Date.Month, day = update.Date.Day, year = update.Date.Year})" class="list-group-item">
+                    <i class="fa fa-chevron-right text-muted"></i>
+                    @if (update.Title.HasValue())
+                    {
+                        @update.Date.ToString("d")
+                        if (update.Visible)
+                        {
+                            <span class="updateBadge m-l-xs">@update.Count</span>@(" - " + update.Title)
+                        }
+                        else
+                        {
+                            <span class="updateBadge m-l-xs">@update.Count</span>@(" - " + update.Title + " (Hidden)")
+                        }
+
+
+                    }
+                    else
+                    {
+                        if (update.Visible)
+                        {
+                            @update.Date.ToString("d")<span class="updateBadge m-l-xs">@update.Count</span>
+                        }
+                        else
+                        {
+                            @update.Date.ToString("d")<span class="updateBadge m-l-xs">@update.Count</span> @(" (Hidden)")
+                        }
+
+                    }
+                </a>
+            }
+        }
+
+    </div>
+
+    <hr class="m-b-sm">
+    <!-- paging -->
+    <div class="row">
+        <div class="col-sm-8 text-left">
+            <small class="text-muted inline m-t-sm m-b-sm">Showing @Model.Results.FirstItemOnPage-@Model.Results.LastItemOnPage of @Model.Results.TotalItemCount items</small>
+        </div>
+        @Html.ThemedPager(Model.Results, page => Url.Action("Index", new { page = page }))
+    </div>
+    <!-- /paging -->
+    <hr class="m-t-xs">
+</div>

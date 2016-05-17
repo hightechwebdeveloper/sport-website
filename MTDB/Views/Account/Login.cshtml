@@ -1,0 +1,48 @@
+﻿@using MTDB.Models
+@using reCAPTCHA.MVC
+@model LoginViewModel
+@{
+    ViewBag.Title = "Log in";
+}
+
+<div class="container w-xxl w-auto-xs">
+    <a class="navbar-brand block m-t"><img src="~/content/images/mtdb_logo_black.png"></a>
+    <div class="m-b-lg">
+        <div class="wrapper text-center">
+            <strong>Welcome to the MTDB Beta Site, we've upgraded the entire site!  Your normal MTDB account will not work here yet. Login or Register a new account to use the beta features!</strong>
+        </div>
+        @using (Html.BeginForm("Login", "Account", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "form-validation" }))
+        {
+            @Html.AntiForgeryToken()
+
+            @Html.ValidationSummary("", new { @class = "text-danger wrapper text-center" })
+            <div class="list-group list-group-sm">
+                <div class="list-group-item">
+                    @Html.TextBoxFor(m => m.UserNameOrEmail, new { placeholder = "Username or Email", @class = "form-control no-border" })
+                </div>
+                <div class="list-group-item">
+                    @Html.PasswordFor(m => m.Password, new { placeholder = "Password", @class = "form-control no-border" })
+                </div>
+                <span class="input-group-addon">@Html.CheckBoxFor(m => m.RememberMe)@Html.LabelFor(m => m.RememberMe)</span>
+                <div class="list-group-item">
+                    @Html.Recaptcha()
+                </div>
+            </div>
+            <button type="submit" class="btn btn-lg btn-primary btn-block">Log in</button>
+
+            <div class="text-center m-t m-b">
+                @Html.ActionLink("Forgot password?", "ForgotPassword", "Account")
+            </div>
+            <div class="line line-dashed"></div>
+            <p class="text-center">
+                <small>Do not have an account?</small>
+            </p>
+
+            @Html.ActionLink("Create an account", "Register", "Account", new { @class = "btn btn-lg btn-default btn-block" })
+        }
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

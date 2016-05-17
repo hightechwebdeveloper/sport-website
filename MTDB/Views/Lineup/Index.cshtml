@@ -1,0 +1,167 @@
+﻿@using System.Data.SqlClient
+@using MTDB.Core
+@using MTDB.Helpers
+@using PagedList.Mvc
+@model MTDB.Core.ViewModels.PagedResults<MTDB.Core.ViewModels.LineupSearchDto>
+
+@{
+//var pageSizes = new[]
+//{
+//    Tuple.Create(5,  Url.Action("Index", new {page = Model.Lineups.PageNumber, pageSize = 5 })),
+//    Tuple.Create(10, Url.Action("Index", new {page = Model.Lineups.PageNumber, pageSize = 10 })),
+//    Tuple.Create(25, Url.Action("Index", new {page = Model.Lineups.PageNumber, pageSize = 25 })),
+//    Tuple.Create(50, Url.Action("Index", new {page = Model.Lineups.PageNumber, pageSize = 50 })),
+//    Tuple.Create(100,Url.Action("Index", new {page = Model.Lineups.PageNumber, pageSize = 100 })),
+//};
+
+//var pageSizeSelectList = new SelectList(pageSizes, "Item2", "Item1", Model.Lineups.PageSize.ToString());
+}
+<!-- main header -->
+<div class="bg-light lter b-b wrapper-md">
+    <div class="row">
+        <div class="col-sm-6 col-xs-12">
+            <h1 class="m-n font-thin h3 text-black">NBA 2K16 Lineups</h1>
+        </div>
+        <div class="col-sm-6 text-right">
+            <div class="inline m-r text-left">
+                @Html.ActionLink("Create Lineup", "Create", "Lineup", null, new { @class = "btn btn-primary" })
+            </div>
+        </div>
+
+
+    </div>
+</div>
+<!-- / main header -->
+<div class="wrapper-md">
+    <div class="wrapper-md">
+
+        <!-- players -->
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Lineups
+            </div>
+            @*<div class="row">
+                    <div class="col-sm-6">
+                        <div class="dataTables_length">
+                            <label>
+                                Show
+                                @Html.DropDownList("pageSize", pageSizeSelectList, new { @class = "form-control input-sm", onchange = "location = this.value" })
+                                entries
+                            </label>
+                        </div>
+                    </div>
+                </div>*@
+            <div class="table-responsive">
+                <table id="results" class="table table-striped b-t b-light playerList">
+                    <thead>
+                        <tr>
+                            @*<th></th>*@
+                            <th style="text-align: left;">@Html.SortingHeader("TITLE", "Index", "Lineup", "title", Model.SortedBy, Model.SortOrder)</th>
+                            <th>@Html.SortingHeader("# PLAYERS", "Index", "Lineup", "playerCount", Model.SortedBy, Model.SortOrder)</th>
+                            <th>@Html.SortingHeader("OVR", "Index", "Lineup", "overall", Model.SortedBy, Model.SortOrder)</th>
+                            <th>@Html.SortingHeader("OUT", "Index", "Lineup", "outsideScoring", Model.SortedBy, Model.SortOrder)</th>
+                            <th>@Html.SortingHeader("INS", "Index", "Lineup", "insideScoring", Model.SortedBy, Model.SortOrder)</th>
+                            <th>@Html.SortingHeader("PLA", "Index", "Lineup", "playmaking", Model.SortedBy, Model.SortOrder)</th>
+                            <th>@Html.SortingHeader("ATH", "Index", "Lineup", "athleticism", Model.SortedBy, Model.SortOrder)</th>
+                            <th>@Html.SortingHeader("DEF", "Index", "Lineup", "defending", Model.SortedBy, Model.SortOrder)</th>
+                            <th>@Html.SortingHeader("REB", "Index", "Lineup", "rebounding", Model.SortedBy, Model.SortOrder)</th>
+                            <th>@Html.SortingHeader("XBOX", "Index", "Lineup", "xbox", Model.SortedBy, Model.SortOrder)</th>
+                            <th>@Html.SortingHeader("PS4", "Index", "Lineup", "ps4", Model.SortedBy, Model.SortOrder)</th>
+                            <th>@Html.SortingHeader("PC", "Index", "Lineup", "pc", Model.SortedBy, Model.SortOrder)</th>
+                            <th>@Html.SortingHeader("Author", "Index", "Lineup", "author", Model.SortedBy, Model.SortOrder)</th>
+                            <th>@Html.SortingHeader("Date Added", "Index", "Lineup", "dateAdded", Model.SortedBy, Model.SortOrder)</th>
+                        </tr>
+                    </thead>
+                    <tbody class="facetwp-template">
+                        @if (Model != null && Model.Results.HasItems())
+                        {
+                            foreach (var lineup in Model.Results)
+                            {
+                                <tr>
+                                    @*<td>
+                                        @if (ViewBag.User == lineup.Author)
+                                        {
+                                            <h5><a href="@Url.Action("Edit", "Lineup", new { lineupId = lineup.Id })">Edit</a></h5>
+                                        }
+                                    </td>*@
+                                    <td>
+                                        <h5><a href="@Url.Action("Details", "Lineup", new {id = lineup.Id})">@lineup.Name</a></h5>
+                                    </td>
+                                    <td>
+                                        @lineup.PlayerCount
+                                    </td>
+                                    <td>
+                                        <span class="statNum">@lineup.Overall</span>
+                                    </td>
+                                    <td>
+                                        <span class="statNum">@lineup.OutsideScoring</span>
+                                    </td>
+                                    <td>
+                                        <span class="statNum">@lineup.InsideScoring</span>
+                                    </td>
+                                    <td>
+                                        <span class="statNum">@lineup.Playmaking</span>
+                                    </td>
+                                    <td>
+                                        <span class="statNum">@lineup.Athleticism</span>
+                                    </td>
+                                    <td>
+                                        <span class="statNum">@lineup.Defending</span>
+                                    </td>
+                                    <td>
+                                        <span class="statNum">@lineup.Rebounding</span>
+                                    </td>
+                                    <td>
+                                        @lineup.Xbox
+                                    </td>
+                                    <td>
+                                        @lineup.PS4
+                                    </td>
+                                    <td>
+                                        @lineup.PC
+                                    </td>
+                                    <td>
+                                        @lineup.Author
+                                    </td>
+                                    <td>
+                                        @lineup.CreatedDateString
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <footer class="panel-footer">
+                <div class="row">
+                    <div class="col-sm-8 text-left">
+                        <small class="text-muted inline m-t-sm m-b-sm">Showing @Model.Results.FirstItemOnPage-@Model.Results.LastItemOnPage of @Model.Results.TotalItemCount items</small>
+                    </div>
+                    @Html.ThemedPager(Model.Results, page => Url.Action("Index", new { page = page, sortedBy = Model.SortedBy, sortOrder = Model.SortOrder }))
+                </div>
+            </footer>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <!-- color of stats -->
+    <script type="text/javascript">
+        var cell = $('.statNum');
+        cell.each(function () {
+            var cell_value = $(this).html();
+            if ((cell_value >= 0) && (cell_value <= 59)) {
+                $(this).css({ 'background': '#A52A2A' });
+            } else if ((cell_value >= 60) && (cell_value <= 69)) {
+                $(this).css({ 'background': '#D2691E' });
+            } else if ((cell_value >= 70) && (cell_value <= 79)) {
+                $(this).css({ 'background': '#DAA520' });
+            } else if ((cell_value >= 80) && (cell_value <= 89)) {
+                $(this).css({ 'background': '#008000' });
+            } else if (cell_value >= 90) {
+                $(this).css({ 'background': '#32CD32' });
+            }
+        });
+    </script>
+}
+

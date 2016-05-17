@@ -1,0 +1,65 @@
+﻿@using MTDB.Core.Services
+@model CommentsViewModel
+
+<h4 class="m-t-lg m-b">@Model.Total Comments</h4>
+<div>
+    @foreach (var comment in Model.Comments)
+    {
+        <div class="m-l-lg m-b">
+            <div>
+                <a><strong><i class="fa fa-user"></i> @comment.UserName</strong></a>
+                <span class="text-muted text-xs block m-t-xs">@comment.TimeAgo</span>
+            </div>
+            <div class="m-t-sm">@comment.Text</div>
+            <div class="reply">
+                <a class="reply-comment">Reply</a>
+                <input type="hidden" id="comment-@comment.Id" value="@comment.Id" />
+            </div>
+        </div>
+        foreach (var child in comment != null ? comment.Children : null)
+        {
+            <div class="m-l-lg">
+                <div class="m-l-xxl m-b">
+                    <div>
+                        <a><strong><i class="fa fa-user"></i> @child.UserName</strong></a>
+                        <span class="text-muted text-xs block m-t-xs">@child.TimeAgo</span>
+                    </div>
+                    <div class="m-t-sm">@child.Text</div>
+                </div>
+            </div>
+        }
+    }
+</div>
+<div id="comment-form">
+    @{
+        var header = Model.Comments.Count > 0 ? "Leave a comment" : "Be the first to leave a comment";
+    }
+    <h4 class="m-t-lg m-b">@header <a id="cancel-reply" class="hidden" style="margin-left:9px; color:#EC8100;">Cancel Reply</a></h4>
+    @using (Html.BeginForm("NewComment", "Comments"))
+    {
+        <input type="hidden" id="parentId" name="parentId" value="" />
+        <input type="hidden" id="pageUrl" name="pageUrl" value="@Model.PageUrl" />
+        <div class="form-group">
+            <label>Comment</label>
+            @if (User.Identity.IsAuthenticated)
+            {
+                <textarea id="text" name="text" class="form-control" rows="5" placeholder="Type your comment"></textarea>
+            }
+            else
+            {
+                <textarea readonly id="text" name="text" class="form-control" rows="5" placeholder="Type your comment"></textarea>
+            }
+            
+        </div>
+        <div class="form-group">
+            @if (User.Identity.IsAuthenticated)
+            {
+                <button type="submit" class="btn btn-primary">Submit comment</button>
+            }
+            else
+            {
+                @Html.ActionLink("Login", "Login", "Account", null, new { @class = "btn btn-primary" })
+            }
+        </div>
+    }
+</div>
