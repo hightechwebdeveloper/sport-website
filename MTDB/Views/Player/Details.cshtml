@@ -91,14 +91,19 @@
     <!-- player stats -->
     <div class="row">
         <div class="col-md-12">
-            <p>
-                @Html.ActionLink("Compare Players", "Compare", new { player1 = Model.UriName }, new { @class = "btn btn-primary btn-sm" })
+            @Html.ActionLink("Compare Players", "Compare", new { player1 = Model.UriName }, new { @class = "btn btn-primary btn-sm" })
 
-                @if (Request.IsAuthenticated && User.IsInRole("Admin"))
+            @if (Request.IsAuthenticated && User.IsInRole("Admin"))
+            {
+                @Html.ActionLink("Edit Player", "Edit", new { playerUri = @Model.UriName }, new { @class = "btn btn-success btn-sm" })
+            }
+            @if (Request.IsAuthenticated && User.IsInRole("Admin"))
+            {
+                using (@Html.BeginForm("Delete", "Player", FormMethod.Post, new { style = "display: inline;"}))
                 {
-                    @Html.ActionLink("Edit Player", "Edit", new { playerUri = @Model.UriName }, new { @class = "btn btn-success btn-sm" })
+                    <button name="playerUri" value="@Model.UriName" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this player?');">Delete Player</button>
                 }
-            </p>
+            }
         </div>
     </div>
     <div class="row">

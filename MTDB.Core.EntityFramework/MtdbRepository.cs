@@ -58,6 +58,7 @@ namespace MTDB.Core.EntityFramework
         public DbSet<Division> Divisions { get; set; }
         public DbSet<Team> Teams { get; set; }
         public DbSet<CardPack> CardPacks { get; set; }
+        public DbSet<CardPackPlayer> CardPackPlayers { get; set; }
 
         public DbSet<Collection> Collections { get; set; }
 

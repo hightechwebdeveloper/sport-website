@@ -207,6 +207,21 @@ namespace MTDB.Controllers
             return RedirectToAction("Index");
         }
 
+        [HttpPost]
+        [Authorize(Roles = "Admin")]
+        [Route("players/delete/{playerUri}")]
+        [Route("player/edit/{playerUri}")]
+        public async Task<ActionResult> Delete(string playerUri, CancellationToken cancellationToken)
+        {
+            if (!string.IsNullOrWhiteSpace(playerUri))
+            {
+                await Service.DeletePlayer(playerUri, cancellationToken);
+            }
+
+            return RedirectToAction("Index");
+        }
+
+
         [AsyncTimeout(150)]
         public async Task<IEnumerable<string>> AutoComplete(string term, CancellationToken cancellationToken)
         {

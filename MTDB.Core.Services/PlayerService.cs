@@ -596,6 +596,39 @@ namespace MTDB.Core.Services
             return oldPlayer.ToDto();
         }
 
+        public async Task DeletePlayer(string uri, CancellationToken token)
+        {
+            var player = await _repository.PlayersWithStats
+                .Include(p => p.Stats)
+                .FirstOrDefaultAsync(p => p.UriName.Equals(uri, StringComparison.OrdinalIgnoreCase), token);
+
+            if (player == null)
+                return;
+            
+            var changes = await _repository.PlayerUpdateChanges
+                .Include(c => c.Player)
+                .Where(c => c.Player.Id == player.Id)
+                .ToListAsync(token);
+            _repository.PlayerUpdateChanges.RemoveRange(changes);
+
+            var cpPlayers = await _repository.CardPackPlayers
+                .Include(c => c.Player)
+                .Where(c => c.Player.Id == player.Id)
+                .ToListAsync(token);
+            _repository.CardPackPlayers.RemoveRange(cpPlayers);
+
+            var lineupPlayers = await _repository.LineupPlayers
+                .Include(c => c.Player)
+                .Where(c => c.Player.Id == player.Id)
+                .ToListAsync(token);
+            _repository.LineupPlayers.RemoveRange(lineupPlayers);
+
+            _repository.PlayerStats.RemoveRange(player.Stats);
+
+            _repository.Players.Remove(player);
+
+            await _repository.SaveChangesAsync(token);
+        }
 
 
         private PlayerUpdateChange CreateUpdateIfNecessary(Player player, object newValue, object oldValue, string fieldName, bool statUpdate = false, bool visible = true)
