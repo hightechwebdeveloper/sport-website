@@ -349,7 +349,7 @@
                         {
                             foreach (var player in Model.SearchResults.Results)
                             {
-                                <tr>
+                                <tr @(player.Prvate ? Html.Raw(" class='private-player'") : null)>
                                     <td style="text-align: left;">
                                         <img src="@player.ImageUri">
                                     </td>

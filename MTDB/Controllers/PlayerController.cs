@@ -1,24 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
-using System.Web.UI.WebControls.WebParts;
-using System.Web.WebPages;
 using MTDB.Core;
 using MTDB.Core.Services;
 using MTDB.Core.ViewModels;
 using MTDB.Helpers;
-using MTDB.Models;
 
 namespace MTDB.Controllers
 {
     public class PlayerController : ServicedController<PlayerService>
     {
-
         public PlayerController()
         { }
 
@@ -55,7 +50,7 @@ namespace MTDB.Controllers
             }
 
             // search
-            var searchResults = await Service.SearchPlayers((page - 1) * pageSize, pageSize, sortedBy, sortOrder, filter, cancellationToken);
+            var searchResults = await Service.SearchPlayers((page - 1) * pageSize, pageSize, sortedBy, sortOrder, filter, cancellationToken, User.IsInRole("Admin"));
             searchViewModel.SearchResults = new PagedResults<SearchPlayerResultDto>(searchResults.Results, page, pageSize, searchResults.ResultCount, sortedBy, sortOrder);
 
             searchViewModel.Tiers = await Service.GetTiers(cancellationToken);
@@ -75,8 +70,13 @@ namespace MTDB.Controllers
 
             if (player == null)
             {
-                this.HttpContext.Response.StatusCode = 404;
+                this.HttpContext.Response.StatusCode = (int)HttpStatusCode.NotFound;
                 return Json("Not found", JsonRequestBehavior.AllowGet);
+            }
+            if (player.Private && !User.IsInRole("Admin"))
+            {
+                this.HttpContext.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+                return Json("Forbidden", JsonRequestBehavior.AllowGet);
             }
 
             return Json(player, JsonRequestBehavior.AllowGet);
@@ -93,6 +93,10 @@ namespace MTDB.Controllers
             }
 
             var player = await Service.GetPlayer(playerUri, cancellationToken);
+            if (player == null)
+                return HttpNotFound();
+            if (player.Private && !User.IsInRole("Admin"))
+                return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
 
             SetCommentsPageUrl(playerUri);
             return View(player);
@@ -111,17 +115,20 @@ namespace MTDB.Controllers
             {
                 var comparedPlayers = await Service.GetPlayerDtosByUri(cancellationToken, compareDto.Player1, compareDto.Player2, compareDto.Player3);
 
-                var order = new List<string>()
+                var order = new List<string>
                 {
                     compareDto.Player1,
                     compareDto.Player2,
                     compareDto.Player3
                 };
 
-                compareDto.ComparedPlayers = order.Where(p => p.HasValue()).Select(player => comparedPlayers.FirstOrDefault(p => p.UriName == player)).Where(p => p != null).ToList();
+                compareDto.ComparedPlayers = order
+                    .Where(p => p.HasValue())
+                    .Select(player => comparedPlayers.FirstOrDefault(p => p.UriName == player))
+                    .Where(p => p != null).ToList();
             }
 
-            compareDto.Players = await Service.GetComparisonPlayers(cancellationToken);
+            compareDto.Players = await Service.GetComparisonPlayers(cancellationToken, User.IsInRole("Admin"));
 
             return View("Compare", compareDto);
         }

@@ -3,13 +3,11 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using CsvHelper;
 using MTDB.Core.EntityFramework;
 using MTDB.Core.Services;
-using MTDB.Core.ViewModels;
 
 namespace _2KUpdateCode
 {

@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using MTDB.Core.EntityFramework;
@@ -27,12 +24,20 @@ namespace MTDB.Core.Services
         public LineupService() : this(new MtdbRepository())
         { }
 
-        public async Task<IEnumerable<LineupSearchPlayerDto>> GetLineupPlayers(CancellationToken token)
+        public async Task<IEnumerable<LineupSearchPlayerDto>> GetLineupPlayers(CancellationToken token, bool showHidden = false)
         {
-            return await Task.Run(() =>
-            _repository.Players
-            .OrderBy(p => p.Name)
-            .Select(p => new LineupSearchPlayerDto() { Name = p.Name + " - OVR " + p.Overall, Id = p.Id }), token);
+            var query = _repository.Players.AsQueryable();
+
+            if (!showHidden)
+                query = query.Where(p => !p.Private);
+
+            query = query.OrderBy(p => p.Name);
+
+            var players =
+                await query.Select(p => new LineupSearchPlayerDto {Name = p.Name + " - OVR " + p.Overall, Id = p.Id})
+                    .ToListAsync(token);
+            
+            return players;
         }
 
         public async Task<int> UpdateLineup(ApplicationUser user, CreateLineupDto dto, CancellationToken token)

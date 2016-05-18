@@ -1,22 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Dynamic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Web;
 using System.Web.Mvc;
 using System.Web.Mvc.Html;
 using System.Web.Routing;
 using MTDB.Core;
-using MTDB.Core.Services;
 using PagedList;
 using PagedList.Mvc;
 using HtmlHelper = System.Web.Mvc.HtmlHelper;
-using System.Reflection;
-using System.Globalization;
-using MTDB.Controllers;
 using MTDB.Core.ViewModels.PlayerUpdates;
 
 namespace MTDB.Helpers

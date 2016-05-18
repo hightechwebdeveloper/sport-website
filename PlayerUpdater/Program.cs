@@ -4,15 +4,11 @@ using System.Configuration;
 using System.Data.Entity;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using CsvHelper;
 using MTDB.Core.EntityFramework;
 using MTDB.Core.EntityFramework.Entities;
 using MTDB.Core.Services;
 using MTDB.Core.Services.Extensions;
-using MTDB.Core.ViewModels;
 
 namespace PlayerUpdater
 {

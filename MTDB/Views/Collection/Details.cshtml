@@ -1,5 +1,4 @@
-﻿@using MTDB.Core
-@using MTDB.Helpers
+﻿@using MTDB.Helpers
 @model MTDB.Controllers.CollectionDetailsViewModel
 
 <section class="playerHero">
@@ -108,7 +107,7 @@
                 {
                     foreach (var player in Model.Players.Results)
                     {
-                        <tr>
+                        <tr @(player.Prvate ? Html.Raw(" class='private-player'") : null)>
                             <td style="text-align: left;">
                                 <img src="@player.ImageUri">
                             </td>

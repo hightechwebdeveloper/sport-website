@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
 namespace MTDB.Core.EntityFramework.Entities
 {
@@ -44,6 +43,8 @@ namespace MTDB.Core.EntityFramework.Entities
         public int? Points { get; set; }
         public Collection Collection { get; set; }
         public int? NBA2K_ID { get; set; }
+
+        public bool Private { get; set; }
     }
 
     public class Collection : EntityBase

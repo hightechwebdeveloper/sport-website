@@ -194,6 +194,13 @@
 
                 <div class="line line-dashed b-b line-lg pull-in"></div>
                 <div class="form-group">
+                    <div class="checkbox">
+                        <label>@Html.CheckBoxFor(p => p.Private) Private</label>
+                    </div>
+                </div>
+
+                <div class="line line-dashed b-b line-lg pull-in"></div>
+                <div class="form-group">
                     <label>Publish Date</label>
                     @Html.TextBoxFor(p => p.PublishDate, "{0:MM/dd/yyyy}", new { data_provide = "datepicker" })
                 </div>

@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Linq;
+﻿using System.Data.SqlClient;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
 using MTDB.Core.EntityFramework.Entities;
 using MTDB.Core.Services;
 using MTDB.Core.ViewModels;
 using MTDB.Core.ViewModels.Lineups;
 using MTDB.Helpers;
-using MTDB.Models;
 using PagedList;
 
 namespace MTDB.Controllers
@@ -21,7 +16,6 @@ namespace MTDB.Controllers
     {
         public LineupController()
         {
-
         }
 
         public LineupController(LineupService lineupService)
@@ -139,7 +133,6 @@ namespace MTDB.Controllers
                 Bench7Id = dto.Bench7?.Id,
                 Bench8Id = dto.Bench8?.Id,
             };
-
             
             model.Players = await Service.GetLineupPlayers(cancellationToken);
             

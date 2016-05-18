@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace PagedList
+﻿namespace PagedList
 {
     /// <summary>
     /// Paging settings for 3-rd part tools

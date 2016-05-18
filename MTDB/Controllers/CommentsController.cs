@@ -1,10 +1,6 @@
-﻿using MTDB.Core.EntityFramework;
-using MTDB.Core.EntityFramework.Entities;
+﻿using MTDB.Core.EntityFramework.Entities;
 using MTDB.Core.Services;
-using MTDB.Core.ViewModels;
 using MTDB.Helpers;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Mvc;

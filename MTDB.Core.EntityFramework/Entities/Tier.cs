@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MTDB.Core.EntityFramework.Entities
+﻿namespace MTDB.Core.EntityFramework.Entities
 {
     public class Tier : EntityBase, ISortable
     {

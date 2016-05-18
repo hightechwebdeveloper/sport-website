@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.SqlClient;
 using System.Drawing;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -11,15 +10,10 @@ using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using Flurl.Util;
 using MTDB.Core.EntityFramework;
 using MTDB.Core.EntityFramework.Entities;
 using MTDB.Core.Services.Extensions;
 using MTDB.Core.ViewModels;
-using MTDB.Core.ViewModels.PlayerUpdates;
-using net.openstack.Core;
-using net.openstack.Core.Domain;
-using net.openstack.Providers.Rackspace;
 
 namespace MTDB.Core.Services
 {
@@ -40,7 +34,7 @@ namespace MTDB.Core.Services
             return await _repository.Players.OrderByOverallScore().Take(20).ToSearchDtos(token);
         }
 
-        public async Task<SearchPlayerViewModel> SearchPlayers(int skip, int take, string sortByColumn, SortOrder sortOrder, PlayerFilter filter, CancellationToken token)
+        public async Task<SearchPlayerViewModel> SearchPlayers(int skip, int take, string sortByColumn, SortOrder sortOrder, PlayerFilter filter, CancellationToken token, bool showHidden = false)
         {
             var result = new SearchPlayerViewModel();
 
@@ -131,6 +125,9 @@ namespace MTDB.Core.Services
                     players = players.FilterByStats(filter.Stats);
                 }
             }
+
+            if (!showHidden)
+                players = players.Where(p => p.Private == false);
 
             var sortMap = new Dictionary<string, string>();
             sortMap.Add("CreatedDateString", "CreatedDate");
@@ -228,7 +225,8 @@ namespace MTDB.Core.Services
                 PS4 = player.PS4,
                 ImageUri = player.GetImageUri(ImageSize.Full),
                 NBA2K_ID = player.NBA2K_ID,
-                PublishDate = player.CreatedDate
+                PublishDate = player.CreatedDate,
+                Private = player.Private
             };
         }
 
@@ -284,14 +282,18 @@ namespace MTDB.Core.Services
 
         }
 
-        public async Task<IEnumerable<ComparePlayerDto>> GetComparisonPlayers(CancellationToken token)
+        public async Task<IEnumerable<ComparePlayerDto>> GetComparisonPlayers(CancellationToken token, bool showHidden = false)
         {
-            return
-                await
-                    Task.Run(
-                        () =>
-                            _repository.Players.OrderBy(p => p.Name)
-                                .Select(p => new ComparePlayerDto() { Id = p.Id, Name = p.Name + " - OVR " + p.Overall, Uri = p.UriName }), token);
+            var query = _repository.Players.AsQueryable();
+            if (!showHidden)
+                query = query.Where(p => !p.Private);
+
+            query = query.OrderBy(p => p.Name);
+
+            var players =  await query
+                                .Select(p => new ComparePlayerDto { Id = p.Id, Name = p.Name + " - OVR " + p.Overall, Uri = p.UriName })
+                                .ToListAsync(token);
+            return players;
         }
 
         public async Task<PlayerDto> GetPlayer(int id, CancellationToken token)
@@ -369,6 +371,7 @@ namespace MTDB.Core.Services
                 NBA2K_ID = create.NBA2K_Id,
                 Collection = await _repository.Collections.FindAsync(token, create.Collection),
                 CreatedDate = create.PublishDate,
+                Private = create.Private
             };
 
             foreach (var stat in stats.Select(s => new PlayerStat() { Player = player, Stat = s }))
@@ -559,6 +562,7 @@ namespace MTDB.Core.Services
             oldPlayer.Defending = aggregated.Defending;
             oldPlayer.Rebounding = aggregated.Rebounding;
             oldPlayer.Points = oldPlayer.Score();
+            oldPlayer.Private = update.Private;
 
             if (changes.Any())
             {
@@ -848,7 +852,7 @@ namespace MTDB.Core.Services
             return $"{theme.ToLower().Replace(" ", "-")}/{name.ToLower().Replace(" ", "-")}";
         }
 
-        public async Task<CollectionDetails> GetPlayersForCollection(int skip, int take, string sortByColumn, SortOrder sortOrder, string groupName, string name, CancellationToken token)
+        public async Task<CollectionDetails> GetPlayersForCollection(int skip, int take, string sortByColumn, SortOrder sortOrder, string groupName, string name, CancellationToken token, bool showHidden = false)
         {
             // So we will receive a groupName and name with dashes instead of spaces.  Remove dashes and place spaces in.  
             groupName = groupName.Replace("-", " ");
@@ -878,6 +882,9 @@ namespace MTDB.Core.Services
                 // Not a team so just search by collection
                 players = _repository.PlayersWithStats.Where(p => p.Collection.Id == collection.Id);
             }
+            if (!showHidden)
+                players = players.Where(p => !p.Private);
+
             var count = await players.CountAsync(token);
 
             if (count == 0)
@@ -974,7 +981,7 @@ namespace MTDB.Core.Services
                         break;
                     case ManageTypeDto.Team:
                     {
-                        var entity = await _repository.Teams.SingleOrDefaultAsync(e => e.Id == id, token);
+                        var entity = await _repository.Teams.Include(e => e.Division).SingleOrDefaultAsync(e => e.Id == id, token);
                         model.Name = entity.Name;
                         model.DivisionId = entity.Division.Id;
                     }

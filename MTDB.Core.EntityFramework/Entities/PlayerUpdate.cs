@@ -1,15 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace MTDB.Core.EntityFramework.Entities
 {
     public class PlayerUpdateChange : EntityBase
     {
-        public PlayerUpdate PlayerUpdate { get; set; }
-        public Player Player { get; set; }
+        public virtual PlayerUpdate PlayerUpdate { get; set; }
+        public virtual Player Player { get; set; }
         public string FieldName { get; set; }
         public string OldValue { get; set; }
         public string NewValue { get; set; }

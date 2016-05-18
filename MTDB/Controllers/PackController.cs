@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Configuration;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Threading;
@@ -10,7 +8,6 @@ using System.Web.Mvc;
 using MTDB.Core.Services;
 using MTDB.Core.ViewModels;
 using MTDB.Helpers;
-using MTDB.Models;
 
 namespace MTDB.Controllers
 {

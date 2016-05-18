@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.SqlClient;
-using System.Linq;
+﻿using System.Data.SqlClient;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
 using MTDB.Core;
 using MTDB.Core.Services;
@@ -41,7 +37,7 @@ namespace MTDB.Controllers
                 return RedirectToAction("Index");
             }
 
-            var collectionDetails = await Service.GetPlayersForCollection((page - 1) * pageSize, pageSize, sortedBy, sortOrder, groupName, name, token);
+            var collectionDetails = await Service.GetPlayersForCollection((page - 1) * pageSize, pageSize, sortedBy, sortOrder, groupName, name, token, User.IsInRole("Admin"));
 
             if (collectionDetails == null)
                 return RedirectToAction("Index");

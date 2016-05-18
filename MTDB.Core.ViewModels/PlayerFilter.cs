@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
@@ -93,7 +92,7 @@ namespace MTDB.Core.ViewModels
         public int? NBA2K_ID { get; set; }
 
         public DateTimeOffset PublishDate { get; set; } = DateTimeOffset.Now;
-
+        public bool Private { get; set; }
     }
 
     public class CreatePlayerDto
@@ -144,6 +143,7 @@ namespace MTDB.Core.ViewModels
         public int? NBA2K_Id { get; set; }
         public int? Collection { get; set; }
         public DateTime PublishDate { get; set; } = DateTime.Today;
+        public bool Private { get; set; }
     }
 
     public class ManageDto

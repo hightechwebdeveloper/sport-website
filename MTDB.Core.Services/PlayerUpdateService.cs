@@ -4,7 +4,6 @@ using System.Data.Entity;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
@@ -12,7 +11,6 @@ using CsvHelper;
 using MTDB.Core.EntityFramework;
 using MTDB.Core.EntityFramework.Entities;
 using MTDB.Core.Services.Extensions;
-using MTDB.Core.ViewModels;
 using MTDB.Core.ViewModels.PlayerUpdates;
 
 namespace MTDB.Core.Services

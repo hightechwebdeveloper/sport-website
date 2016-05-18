@@ -5236,6 +5236,10 @@ a.text-#000000:hover {
     color: #F7F7F7;
     overflow: hidden;
 }
+.playerHero .entry-title .private {
+    color: #00C2FF;
+    font-size: 26px;
+}
 .playerOText {
   padding: 0px!important;
   font-size: 18px;
@@ -5275,6 +5279,14 @@ a.text-#000000:hover {
 .playerList th a {
     color: #58666e!important;
 }
+.playerList .private-player {
+    opacity: 0.5;
+}
+
+.playerList .private-player td a {
+    color: #C7C7C7 !important;
+}
+
 .playerListOverall {
   background-color: #E8E8E8!important;
 }
@@ -5285,15 +5297,21 @@ a.text-#000000:hover {
     position: relative;
 }
 .lineup-player .details {
-    cursor: pointer;
     -webkit-transition: -webkit-transform 0.2s ease-out;
     -moz-transition: -moz-transform 0.2s ease-out;
     -o-transition: -o-transform 0.2s ease-out;
     -ms-transition: -ms-transform 0.2s ease-out;
+    cursor: default;
 }
-.lineup-player .details:hover {
+.lineup-player .details[draggable=true],
+.lineup-player a[href] > .details {
+    cursor: pointer;
+}
+.lineup-player .details[draggable=true]:hover,
+.lineup-player a[href] > .details:hover {
     outline: -webkit-focus-ring-color auto 5px;
 }
+
 .lineup-player .details.moving {
     opacity: 0.9;
     -webkit-transform: scale(0.95);

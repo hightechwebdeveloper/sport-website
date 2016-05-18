@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
 using MTDB.Core.EntityFramework;

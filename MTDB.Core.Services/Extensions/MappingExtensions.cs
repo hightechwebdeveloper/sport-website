@@ -8,7 +8,6 @@ using AutoMapper;
 using MTDB.Core.EntityFramework;
 using MTDB.Core.EntityFramework.Entities;
 using MTDB.Core.ViewModels;
-using MTDB.Core;
 
 namespace MTDB.Core.Services.Extensions
 {
@@ -77,6 +76,7 @@ namespace MTDB.Core.Services.Extensions
                 Defending = player.Defending.Value,
                 Rebounding = player.Rebounding.Value,
                 CreatedDate = player.CreatedDate,
+                Prvate = player.Private
             };
         }
 
@@ -125,6 +125,7 @@ namespace MTDB.Core.Services.Extensions
                 //Tier = player.Tier.ToDto(),
                 Attributes = player.Stats.ToDtos(),
                 Overall = player.Overall,
+                Private = player.Private,
                 GroupAverages = player.Stats.OrderBy(s => s.Stat.Category.SortOrder).GroupBy(
                     playerStat => playerStat.Stat.Category,
                     playerStat => playerStat.Value, (key, statValues) => new
@@ -226,6 +227,7 @@ namespace MTDB.Core.Services.Extensions
                 Athleticism = player.Player.Athleticism.Value,
                 Defending = player.Player.Defending.Value,
                 Rebounding = player.Player.Rebounding.Value,
+                Private = player.Player.Private,
                 Id = player.Player.Id
             };
         }

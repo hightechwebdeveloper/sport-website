@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace MTDB.Core.EntityFramework.Entities
+﻿namespace MTDB.Core.EntityFramework.Entities
 {
     public class Comment : EntityBase
     {

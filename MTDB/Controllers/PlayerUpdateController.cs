@@ -5,15 +5,12 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
-using System.Web.Caching;
 using System.Web.Mvc;
-using System.Web.UI;
 using Microsoft.Ajax.Utilities;
 using MTDB.Core.Services;
 using MTDB.Core.ViewModels;
 using MTDB.Core.ViewModels.PlayerUpdates;
 using MTDB.Helpers;
-using MTDB.Models;
 
 namespace MTDB.Controllers
 {

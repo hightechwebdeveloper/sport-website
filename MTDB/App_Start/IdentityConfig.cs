@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using System.Web;
 using Mailgun.AspNet.Identity;
 using Mailgun.Messages;
 using Microsoft.AspNet.Identity;
@@ -13,7 +9,6 @@ using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using MTDB.Core.EntityFramework;
-using MTDB.Models;
 
 namespace MTDB
 {

@@ -26,6 +26,7 @@ namespace MTDB.Core.ViewModels
         public int? PC { get; set; }
         public string CollectionName { get; set; }
         public string GroupName { get; set; }
+        public bool Private { get; set; }
     }
 
 
@@ -54,5 +55,6 @@ namespace MTDB.Core.ViewModels
         public DateTimeOffset CreatedDate { get; set; }
 
         public string CreatedDateString => CreatedDate.ToString("G");
+        public bool Prvate { get; set; }
     }
 }

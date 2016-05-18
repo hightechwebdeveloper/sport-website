@@ -14,7 +14,7 @@
                         <div class="col-md-7">
                             <div class="row">
                                 <div class="col-md-12">
-                                    <h1 class="entry-title">@Model.Name</h1>
+                                    <h1 class="entry-title">@Model.Name @if (Model.Private) { <span class="private">(Private)</span> }</h1>
                                     <p>
                                         <strong>@Model.PrimaryPosition</strong> @*/ @Model.SecondaryPosition*@ / @Html.ActionLink(Model.CollectionName, "Details", new { controller = "collection", groupName = Model.GroupName.ToUri(), name = Model.CollectionName.ToUri() }) / @Model.Age yrs / @Model.Weight lbs / @Model.Height
                                     </p>

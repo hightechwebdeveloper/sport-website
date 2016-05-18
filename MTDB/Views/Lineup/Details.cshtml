@@ -7,26 +7,25 @@
 @helper LineupTemplate(LineupPlayerDto player)
 {
     <li class="lineup-player chosen">
-        <div class="details whitebg">
-            <div class="picture">
-                <a href="@Url.Action("Details", "Player", new {playerUri = player.Uri})">
+        <a @(!player.Private ? Html.Raw("href='" + Url.Action("Details", "Player", new { playerUri = player.Uri }) + "'") : null)>
+            <div class="details whitebg">
+                <div class="picture">
                     <img src="@player.ImageUri" class="img-responsive center-block">
-                </a>
+                </div>
+                <div class="lineup-player-details">
+                    @*<span class="player-position">- @text -</span>*@
+                    <ul class="list-unstyled list-inline lineup-stats">
+                        <li><span class="statNum playerOv">@player.Overall</span><small><strong>OVR</strong></small></li>
+                        <li><span class="statNum playerOut">@player.OutsideScoring</span><small><strong>OUT</strong></small></li>
+                        <li><span class="statNum playerIn">@player.InsideScoring</span><small><strong>INS</strong></small></li>
+                        <li><span class="statNum playerPl">@player.Playmaking</span><small><strong>PLA</strong></small></li>
+                        <li><span class="statNum playerAt">@player.Athleticism</span><small><strong>ATH</strong></small></li>
+                        <li><span class="statNum playerDe">@player.Defending</span><small><strong>DEF</strong></small></li>
+                        <li><span class="statNum playerRe">@player.Rebounding</span><small><strong>REB</strong></small></li>
+                    </ul>
+                </div>
             </div>
-            <div class="lineup-player-details">
-                @*<span class="player-position">- @text -</span>*@
-                <ul class="list-unstyled list-inline lineup-stats">
-                    <li><span class="statNum playerOv">@player.Overall</span><small><strong>OVR</strong></small></li>
-                    <li><span class="statNum playerOut">@player.OutsideScoring</span><small><strong>OUT</strong></small></li>
-                    <li><span class="statNum playerIn">@player.InsideScoring</span><small><strong>INS</strong></small></li>
-                    <li><span class="statNum playerPl">@player.Playmaking</span><small><strong>PLA</strong></small></li>
-                    <li><span class="statNum playerAt">@player.Athleticism</span><small><strong>ATH</strong></small></li>
-                    <li><span class="statNum playerDe">@player.Defending</span><small><strong>DEF</strong></small></li>
-                    <li><span class="statNum playerRe">@player.Rebounding</span><small><strong>REB</strong></small></li>
-                </ul>
-            </div>
-        </div>
-
+        </a>
     </li>
 }
 

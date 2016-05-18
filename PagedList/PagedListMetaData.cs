@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace PagedList
+﻿namespace PagedList
 {
 	///<summary>
 	/// Non-enumerable version of the PagedList class.

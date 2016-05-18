@@ -13,5 +13,6 @@ namespace MTDB.Core.ViewModels
         public int Athleticism { get; set; }
         public int Defending { get; set; }
         public int Rebounding { get; set; }
+        public bool Private { get; set; }
     }
 }
