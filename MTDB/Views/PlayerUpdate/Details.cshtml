@@ -83,14 +83,14 @@
     <hr class="m-t-none">
     <div class="row">
         <div id="player-updates" class="col-md-12">
-            @if (Model.DisplayNewCards && Model.Updates.Results.Any(p => p.UpdateType == PlayerUpdateType.New))
+            @if (Model.DisplayNewCards && Model.Updates.Results.Any(p => p.UpdateType == PlayerUpdateModelType.New))
             {
                 <div class="row">
                     <div class="col-md-12">
                         <h3>New Cards</h3>
                         <hr class="m-b-md m-t-none" />
                         <ul class="list-inline listUpdates3 col-md-12">
-                            @foreach (var newUpdate in Model.Updates.Results.Where(p => p.UpdateType == PlayerUpdateType.New))
+                            @foreach (var newUpdate in Model.Updates.Results.Where(p => p.UpdateType == PlayerUpdateModelType.New))
                             {
                                 <li>
                                     <div class="row">
@@ -107,7 +107,7 @@
                     </div>
                 </div>
             }
-            @if (Model.Updates.Results.Any(p => p.UpdateType == PlayerUpdateType.Update))
+            @if (Model.Updates.Results.Any(p => p.UpdateType == PlayerUpdateModelType.Update))
             {
                 <div class="row">
                     <div class="col-md-12">
@@ -115,7 +115,7 @@
                         <hr class="m-b-md m-t-none">
                     </div>
                     <ul class="list-inline listUpdates2 col-md-12">
-                        @foreach (var update in Model.Updates.Results.Where(p => p.UpdateType == PlayerUpdateType.Update))
+                        @foreach (var update in Model.Updates.Results.Where(p => p.UpdateType == PlayerUpdateModelType.Update))
                         {
                             <li>
                                 <div class="upcardleft">

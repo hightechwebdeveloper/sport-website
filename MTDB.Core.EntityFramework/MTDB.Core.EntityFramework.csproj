@@ -62,17 +62,26 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Entities\BadgeGroup.cs" />
+    <Compile Include="Entities\PlayerTendency.cs" />
+    <Compile Include="Entities\PlayerBadge.cs" />
+    <Compile Include="Entities\Badge.cs" />
     <Compile Include="Entities\CardPack.cs" />
     <Compile Include="Entities\CardPackPlayer.cs" />
+    <Compile Include="Entities\Collection.cs" />
     <Compile Include="Entities\Comment.cs" />
     <Compile Include="Entities\Conference.cs" />
     <Compile Include="Entities\Division.cs" />
     <Compile Include="Entities\ISortable.cs" />
     <Compile Include="Entities\Lineup.cs" />
     <Compile Include="Entities\LineupPlayer.cs" />
-    <Compile Include="Entities\LineupPosition.cs" />
+    <Compile Include="Entities\LineupPositionType.cs" />
     <Compile Include="Entities\PlayerUpdate.cs" />
+    <Compile Include="Entities\PlayerUpdateChange.cs" />
+    <Compile Include="Entities\BadgeLevel.cs" />
     <Compile Include="Entities\Team.cs" />
+    <Compile Include="Entities\Tendency.cs" />
+    <Compile Include="Entities\TendencyType.cs" />
     <Compile Include="Entities\Theme.cs" />
     <Compile Include="Entities\Tier.cs" />
     <Compile Include="MtdbRepository.cs" />

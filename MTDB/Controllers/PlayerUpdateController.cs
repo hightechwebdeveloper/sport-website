@@ -33,19 +33,8 @@ namespace MTDB.Controllers
         //[OutputCache(Duration = 300, Location = OutputCacheLocation.ServerAndClient)]
         public async Task<ActionResult> Index(CancellationToken cancellationToken, int page = 1, int pageSize = 25)
         {
-            var isAdmin = await UserIsInRole("Admin");
-
-            var updates = await Service.GetUpdates(isAdmin, (page - 1) * pageSize, pageSize, cancellationToken);
+            var updates = await Service.GetUpdates((page - 1) * pageSize, pageSize, cancellationToken);
             var vm = new PagedResults<PlayerUpdatesViewModel>(updates.Results, page, pageSize, updates.TotalCount);
-
-            //very dirty dice for fast result
-            foreach (var playerUpdatesViewModel in vm.Results)
-            {
-                playerUpdatesViewModel.Count = (await Service.GetUpdatesForDate(playerUpdatesViewModel.Date, 0, 1, cancellationToken))
-                    .TotalCount;
-            }
-            //must be replaced with good code
-
             return View(vm);
         }
 
@@ -54,8 +43,7 @@ namespace MTDB.Controllers
         //[OutputCache(Duration = 300, Location = OutputCacheLocation.ServerAndClient)]
         public async Task<ActionResult> Details(CancellationToken token, int year, int month, int day, int page = 1, int pageSize = 24)
         {
-
-            DateTime date = DateTime.Today;
+            DateTime date;
             try
             {
                 date = new DateTime(year, month, day);
@@ -65,33 +53,41 @@ namespace MTDB.Controllers
                 date = DateTime.Today;
             }
 
-            var results = new List<PlayerUpdateViewModel>();
+            //var results = new List<PlayerUpdateViewModel>();
 
-            var updates = await Service.GetUpdatesForDate(date, (page - 1) * pageSize, pageSize, token);
-            results.AddRange(updates.Results);
+            //var updates = await Service.GetUpdatesForDate(date, (page - 1) * pageSize, pageSize, token);
+            //results.AddRange(updates.Results);
 
-            //if on page one get all new cards
-            if (page == 1)
-            {
-                PlayerUpdateDetails newCards = await Service.GetAllNewCardsForDate(date, token);
-                results.AddRange(newCards.Results);
-                results = results.DistinctBy(p => p.UriName).ToList();
-            }
+            ////if on page one get all new cards
+            //if (page == 1)
+            //{
+            //    PlayerUpdateDetails newCards = await Service.GetAllNewCardsForDate(date, token);
+            //    results.AddRange(newCards.Results);
+            //    results = results.DistinctBy(p => p.UriName).ToList();
+            //}
 
-            
-            var vm = new PagedResults<PlayerUpdateViewModel>(results, page, pageSize, updates.TotalCount);
+
+            //var vm = new PagedResults<PlayerUpdateViewModel>(results, page, pageSize, updates.TotalCount);
 
             SetCommentsPageUrl($"{year}-{month}-{day}");
 
+            //var playerUpdateDetailViewModel = new PlayerUpdateDetailsViewModel
+            //{
+            //    Title = updates.Title,
+            //    Date = date,
+            //    Updates = vm,
+            //    Visible = updates.Visible,
+            //    DisplayNewCards = (page == 1)
+            //};
             var playerUpdateDetailViewModel = new PlayerUpdateDetailsViewModel
             {
-                Title = updates.Title,
+                Title = string.Empty,
                 Date = date,
-                Updates = vm,
-                Visible = updates.Visible,
+                Updates = new PagedResults<PlayerUpdateViewModel>(new List<PlayerUpdateViewModel>(), 1, 1, 1),
+                Visible = false,
                 DisplayNewCards = (page == 1)
             };
-            playerUpdateDetailViewModel.TotalUpdateCount = await Service.GetToalUpdateCountForDate(date, token);
+            //playerUpdateDetailViewModel.TotalUpdateCount = await Service.GetToalUpdateCountForDate(date, token);
 
             return View(playerUpdateDetailViewModel);
         }
@@ -119,7 +115,7 @@ namespace MTDB.Controllers
 
         [HttpPost]
         [Route("playerupdates/create")]
-        [AsyncTimeout(120000)]
+        [AsyncTimeout(3600000)]
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult> Create(HttpPostedFileBase file, CancellationToken token)
         {
@@ -136,7 +132,7 @@ namespace MTDB.Controllers
 
         [HttpPost]
         [Route("playerupdates/{year}-{month}-{day}/publish")]
-        [AsyncTimeout(120000)]
+        [AsyncTimeout(3600000)]
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult> PublishUpdate(int year, int month, int day, string title, CancellationToken token)
         {

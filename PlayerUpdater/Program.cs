@@ -32,9 +32,9 @@ namespace PlayerUpdater
                 var playerService = new PlayerService();
 
                 var existingPlayers =
-                    repo.Players.Include(p => p.Stats.Select(t => t.Stat.Category)).Include(t => t.Tier).ToList();
+                    repo.Players.ToList();
 
-                var players = GetPlayers(repo.Stats.Include(p => p.Category).ToList(), positions, repo.Tiers.ToList(), repo.Teams.ToList(), repo.Themes.ToList(), repo.Collections.ToList());
+                var players = GetPlayers(repo.Stats.ToList(), positions, repo.Tiers.ToList(), repo.Teams.ToList(), repo.Themes.ToList(), repo.Collections.ToList());
                 int added = 0;
 
                 foreach (var player in players)
@@ -406,21 +406,6 @@ namespace PlayerUpdater
             if (player.Age == 0)
             {
                 player.Age = ParseStat(group, "player_age", false).Value;
-            }
-
-            if (player.BronzeBadges == 0)
-            {
-                player.BronzeBadges = ParseStat(group, "badge_bronze", true).GetValueOrDefault(0);
-            }
-
-            if (player.SilverBadges == 0)
-            {
-                player.SilverBadges = ParseStat(group, "badge_silver", true).GetValueOrDefault(0);
-            }
-
-            if (player.GoldBadges == 0)
-            {
-                player.GoldBadges = ParseStat(group, "badge_gold", true).GetValueOrDefault(0);
             }
 
             if (player.Theme == null)

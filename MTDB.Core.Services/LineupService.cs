@@ -56,19 +56,19 @@ namespace MTDB.Core.Services
 
             existingLineup.Name = dto.Name;
 
-            await UpdatePosition(existingLineup, LineupPosition.Bench1, dto.Bench1Id);
-            await UpdatePosition(existingLineup, LineupPosition.Bench2, dto.Bench2Id);
-            await UpdatePosition(existingLineup, LineupPosition.Bench3, dto.Bench3Id);
-            await UpdatePosition(existingLineup, LineupPosition.Bench4, dto.Bench4Id);
-            await UpdatePosition(existingLineup, LineupPosition.Bench5, dto.Bench5Id);
-            await UpdatePosition(existingLineup, LineupPosition.Bench6, dto.Bench6Id);
-            await UpdatePosition(existingLineup, LineupPosition.Bench7, dto.Bench7Id);
-            await UpdatePosition(existingLineup, LineupPosition.Bench8, dto.Bench8Id);
-            await UpdatePosition(existingLineup, LineupPosition.Center, dto.CenterId);
-            await UpdatePosition(existingLineup, LineupPosition.PointGuard, dto.PointGuardId);
-            await UpdatePosition(existingLineup, LineupPosition.PowerForward, dto.PowerForwardId);
-            await UpdatePosition(existingLineup, LineupPosition.ShootingGuard, dto.ShootingGuardId);
-            await UpdatePosition(existingLineup, LineupPosition.SmallForward, dto.SmallForwardId);
+            await UpdatePosition(existingLineup, LineupPositionType.Bench1, dto.Bench1Id);
+            await UpdatePosition(existingLineup, LineupPositionType.Bench2, dto.Bench2Id);
+            await UpdatePosition(existingLineup, LineupPositionType.Bench3, dto.Bench3Id);
+            await UpdatePosition(existingLineup, LineupPositionType.Bench4, dto.Bench4Id);
+            await UpdatePosition(existingLineup, LineupPositionType.Bench5, dto.Bench5Id);
+            await UpdatePosition(existingLineup, LineupPositionType.Bench6, dto.Bench6Id);
+            await UpdatePosition(existingLineup, LineupPositionType.Bench7, dto.Bench7Id);
+            await UpdatePosition(existingLineup, LineupPositionType.Bench8, dto.Bench8Id);
+            await UpdatePosition(existingLineup, LineupPositionType.Center, dto.CenterId);
+            await UpdatePosition(existingLineup, LineupPositionType.PointGuard, dto.PointGuardId);
+            await UpdatePosition(existingLineup, LineupPositionType.PowerForward, dto.PowerForwardId);
+            await UpdatePosition(existingLineup, LineupPositionType.ShootingGuard, dto.ShootingGuardId);
+            await UpdatePosition(existingLineup, LineupPositionType.SmallForward, dto.SmallForwardId);
 
             // recalculate stats
             SetLineupStats(existingLineup);
@@ -78,7 +78,7 @@ namespace MTDB.Core.Services
             return existingLineup.Id;
         }
 
-        private async Task UpdatePosition(Lineup lineup, LineupPosition position, int? playerId)
+        private async Task UpdatePosition(Lineup lineup, LineupPositionType position, int? playerId)
         {
             var existingPlayer = lineup.Players.FirstOrDefault(x => x.LineupPosition == position);
             if (existingPlayer?.Id != playerId)
@@ -128,19 +128,19 @@ namespace MTDB.Core.Services
                 User = user
             };
 
-            await lineup.AddPlayer(_repository, dto.PointGuardId, LineupPosition.PointGuard);
-            await lineup.AddPlayer(_repository, dto.ShootingGuardId, LineupPosition.ShootingGuard);
-            await lineup.AddPlayer(_repository, dto.SmallForwardId, LineupPosition.SmallForward);
-            await lineup.AddPlayer(_repository, dto.PowerForwardId, LineupPosition.PowerForward);
-            await lineup.AddPlayer(_repository, dto.CenterId, LineupPosition.Center);
-            await lineup.AddPlayer(_repository, dto.Bench1Id, LineupPosition.Bench1);
-            await lineup.AddPlayer(_repository, dto.Bench2Id, LineupPosition.Bench2);
-            await lineup.AddPlayer(_repository, dto.Bench3Id, LineupPosition.Bench3);
-            await lineup.AddPlayer(_repository, dto.Bench4Id, LineupPosition.Bench4);
-            await lineup.AddPlayer(_repository, dto.Bench5Id, LineupPosition.Bench5);
-            await lineup.AddPlayer(_repository, dto.Bench6Id, LineupPosition.Bench6);
-            await lineup.AddPlayer(_repository, dto.Bench7Id, LineupPosition.Bench7);
-            await lineup.AddPlayer(_repository, dto.Bench8Id, LineupPosition.Bench8);
+            await lineup.AddPlayer(_repository, dto.PointGuardId, LineupPositionType.PointGuard);
+            await lineup.AddPlayer(_repository, dto.ShootingGuardId, LineupPositionType.ShootingGuard);
+            await lineup.AddPlayer(_repository, dto.SmallForwardId, LineupPositionType.SmallForward);
+            await lineup.AddPlayer(_repository, dto.PowerForwardId, LineupPositionType.PowerForward);
+            await lineup.AddPlayer(_repository, dto.CenterId, LineupPositionType.Center);
+            await lineup.AddPlayer(_repository, dto.Bench1Id, LineupPositionType.Bench1);
+            await lineup.AddPlayer(_repository, dto.Bench2Id, LineupPositionType.Bench2);
+            await lineup.AddPlayer(_repository, dto.Bench3Id, LineupPositionType.Bench3);
+            await lineup.AddPlayer(_repository, dto.Bench4Id, LineupPositionType.Bench4);
+            await lineup.AddPlayer(_repository, dto.Bench5Id, LineupPositionType.Bench5);
+            await lineup.AddPlayer(_repository, dto.Bench6Id, LineupPositionType.Bench6);
+            await lineup.AddPlayer(_repository, dto.Bench7Id, LineupPositionType.Bench7);
+            await lineup.AddPlayer(_repository, dto.Bench8Id, LineupPositionType.Bench8);
 
             SetLineupStats(lineup);
 
@@ -154,7 +154,7 @@ namespace MTDB.Core.Services
 
         public async Task<LineupDto> GetLineup(int id, CancellationToken cancellationToken)
         {
-            var lineup = await _repository.LineupsWithPlayers
+            var lineup = await _repository.Lineups
                 .FirstOrDefaultAsync(l => l.Id == id, cancellationToken);
 
             return lineup.ToDto();
@@ -163,7 +163,6 @@ namespace MTDB.Core.Services
         public async Task DeleteLineup(int id, CancellationToken cancellationToken)
         {
             var lineup = await _repository.Lineups
-                .Include(x => x.Players)
                 .FirstOrDefaultAsync(l => l.Id == id, cancellationToken);
 
             if (lineup != null)
@@ -177,24 +176,25 @@ namespace MTDB.Core.Services
 
         public async Task<LineupSearchViewModel> SearchLineups(int skip, int take, string sortByColumn, SortOrder sortOrder, CancellationToken cancellationToken)
         {
-            var lineups = _repository.LineupsWithPlayers;
-
             var map = new Dictionary<string, string>
             {
                 {"Author", "User.UserName"},
                 {"DateAdded", "CreatedDate" },
-                {"Title", "Name" },
-
+                {"Title", "Name" }
             };
 
-            return new LineupSearchViewModel()
+            var lineups = await _repository.Lineups
+                .Sort(sortByColumn, sortOrder, "CreatedDate", skip, take, map)
+                .ToListAsync(cancellationToken);
+
+            return new LineupSearchViewModel
             {
-                RecordCount = await lineups.CountAsync(cancellationToken),
-                Records = await lineups.Sort(sortByColumn, sortOrder, "CreatedDate", skip, take, map).ToSearchDtos(cancellationToken)
+                RecordCount = lineups.Count,
+                Records = lineups.ToSearchDtos()
             };
         }
 
-        public async Task<LineupPlayerDto> GetLineupPlayer(int lineupId, int playerId, LineupPosition position, CancellationToken token)
+        public async Task<LineupPlayerDto> GetLineupPlayer(int lineupId, int playerId, LineupPositionType position, CancellationToken token)
         {
             var player = await _repository.LineupPlayers
                 .SingleOrDefaultAsync(lp => lp.Id == lineupId && lp.Player.Id == playerId && lp.LineupPosition == position, token);

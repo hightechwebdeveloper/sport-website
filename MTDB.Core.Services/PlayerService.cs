@@ -31,14 +31,19 @@ namespace MTDB.Core.Services
 
         public async Task<IEnumerable<SearchPlayerResultDto>> GetInitialPlayers(CancellationToken token)
         {
-            return await _repository.Players.OrderByOverallScore().Take(20).ToSearchDtos(token);
+            var players = await _repository.Players
+                .OrderByOverallScore()
+                .Take(20)
+                .ToListAsync(token);
+
+            return players.Select(p => p.ToSearchDto());
         }
 
         public async Task<SearchPlayerViewModel> SearchPlayers(int skip, int take, string sortByColumn, SortOrder sortOrder, PlayerFilter filter, CancellationToken token, bool showHidden = false)
         {
             var result = new SearchPlayerViewModel();
 
-            var players = _repository.PlayersWithStats;
+            var query = _repository.Players.AsQueryable();
             if (filter != null)
             {
                 result = new SearchPlayerViewModel
@@ -56,29 +61,29 @@ namespace MTDB.Core.Services
 
                 if (filter.Name.HasValue())
                 {
-                    players = players.FilterByName(filter.Name);
+                    query = query.FilterByName(filter.Name);
                 }
 
                 if (filter.Position.HasValue() && filter.Position != "Any")
                 {
-                    players =
-                        players.Where(
+                    query =
+                        query.Where(
                             p => p.PrimaryPosition == filter.Position || p.SecondaryPosition == filter.Position);
                 }
 
                 if (filter.Height.HasValue() && filter.Height != "Any")
                 {
-                    players = players.Where(p => p.Height == filter.Height);
+                    query = query.Where(p => p.Height == filter.Height);
                 }
 
                 if (filter.Theme.HasValue())
                 {
-                    players = players.Where(p => p.Theme.Name == filter.Theme);
+                    query = query.Where(p => p.Theme.Name == filter.Theme);
                 }
 
                 if (filter.Tier.HasValue())
                 {
-                    players = players.Where(p => p.Tier.Name == filter.Tier);
+                    query = query.Where(p => p.Tier.Name == filter.Tier);
                 }
 
                 if (filter.Platform.HasValue() && (filter.PriceMin.HasValue || filter.PriceMax.HasValue))
@@ -87,11 +92,11 @@ namespace MTDB.Core.Services
                     {
                         if (filter.PriceMin.HasValue)
                         {
-                            players = players.Where(p => p.PS4 >= filter.PriceMin);
+                            query = query.Where(p => p.PS4 >= filter.PriceMin);
                         }
                         if (filter.PriceMax.HasValue)
                         {
-                            players = players.Where(p => p.PS4 <= filter.PriceMax);
+                            query = query.Where(p => p.PS4 <= filter.PriceMax);
                         }
                     }
 
@@ -99,11 +104,11 @@ namespace MTDB.Core.Services
                     {
                         if (filter.PriceMin.HasValue)
                         {
-                            players = players.Where(p => p.Xbox >= filter.PriceMin);
+                            query = query.Where(p => p.Xbox >= filter.PriceMin);
                         }
                         if (filter.PriceMax.HasValue)
                         {
-                            players = players.Where(p => p.Xbox <= filter.PriceMax);
+                            query = query.Where(p => p.Xbox <= filter.PriceMax);
                         }
                     }
 
@@ -111,30 +116,34 @@ namespace MTDB.Core.Services
                     {
                         if (filter.PriceMin.HasValue)
                         {
-                            players = players.Where(p => p.PC >= filter.PriceMin);
+                            query = query.Where(p => p.PC >= filter.PriceMin);
                         }
                         if (filter.PriceMax.HasValue)
                         {
-                            players = players.Where(p => p.PC <= filter.PriceMax);
+                            query = query.Where(p => p.PC <= filter.PriceMax);
                         }
                     }
                 }
 
                 if (filter.Stats.HasItems())
                 {
-                    players = players.FilterByStats(filter.Stats);
+                    query = query.FilterByStats(filter.Stats);
                 }
             }
 
             if (!showHidden)
-                players = players.Where(p => p.Private == false);
+                query = query.Where(p => p.Private == false);
 
             var sortMap = new Dictionary<string, string>();
             sortMap.Add("CreatedDateString", "CreatedDate");
             sortMap.Add("Position", "PrimaryPosition");
 
-            result.ResultCount = await players.CountAsync(token);
-            result.Results = await players.Sort(sortByColumn, sortOrder, "Overall", skip, take, sortMap).ToSearchDtos(token);
+            var players = await query
+                .Sort(sortByColumn, sortOrder, "Overall", skip, take, sortMap)
+                .ToListAsync(token);
+
+            result.ResultCount = await query.CountAsync(token);
+            result.Results = players.Select(p => p.ToSearchDto());
 
             return result;
         }
@@ -170,19 +179,19 @@ namespace MTDB.Core.Services
 
         public async Task<IEnumerable<Player>> GetPlayersByNBAIds(CancellationToken token, params int[] playerIds)
         {
-            return await _repository.PlayersWithStats.Where(p => p.NBA2K_ID.HasValue)
+            return await _repository.Players.Where(p => p.NBA2K_ID.HasValue)
                                 .Where(p => playerIds.Contains(p.NBA2K_ID.Value))
                                 .ToListAsync(token);
         }
 
         public async Task<Player> GetPlayerByNBA2kId(int id, CancellationToken token)
         {
-            return await _repository.PlayersWithStats.FirstOrDefaultAsync(p => p.NBA2K_ID == id, token);
+            return await _repository.Players.FirstOrDefaultAsync(p => p.NBA2K_ID == id, token);
         }
 
         private async Task<Player> GetPlayerByUri(string uri, CancellationToken token)
         {
-            return await _repository.PlayersWithStats.FirstOrDefaultAsync(p => p.UriName.Equals(uri, StringComparison.OrdinalIgnoreCase), token);
+            return await _repository.Players.FirstOrDefaultAsync(p => p.UriName.Equals(uri, StringComparison.OrdinalIgnoreCase), token);
         }
 
         public async Task<UpdatePlayerDto> GetPlayerForEdit(string uri, CancellationToken token)
@@ -197,13 +206,10 @@ namespace MTDB.Core.Services
             var tiers = await GetTiers(token);
             var collections = await GetCollectionsForDropDowns(token);
 
-            return new UpdatePlayerDto()
+            return new UpdatePlayerDto
             {
                 Attributes = player.Stats.OrderBy(p => p.Stat.EditOrder).Select(p => p.ToDto()),
                 Age = player.Age,
-                BronzeBadges = player.BronzeBadges,
-                SilverBadges = player.SilverBadges,
-                GoldBadges = player.GoldBadges,
                 Height = player.Height,
                 Id = player.Id,
                 Name = player.Name,
@@ -237,13 +243,10 @@ namespace MTDB.Core.Services
             if (player == null)
                 return null;
 
-            return new UpdatePlayerDto()
+            return new UpdatePlayerDto
             {
                 Attributes = player.Stats.OrderBy(p => p.Stat.EditOrder).Select(p => p.ToDto()),
                 Age = player.Age,
-                BronzeBadges = player.BronzeBadges,
-                SilverBadges = player.SilverBadges,
-                GoldBadges = player.GoldBadges,
                 Height = player.Height,
                 Id = player.Id,
                 Name = player.Name,
@@ -271,14 +274,15 @@ namespace MTDB.Core.Services
 
         public async Task<IEnumerable<PlayerDto>> GetPlayerDtosByUri(CancellationToken token, params string[] uris)
         {
-            var players = await _repository.PlayersWithStats.Where(p => uris.Contains(p.UriName)).ToDtos(token);
+            var players = await _repository.Players.Where(p => uris.Contains(p.UriName))
+                .ToListAsync(token);
 
-            return players;
+            return players.Select(p => p.ToDto());
         }
 
         public async Task<IEnumerable<Player>> GetPlayersByUri(CancellationToken token, params string[] uris)
         {
-            return await _repository.PlayersWithStats.Where(p => uris.Contains(p.UriName)).ToListAsync(token);
+            return await _repository.Players.Where(p => uris.Contains(p.UriName)).ToListAsync(token);
 
         }
 
@@ -298,15 +302,15 @@ namespace MTDB.Core.Services
 
         public async Task<PlayerDto> GetPlayer(int id, CancellationToken token)
         {
-            var player = await _repository.PlayersWithStats.FirstOrDefaultAsync(p => p.Id == id, token);
+            var player = await _repository.Players.FirstOrDefaultAsync(p => p.Id == id, token);
             return player.ToDto();
         }
 
         public async Task<CreatePlayerDto> GeneratePlayer(CancellationToken token)
         {
-            var stats = await _repository.Stats.Include(p => p.Category)
+            var stats = await _repository.Stats
                 .OrderBy(p => p.EditOrder)
-                .Select(p => new StatDto() { CategoryId = p.Category.Id, Id = p.Id, Name = p.Name, Value = 99 })
+                .Select(p => new StatDto { CategoryId = p.Category.Id, Id = p.Id, Name = p.Name, Value = 99 })
                 .ToListAsync(token);
 
             var playerDto = new CreatePlayerDto
@@ -316,21 +320,10 @@ namespace MTDB.Core.Services
                 Themes = await GetThemes(token),
                 Teams = await GetTeams(token),
                 Tiers = await GetTiers(token),
-                Collections = await GetCollectionsForDropDowns(token),
-                BronzeBadges = 0,
-                SilverBadges = 0,
-                GoldBadges = 0
+                Collections = await GetCollectionsForDropDowns(token)
             };
 
             return playerDto;
-        }
-
-        public async Task<IEnumerable<StatFilter>> GetStats(CancellationToken token)
-        {
-            return
-                await
-                    _repository.Stats.Include(s => s.Category).Select(s => new StatFilter() { Id = s.Id, Name = s.Name, UriName = s.UriName, CategoryId = s.Category.Id, CategoryName = s.Category.Name })
-                        .ToListAsync(token);
         }
 
         public async Task<IEnumerable<TierDto>> GetTiers(CancellationToken token)
@@ -338,7 +331,7 @@ namespace MTDB.Core.Services
             return
                 await
                     _repository.Tiers.OrderBy(p => p.SortOrder)
-                        .Select(t => new TierDto() { Id = t.Id, Name = t.Name })
+                        .Select(t => new TierDto { Id = t.Id, Name = t.Name })
                         .ToListAsync(token);
         }
 
@@ -360,9 +353,6 @@ namespace MTDB.Core.Services
                 PC = create.PC,
                 Xbox = create.Xbox,
                 PS4 = create.PS4,
-                BronzeBadges = create.BronzeBadges,
-                SilverBadges = create.SilverBadges,
-                GoldBadges = create.GoldBadges,
                 PrimaryPosition = create.PrimaryPosition,
                 SecondaryPosition = create.SecondaryPosition,
                 Tier = await _repository.Tiers.FindAsync(token, create.Tier),
@@ -374,7 +364,7 @@ namespace MTDB.Core.Services
                 Private = create.Private
             };
 
-            foreach (var stat in stats.Select(s => new PlayerStat() { Player = player, Stat = s }))
+            foreach (var stat in stats.Select(s => new PlayerStat { Player = player, Stat = s }))
             {
                 var value = create.Attributes.First(s => s.Id == stat.Stat.Id).Value;
                 stat.Value = value;
@@ -461,7 +451,7 @@ namespace MTDB.Core.Services
 
             var changes = new List<PlayerUpdateChange>();
             // Get existing update
-            var existingUpdates = await _repository.PlayerUpdates.Include(p => p.Changes.Select(s => s.Player))
+            var existingUpdates = await _repository.PlayerUpdates
                 .FilterByCreatedDate(DateTime.Today)
                 .Select(p => new { Update = p, Changes = p.Changes.Where(c => c.Player.Id == oldPlayer.Id) })
                 .FirstOrDefaultAsync(token);
@@ -478,7 +468,7 @@ namespace MTDB.Core.Services
             }
 
             bool shouldDelete = false;
-            var overallChange = playerUpdateService.DetermineChange(existingUpdates?.Changes, oldPlayer, nameof(oldPlayer.Overall), oldPlayer.Overall, update.Overall, true, out shouldDelete);
+            var overallChange = playerUpdateService.DetermineChange(existingUpdates?.Changes, oldPlayer, nameof(oldPlayer.Overall), oldPlayer.Overall, update.Overall, PlayerUpdateType.Stat, out shouldDelete);
 
             if (overallChange != null && shouldDelete)
             {
@@ -509,9 +499,6 @@ namespace MTDB.Core.Services
             oldPlayer.PC = update.PC;
             oldPlayer.Xbox = update.Xbox;
             oldPlayer.PS4 = update.PS4;
-            oldPlayer.BronzeBadges = update.BronzeBadges;
-            oldPlayer.SilverBadges = update.SilverBadges;
-            oldPlayer.GoldBadges = update.GoldBadges;
             oldPlayer.PrimaryPosition = update.PrimaryPosition;
             oldPlayer.SecondaryPosition = update.SecondaryPosition;
             oldPlayer.Tier = await _repository.Tiers.FindAsync(token, update.Tier);
@@ -534,7 +521,7 @@ namespace MTDB.Core.Services
             foreach (var stat in update.Attributes)
             {
                 var compareStat = oldPlayer.Stats.First(ps => ps.Stat.Id == stat.Id);
-                var change = playerUpdateService.DetermineChange(existingUpdates?.Changes, oldPlayer, compareStat.Stat.Name, stat.Value.ToString(), compareStat.Value.ToString(), true, out shouldDelete);
+                var change = playerUpdateService.DetermineChange(existingUpdates?.Changes, oldPlayer, compareStat.Stat.Name, stat.Value.ToString(), compareStat.Value.ToString(), PlayerUpdateType.Stat, out shouldDelete);
 
                 if (compareStat.Value != stat.Value && performUpdate)
                 {
@@ -569,11 +556,14 @@ namespace MTDB.Core.Services
 
                 if (existingUpdates == null)
                 {
-                    var dbUpdate = new PlayerUpdate()
+                    var dbUpdate = new PlayerUpdate
                     {
                         Visible = true,
-                        Changes = changes
                     };
+                    foreach (var playerUpdateChange in changes)
+                    {
+                        dbUpdate.Changes.Add(playerUpdateChange);
+                    }
 
                     _repository.PlayerUpdates.Add(dbUpdate);
                 }
@@ -602,27 +592,23 @@ namespace MTDB.Core.Services
 
         public async Task DeletePlayer(string uri, CancellationToken token)
         {
-            var player = await _repository.PlayersWithStats
-                .Include(p => p.Stats)
+            var player = await _repository.Players
                 .FirstOrDefaultAsync(p => p.UriName.Equals(uri, StringComparison.OrdinalIgnoreCase), token);
 
             if (player == null)
                 return;
             
             var changes = await _repository.PlayerUpdateChanges
-                .Include(c => c.Player)
                 .Where(c => c.Player.Id == player.Id)
                 .ToListAsync(token);
             _repository.PlayerUpdateChanges.RemoveRange(changes);
 
             var cpPlayers = await _repository.CardPackPlayers
-                .Include(c => c.Player)
                 .Where(c => c.Player.Id == player.Id)
                 .ToListAsync(token);
             _repository.CardPackPlayers.RemoveRange(cpPlayers);
 
             var lineupPlayers = await _repository.LineupPlayers
-                .Include(c => c.Player)
                 .Where(c => c.Player.Id == player.Id)
                 .ToListAsync(token);
             _repository.LineupPlayers.RemoveRange(lineupPlayers);
@@ -635,7 +621,7 @@ namespace MTDB.Core.Services
         }
 
 
-        private PlayerUpdateChange CreateUpdateIfNecessary(Player player, object newValue, object oldValue, string fieldName, bool statUpdate = false, bool visible = true)
+        private PlayerUpdateChange CreateUpdateIfNecessary(Player player, object newValue, object oldValue, string fieldName, PlayerUpdateType updateType = PlayerUpdateType.Default, bool visible = true)
         {
             var newString = newValue?.ToString();
             var oldString = oldValue?.ToString();
@@ -645,13 +631,13 @@ namespace MTDB.Core.Services
                 return null;
             }
 
-            return new PlayerUpdateChange()
+            return new PlayerUpdateChange
             {
                 Player = player,
                 FieldName = fieldName,
                 NewValue = newString,
                 OldValue = oldString,
-                IsStatUpdate = statUpdate,
+                UpdateType = updateType,
             };
         }
 
@@ -665,17 +651,18 @@ namespace MTDB.Core.Services
 
         private async Task<Player> GetPlayerWithStatsById(int id, CancellationToken token)
         {
-            return await _repository.Players.Include(p => p.Stats.Select(x => x.Stat.Category)).FirstOrDefaultAsync(p => p.Id == id, token);
+            return await _repository.Players
+                .FirstOrDefaultAsync(p => p.Id == id, token);
         }
 
         public async Task<IEnumerable<ThemeDto>> GetThemes(CancellationToken token)
         {
-            return await _repository.Themes.Select(t => new ThemeDto() { Id = t.Id, Name = t.Name }).ToListAsync(token);
+            return await _repository.Themes.Select(t => new ThemeDto { Id = t.Id, Name = t.Name }).ToListAsync(token);
         }
 
         public async Task<IEnumerable<TeamDto>> GetTeams(CancellationToken token)
         {
-            return await _repository.Teams.OrderBy(t => t.Name).Select(t => new TeamDto() { Id = t.Id, Name = t.Name }).ToListAsync(token);
+            return await _repository.Teams.OrderBy(t => t.Name).Select(t => new TeamDto { Id = t.Id, Name = t.Name }).ToListAsync(token);
         }
 
         public async Task<IEnumerable<string>> GetPositions(CancellationToken token)
@@ -801,22 +788,23 @@ namespace MTDB.Core.Services
 
         public async Task<IEnumerable<CollectionDto>> GetCollectionsForDropDowns(CancellationToken token)
         {
-            return await _repository.Collections.OrderBy(p => p.Name).Select(t => new CollectionDto() { Id = t.Id, Name = t.Name }).ToListAsync(token);
+            return await _repository.Collections.OrderBy(p => p.Name).Select(t => new CollectionDto { Id = t.Id, Name = t.Name }).ToListAsync(token);
         }
 
         public async Task<CollectionsViewModel> GetCollections(CancellationToken token)
         {
-            var teams = await _repository.Teams.Include(p => p.Division).ToListAsync(token);
+            var teams = await _repository.Teams
+                .ToListAsync(token);
             var collections = await _repository.Collections.ToListAsync(token);
 
             var current = teams
                 .Where(t => !t.Name.Contains("Free")).OrderBy(p => p.Division.Name).ThenBy(p => p.Name)
-                .Select((team, id) => new CollectionViewModel() { Name = team.Name, Group = team.Division.Name, DisplayOrder = id })
+                .Select((team, id) => new CollectionViewModel { Name = team.Name, Group = team.Division.Name, DisplayOrder = id })
                 .ToList();
 
             var dynamic = teams
                 .Where(t => !t.Name.Contains("Free")).OrderBy(p => p.Division.Name).ThenBy(p => p.Name)
-                .Select((team, id) => new CollectionViewModel() { Name = team.Name, Group = team.Division.Name, DisplayOrder = id })
+                .Select((team, id) => new CollectionViewModel { Name = team.Name, Group = team.Division.Name, DisplayOrder = id })
                 .ToList();
 
             var other = new List<CollectionViewModel>();
@@ -839,7 +827,7 @@ namespace MTDB.Core.Services
 
         private IEnumerable<CollectionViewModel> MapCollectionToViewModel(IEnumerable<Collection> collections, string groupName = null)
         {
-            return collections.OrderBy(p => p.Name).Select((collection, index) => new CollectionViewModel()
+            return collections.OrderBy(p => p.Name).Select((collection, index) => new CollectionViewModel
             {
                 Name = collection.Name,
                 Group = groupName ?? collection.GroupName,
@@ -860,7 +848,7 @@ namespace MTDB.Core.Services
             string collectionName;
 
 
-            IQueryable<Player> players;
+            IQueryable<Player> query;
             // If groupName == Dynamic or Current then we just filter by theme and team
             if (groupName.EqualsAny("dynamic", "current") && !name.Contains("free"))
             {
@@ -869,7 +857,7 @@ namespace MTDB.Core.Services
                     return null;
 
                 collectionName = team.Name;
-                players = _repository.PlayersWithStats.Where(p => p.Theme.Name == groupName && p.Team.Name == name);
+                query = _repository.Players.Where(p => p.Theme.Name == groupName && p.Team.Name == name);
             }
             else
             {
@@ -880,27 +868,27 @@ namespace MTDB.Core.Services
 
                 collectionName = collection.Name;
                 // Not a team so just search by collection
-                players = _repository.PlayersWithStats.Where(p => p.Collection.Id == collection.Id);
+                query = _repository.Players.Where(p => p.Collection.Id == collection.Id);
             }
             if (!showHidden)
-                players = players.Where(p => !p.Private);
+                query = query.Where(p => !p.Private);
 
-            var count = await players.CountAsync(token);
+            var count = await query.CountAsync(token);
 
             if (count == 0)
             {
-                return new CollectionDetails() { Name = collectionName, Results = new List<SearchPlayerResultDto>() };
+                return new CollectionDetails { Name = collectionName, Results = new List<SearchPlayerResultDto>() };
             }
 
             var averages = new
             {
-                Overall = (int)await players.AverageAsync(s => s.Overall, token),
-                OutsideScoring = (int)await players.AverageAsync(s => s.OutsideScoring, token),
-                InsideScoring = (int)await players.AverageAsync(s => s.InsideScoring, token),
-                Playmaking = (int)await players.AverageAsync(s => s.Playmaking, token),
-                Athleticism = (int)await players.AverageAsync(s => s.Athleticism, token),
-                Defending = (int)await players.AverageAsync(s => s.Defending, token),
-                Rebounding = (int)await players.AverageAsync(s => s.Rebounding, token),
+                Overall = (int)await query.AverageAsync(s => s.Overall, token),
+                OutsideScoring = (int)await query.AverageAsync(s => s.OutsideScoring, token),
+                InsideScoring = (int)await query.AverageAsync(s => s.InsideScoring, token),
+                Playmaking = (int)await query.AverageAsync(s => s.Playmaking, token),
+                Athleticism = (int)await query.AverageAsync(s => s.Athleticism, token),
+                Defending = (int)await query.AverageAsync(s => s.Defending, token),
+                Rebounding = (int)await query.AverageAsync(s => s.Rebounding, token),
             };
 
 
@@ -911,7 +899,11 @@ namespace MTDB.Core.Services
                 {"Position", "PrimaryPosition"}
             };
 
-            var paged = await players.Sort(sortByColumn, sortOrder, "Overall", skip, take, sortMap).ToSearchDtos(token);
+            var players = await query
+                .Sort(sortByColumn, sortOrder, "Overall", skip, take, sortMap)
+                .ToListAsync(token);
+
+            var paged = players.Select(p => p.ToSearchDto());
 
             var viewModel = new CollectionDetails
             {
@@ -949,7 +941,6 @@ namespace MTDB.Core.Services
                 throw new ArgumentNullException("model");
 
             model.AvailableDivisions = await _repository.Divisions
-                .Include(d => d.Conference)
                 .Select(d => new ManageEditDto.DivisionDto
                 {
                     Id = d.Id,
@@ -981,7 +972,8 @@ namespace MTDB.Core.Services
                         break;
                     case ManageTypeDto.Team:
                     {
-                        var entity = await _repository.Teams.Include(e => e.Division).SingleOrDefaultAsync(e => e.Id == id, token);
+                        var entity = await _repository.Teams
+                                .SingleOrDefaultAsync(e => e.Id == id, token);
                         model.Name = entity.Name;
                         model.DivisionId = entity.Division.Id;
                     }

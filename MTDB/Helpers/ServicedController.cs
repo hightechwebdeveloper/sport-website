@@ -50,19 +50,7 @@ namespace MTDB.Helpers
 
             return user;
         }
-
-        protected async Task<bool> UserIsInRole(string roleName)
-        {
-            var user = await GetAuthenticatedUser();
-
-            if (user == null)
-                return false;
-
-            var roles = await UserManager.GetRolesAsync(user.Id);
-
-            return roles.Any(p => p.Equals(roleName, StringComparison.OrdinalIgnoreCase));
-        }
-
+        
         // TODO: Is there a better way?
         protected void SetCommentsPageUrl(string id)
         {

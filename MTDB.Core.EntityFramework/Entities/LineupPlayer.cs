@@ -2,8 +2,8 @@
 {
     public class LineupPlayer : EntityBase
     {
-        public Lineup Lineup { get; set; }
-        public Player Player { get; set; }
-        public LineupPosition LineupPosition { get; set; }
+        public virtual Lineup Lineup { get; set; }
+        public virtual Player Player { get; set; }
+        public virtual LineupPositionType LineupPosition { get; set; }
     }
 }

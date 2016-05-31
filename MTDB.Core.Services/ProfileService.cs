@@ -24,17 +24,17 @@ namespace MTDB.Core.Services
 
         public async Task<ProfileDto> GetProfileByUserName(string username, CancellationToken cancellationToken)
         {
-            var cardpacks = await _repository.CardPacks.Include(p => p.Players.Select(cp => cp.Player))
+            var cardpacks = await _repository.CardPacks
                                             .Where(p => p.User.UserName.Equals(username, StringComparison.OrdinalIgnoreCase))
                                             .OrderByRecentlyAdded()
                                             .ToListAsync(cancellationToken);
 
-
-            var lineups = await Task.Run(() => _repository.LineupsWithPlayers.Where(p => p.User.UserName.Equals(username, StringComparison.OrdinalIgnoreCase))
+            var lineups = await _repository.Lineups.Where(
+                p => p.User.UserName.Equals(username, StringComparison.OrdinalIgnoreCase))
                 .OrderByRecentlyAdded()
-                .ToSearchDtos(cancellationToken), cancellationToken);
+                .ToListAsync(cancellationToken);
 
-            var cardPackDtos = cardpacks.Select(p => new CardPackDto()
+            var cardPackDtos = cardpacks.Select(p => new CardPackDto
             {
                 Id = p.Id,
                 Name = p.Name,
@@ -43,11 +43,11 @@ namespace MTDB.Core.Services
                 Points = p.Points
             });
 
-            return new ProfileDto()
+            return new ProfileDto
             {
                 Name = username,
                 CardPacks = cardPackDtos,
-                Lineups = lineups
+                Lineups = lineups.ToSearchDtos()
             };
         }
     }

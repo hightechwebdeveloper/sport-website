@@ -1,6 +1,6 @@
 namespace MTDB.Core.ViewModels.PlayerUpdates
 {
-    public enum PlayerUpdateType
+    public enum PlayerUpdateModelType
     {
         New,
         Update

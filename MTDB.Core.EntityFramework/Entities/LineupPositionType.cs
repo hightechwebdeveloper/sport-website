@@ -1,6 +1,6 @@
 ﻿namespace MTDB.Core.EntityFramework.Entities
 {
-    public enum LineupPosition
+    public enum LineupPositionType
     {
         PointGuard,
         ShootingGuard,

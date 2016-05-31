@@ -42,6 +42,14 @@ namespace MTDB.Core.ViewModels
 
     public class UpdatePlayerDto
     {
+        public UpdatePlayerDto()
+        {
+            this.Themes = new List<ThemeDto>();
+            this.Teams = new List<TeamDto>();
+            this.Tiers = new List<TierDto>();
+            this.Collections = new List<CollectionDto>();
+        }
+
         public int Id { get; set; }
         [Required]
         public string Name { get; set; }
@@ -59,12 +67,6 @@ namespace MTDB.Core.ViewModels
         public int? Xbox { get; set; }
         public int? PC { get; set; }
         public int? PS4 { get; set; }
-        [Required]
-        public int BronzeBadges { get; set; }
-        [Required]
-        public int SilverBadges { get; set; }
-        [Required]
-        public int GoldBadges { get; set; }
 
         [Required]
         public IEnumerable<StatDto> Attributes { get; set; }
@@ -80,11 +82,6 @@ namespace MTDB.Core.ViewModels
 
         public int? Collection { get; set; }
 
-        public IEnumerable<ThemeDto> Themes { get; set; }
-        public IEnumerable<TeamDto> Teams { get; set; }
-        public IEnumerable<TierDto> Tiers { get; set; }
-        public IEnumerable<CollectionDto> Collections { get; set; }
-
         public HttpPostedFileBase Image { get; set; }
 
         public string ImageUri { get; set; }
@@ -92,7 +89,13 @@ namespace MTDB.Core.ViewModels
         public int? NBA2K_ID { get; set; }
 
         public DateTimeOffset PublishDate { get; set; } = DateTimeOffset.Now;
+
         public bool Private { get; set; }
+
+        public IEnumerable<ThemeDto> Themes { get; set; }
+        public IEnumerable<TeamDto> Teams { get; set; }
+        public IEnumerable<TierDto> Tiers { get; set; }
+        public IEnumerable<CollectionDto> Collections { get; set; }
     }
 
     public class CreatePlayerDto
@@ -113,12 +116,6 @@ namespace MTDB.Core.ViewModels
         public int? Xbox { get; set; }
         public int? PC { get; set; }
         public int? PS4 { get; set; }
-        [Required]
-        public int BronzeBadges { get; set; }
-        [Required]
-        public int SilverBadges { get; set; }
-        [Required]
-        public int GoldBadges { get; set; }
 
         [Required]
         public IEnumerable<StatDto> Attributes { get; set; }

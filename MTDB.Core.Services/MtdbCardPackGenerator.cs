@@ -24,7 +24,7 @@ namespace MTDB.Core.Services
 
             var pickedPlayers = await PickMultiplePlayersUsingMap(5, map, null, cancellationToken);
 
-            return new MtdbCardPackDto()
+            return new MtdbCardPackDto
             {
                 Cards = PickedPlayersToCardDtos(pickedPlayers),
                 Points = pickedPlayers.Sum(p=>p.Points.GetValueOrDefault(0))
@@ -89,7 +89,7 @@ namespace MTDB.Core.Services
         {
             foreach (var player in players)
             {
-                yield return new DraftCardDto()
+                yield return new DraftCardDto
                 {
                     Id = player.Id,
                     Athleticism = player.Athleticism.Value,
@@ -165,7 +165,8 @@ namespace MTDB.Core.Services
             {
                 var tierNumber = random.NextDouble() * 100;
                 var tier = map.First(t => t.Key.Item1 <= tierNumber && t.Key.Item2 >= tierNumber).Value;
-                var playersInTier = Repository.Players.Include(p => p.Tier).Where(p => p.Tier.Id == tier.Id);
+                var playersInTier = Repository.Players
+                    .Where(p => p.Tier.Id == tier.Id);
 
                 var tierCount = await playersInTier.CountAsync(cancellationToken);
                 var playerNumber = random.Next(1, tierCount);
@@ -206,7 +207,7 @@ namespace MTDB.Core.Services
         {
             return players.Select(
                 p =>
-                    new CardDto()
+                    new CardDto
                     {
                         Id = p.Id,
                         PlayerImageUri = p.GetImageUri(ImageSize.Full),

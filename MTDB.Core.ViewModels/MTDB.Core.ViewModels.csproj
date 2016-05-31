@@ -59,7 +59,7 @@
     <Compile Include="PlayerUpdates\Paged.cs" />
     <Compile Include="PlayerUpdates\PlayerFieldUpdateViewModel.cs" />
     <Compile Include="PlayerUpdates\PlayerUpdatesViewModel.cs" />
-    <Compile Include="PlayerUpdates\PlayerUpdateType.cs" />
+    <Compile Include="PlayerUpdates\PlayerUpdateModelType.cs" />
     <Compile Include="PlayerUpdates\PlayerUpdateViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="PlayerFilter.cs" />

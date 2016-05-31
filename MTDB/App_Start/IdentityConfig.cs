@@ -72,7 +72,7 @@ namespace MTDB
             {
                 ApiKey = "key-9wfvdd45sd08fek0398p-aws09mwa1y9",
                 Domain = "mg.mtdb.com",
-                DefaultFrom = new Recipient() { DisplayName = "MTDB.com", Email = "noreply@mtdb.com" },
+                DefaultFrom = new Recipient { DisplayName = "MTDB.com", Email = "noreply@mtdb.com" },
                 UseSsl = true,
                 UseHtmlBody = true,
                 BaseUrlOverride = "api.mailgun.net/v3"

@@ -2,8 +2,9 @@ namespace MTDB.Core.EntityFramework.Entities
 {
     public class PlayerStat : EntityBase
     {
-        public Player Player { get; set; }
-        public Stat Stat { get; set; }
         public int Value { get; set; }
+
+        public virtual Player Player { get; set; }
+        public virtual Stat Stat { get; set; }
     }
 }

@@ -58,7 +58,7 @@ namespace MTDB.Helpers
 
         public static MvcHtmlString ChosenDropBoxFor<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, IEnumerable<SelectListItem> selectList, string htmlClass = "w-full", string placeHolder = null)
         {
-            var attributes = new Dictionary<string, object>()
+            var attributes = new Dictionary<string, object>
             {
                 {"ui-jq", "chosen"},
                 {"class", htmlClass}
@@ -74,7 +74,7 @@ namespace MTDB.Helpers
 
         public static MvcHtmlString ChosenDropBox(this HtmlHelper htmlHelper, string name, IEnumerable<SelectListItem> selectList, string htmlClass = "w-full", string placeHolder = null)
         {
-            var attributes = new Dictionary<string, object>()
+            var attributes = new Dictionary<string, object>
             {
                 {"ui-jq", "chosen"},
                 {"class", htmlClass}
@@ -90,7 +90,7 @@ namespace MTDB.Helpers
 
         public static MvcHtmlString TextBoxFor<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, string htmlClass, string placeHolder)
         {
-            var attributes = new Dictionary<string, object>()
+            var attributes = new Dictionary<string, object>
             {
                 {"class", htmlClass},
                 { "placeHolder", placeHolder}
@@ -101,7 +101,7 @@ namespace MTDB.Helpers
 
         public static MvcHtmlString UpDownFor<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, string htmlClass = "form-control", int minValue = 0, int maxvalue = 99)
         {
-            var attributes = new Dictionary<string, object>()
+            var attributes = new Dictionary<string, object>
             {
                 { "class", htmlClass},
                 { "ui-jq", "TouchSpin" },
@@ -117,7 +117,7 @@ namespace MTDB.Helpers
 
         public static MvcHtmlString UploadFileFor<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, string htmlClass = "form-control")
         {
-            var attributes = new Dictionary<string, object>()
+            var attributes = new Dictionary<string, object>
             {
                 { "ui-jq", "filestyle" },
                 { "type", "file" },
@@ -131,7 +131,7 @@ namespace MTDB.Helpers
 
         public static MvcHtmlString ThemedValidationMessageFor<TModel, TProperty>(this HtmlHelper<TModel> htmlHelper, Expression<Func<TModel, TProperty>> expression, string htmlClass = "text-danger wrapper text-center")
         {
-            var attributes = new Dictionary<string, object>()
+            var attributes = new Dictionary<string, object>
             {
                 {"class", htmlClass}
             };
@@ -147,7 +147,7 @@ namespace MTDB.Helpers
 
             var nextTag = new TagBuilder("i");
             nextTag.MergeAttribute("class", "fa fa-chevron-right results");
-            var settings = new PagedListRenderOptions()
+            var settings = new PagedListRenderOptions
             {
                 DisplayLinkToNextPage = PagedListDisplayMode.Always,
                 DisplayLinkToPreviousPage = PagedListDisplayMode.Always,

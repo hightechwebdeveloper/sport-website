@@ -11,23 +11,6 @@ namespace MTDB.Core.EntityFramework
 {
     public static class RepositoryExtensions
     {
-
-        public static IQueryable<Player> WithStats(this IQueryable<Player> player)
-        {
-            return
-                player.Include(p => p.Stats.Select(y => y.Stat.Category))
-                    .Include(p => p.PrimaryPosition)
-                    .Include(p => p.SecondaryPosition);
-        }
-
-        public static IQueryable<Lineup> IncludePlayer<TProperty>(this IQueryable<Lineup> lineups,
-            Func<Lineup, TProperty> player) where TProperty : Player
-        {
-            return lineups
-                .Include(l => player(l))
-                .Include(l => player(l).Stats.Select(y => y.Stat.Category));
-        }
-
         public static IQueryable<T> FilterByCreatedDate<T>(this IQueryable<T> query, DateTimeOffset date) where T : EntityBase
         {
             return query.Where(p => p.CreatedDate.Year == date.Year)

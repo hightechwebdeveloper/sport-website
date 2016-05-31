@@ -76,15 +76,17 @@ namespace MTDB.Core.Services.Extensions
         public static async Task<IEnumerable<Stat>> ToStats(this IEnumerable<StatDto> dtos, MtdbRepository repository, CancellationToken token)
         {
             var ids = dtos.Select(t => t.Id);
-            return await repository.Stats.Include(s => s.Category).Where(t => ids.Contains(t.Id)).ToListAsync(token);
+            return await repository.Stats
+                .Where(t => ids.Contains(t.Id))
+                .ToListAsync(token);
         }
 
-        public static async Task<Lineup> AddPlayer(this Lineup lineup, MtdbRepository repository, int? id, LineupPosition position)
+        public static async Task<Lineup> AddPlayer(this Lineup lineup, MtdbRepository repository, int? id, LineupPositionType position)
         {
             if (!id.HasValue)
                 return lineup;
 
-            var player = await repository.PlayersWithStats.FirstOrDefaultAsync(p => p.Id == id);
+            var player = await repository.Players.FirstOrDefaultAsync(p => p.Id == id);
 
             if (player == null)
                 return lineup;
@@ -97,7 +99,7 @@ namespace MTDB.Core.Services.Extensions
             return lineup;
         }
 
-        public static async Task<Lineup> RemovePlayer(this Lineup lineup, MtdbRepository repository, int? id, LineupPosition position)
+        public static async Task<Lineup> RemovePlayer(this Lineup lineup, MtdbRepository repository, int? id, LineupPositionType position)
         {
             if (!id.HasValue)
                 return lineup;
@@ -114,7 +116,7 @@ namespace MTDB.Core.Services.Extensions
 
         public static AggregatedCategories AggregateStats(this Player player)
         {
-            return new AggregatedCategories()
+            return new AggregatedCategories
             {
                 OutsideScoring = (int)Math.Ceiling(player.Stats.Where(s => s.Stat.Category.Id == 1).Average(ps => ps.Value)),
                 InsideScoring = (int)Math.Ceiling(player.Stats.Where(s => s.Stat.Category.Id == 2).Average(ps => ps.Value)),

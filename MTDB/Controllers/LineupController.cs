@@ -101,7 +101,7 @@ namespace MTDB.Controllers
             if (user.Id != dto.AuthorId)
                 return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
 
-            var model = new CreateLineupDto()
+            var model = new CreateLineupDto
             {
                 Name = dto.Name,
                 Id = dto.Id,
@@ -166,19 +166,19 @@ namespace MTDB.Controllers
                 return RedirectToAction("Details", new { id = lineupId });
             }
 
-            model.PointGuard = model.PointGuardId.HasValue ? await Service.GetLineupPlayer(lineupId, model.PointGuardId.Value, LineupPosition.PointGuard, cancellationToken) : null;
-            model.ShootingGuard = model.ShootingGuardId.HasValue ? await Service.GetLineupPlayer(lineupId, model.ShootingGuardId.Value, LineupPosition.ShootingGuard, cancellationToken) : null;
-            model.SmallForward = model.SmallForwardId.HasValue ? await Service.GetLineupPlayer(lineupId, model.SmallForwardId.Value, LineupPosition.SmallForward, cancellationToken) : null;
-            model.PowerForward = model.PowerForwardId.HasValue ? await Service.GetLineupPlayer(lineupId, model.PowerForwardId.Value, LineupPosition.PowerForward, cancellationToken) : null;
-            model.Center = model.CenterId.HasValue ? await Service.GetLineupPlayer(lineupId, model.CenterId.Value, LineupPosition.Center, cancellationToken) : null;
-            model.Bench1 = model.Bench1Id.HasValue ? await Service.GetLineupPlayer(lineupId, model.Bench1Id.Value, LineupPosition.Bench1, cancellationToken) : null;
-            model.Bench2 = model.Bench2Id.HasValue ? await Service.GetLineupPlayer(lineupId, model.Bench2Id.Value, LineupPosition.Bench2, cancellationToken) : null;
-            model.Bench3 = model.Bench3Id.HasValue ? await Service.GetLineupPlayer(lineupId, model.Bench3Id.Value, LineupPosition.Bench3, cancellationToken) : null;
-            model.Bench4 = model.Bench4Id.HasValue ? await Service.GetLineupPlayer(lineupId, model.Bench4Id.Value, LineupPosition.Bench4, cancellationToken) : null;
-            model.Bench5 = model.Bench5Id.HasValue ? await Service.GetLineupPlayer(lineupId, model.Bench5Id.Value, LineupPosition.Bench5, cancellationToken) : null;
-            model.Bench6 = model.Bench6Id.HasValue ? await Service.GetLineupPlayer(lineupId, model.Bench6Id.Value, LineupPosition.Bench6, cancellationToken) : null;
-            model.Bench7 = model.Bench7Id.HasValue ? await Service.GetLineupPlayer(lineupId, model.Bench7Id.Value, LineupPosition.Bench7, cancellationToken) : null;
-            model.Bench8 = model.Bench8Id.HasValue ? await Service.GetLineupPlayer(lineupId, model.Bench8Id.Value, LineupPosition.Bench8, cancellationToken) : null;
+            model.PointGuard = model.PointGuardId.HasValue ? await Service.GetLineupPlayer(lineupId, model.PointGuardId.Value, LineupPositionType.PointGuard, cancellationToken) : null;
+            model.ShootingGuard = model.ShootingGuardId.HasValue ? await Service.GetLineupPlayer(lineupId, model.ShootingGuardId.Value, LineupPositionType.ShootingGuard, cancellationToken) : null;
+            model.SmallForward = model.SmallForwardId.HasValue ? await Service.GetLineupPlayer(lineupId, model.SmallForwardId.Value, LineupPositionType.SmallForward, cancellationToken) : null;
+            model.PowerForward = model.PowerForwardId.HasValue ? await Service.GetLineupPlayer(lineupId, model.PowerForwardId.Value, LineupPositionType.PowerForward, cancellationToken) : null;
+            model.Center = model.CenterId.HasValue ? await Service.GetLineupPlayer(lineupId, model.CenterId.Value, LineupPositionType.Center, cancellationToken) : null;
+            model.Bench1 = model.Bench1Id.HasValue ? await Service.GetLineupPlayer(lineupId, model.Bench1Id.Value, LineupPositionType.Bench1, cancellationToken) : null;
+            model.Bench2 = model.Bench2Id.HasValue ? await Service.GetLineupPlayer(lineupId, model.Bench2Id.Value, LineupPositionType.Bench2, cancellationToken) : null;
+            model.Bench3 = model.Bench3Id.HasValue ? await Service.GetLineupPlayer(lineupId, model.Bench3Id.Value, LineupPositionType.Bench3, cancellationToken) : null;
+            model.Bench4 = model.Bench4Id.HasValue ? await Service.GetLineupPlayer(lineupId, model.Bench4Id.Value, LineupPositionType.Bench4, cancellationToken) : null;
+            model.Bench5 = model.Bench5Id.HasValue ? await Service.GetLineupPlayer(lineupId, model.Bench5Id.Value, LineupPositionType.Bench5, cancellationToken) : null;
+            model.Bench6 = model.Bench6Id.HasValue ? await Service.GetLineupPlayer(lineupId, model.Bench6Id.Value, LineupPositionType.Bench6, cancellationToken) : null;
+            model.Bench7 = model.Bench7Id.HasValue ? await Service.GetLineupPlayer(lineupId, model.Bench7Id.Value, LineupPositionType.Bench7, cancellationToken) : null;
+            model.Bench8 = model.Bench8Id.HasValue ? await Service.GetLineupPlayer(lineupId, model.Bench8Id.Value, LineupPositionType.Bench8, cancellationToken) : null;
             model.Players = await Service.GetLineupPlayers(cancellationToken);
             return View("Edit", model);
         }
@@ -191,7 +191,7 @@ namespace MTDB.Controllers
             if (existingPlayer.Id == newPlayerId)
                 return existingPlayer;
 
-            var newPlayer = new LineupPlayerDto() { Id = newPlayerId.Value };
+            var newPlayer = new LineupPlayerDto { Id = newPlayerId.Value };
 
             return newPlayer;
         }

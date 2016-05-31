@@ -201,6 +201,7 @@ namespace MTDB.Controllers
                 editPlayer.Themes = await Service.GetThemes(cancellationToken);
                 editPlayer.Teams = await Service.GetTeams(cancellationToken);
                 editPlayer.Tiers = await Service.GetTiers(cancellationToken);
+                editPlayer.Collections = await Service.GetCollectionsForDropDowns(cancellationToken);
                 return View("Edit", editPlayer);
             }
 

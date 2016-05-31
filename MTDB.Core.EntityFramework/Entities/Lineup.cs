@@ -4,15 +4,9 @@ namespace MTDB.Core.EntityFramework.Entities
 {
     public class Lineup : EntityBase
     {
-        public Lineup()
-        {
-            Players = new List<LineupPlayer>();
-        }
+        private ICollection<LineupPlayer> _players;
 
         public string Name { get; set; }
-        public ApplicationUser User { get; set; }
-
-        public ICollection<LineupPlayer> Players { get; set; } 
         public int Overall { get; set; }
         public int PlayerCount { get; set; }
         public int OutsideScoring { get; set; }
@@ -24,5 +18,13 @@ namespace MTDB.Core.EntityFramework.Entities
         public int Xbox { get; set; }
         public int PS4 { get; set; }
         public int PC { get; set; }
+
+        public virtual ApplicationUser User { get; set; }
+
+        public virtual ICollection<LineupPlayer> Players
+        {
+            get { return _players ?? (_players = new List<LineupPlayer>()); }
+            protected set { _players = value; }
+        }
     }
 }

@@ -7,7 +7,7 @@
 @helper LineupTemplate(LineupPlayerDto player)
 {
     <li class="lineup-player chosen">
-        <a @(!player.Private ? Html.Raw("href='" + Url.Action("Details", "Player", new { playerUri = player.Uri }) + "'") : null)>
+        <a @(!player.Private || User.IsInRole("Admin") ? Html.Raw("href='" + Url.Action("Details", "Player", new { playerUri = player.Uri }) + "'") : null)>
             <div class="details whitebg">
                 <div class="picture">
                     <img src="@player.ImageUri" class="img-responsive center-block">

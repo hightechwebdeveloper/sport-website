@@ -29,23 +29,7 @@ namespace MTDB.Core.Services.Extensions
                 .ForMember(dest => dest.TimeAgo, opt => opt.MapFrom(src => src.CreatedDate.ToTimeAgo()));
         }
 
-        public static async Task<IEnumerable<PlayerDto>> ToDtos(this IQueryable<Player> players, CancellationToken token)
-        {
-            if (!players.HasItems())
-                return null;
-
-            return await Task.Run(() => players.Select(ToDto), token);
-        }
-
-        public static async Task<IEnumerable<SearchPlayerResultDto>> ToSearchDtos(this IQueryable<Player> players, CancellationToken token)
-        {
-            if (!players.HasItems())
-                return null;
-
-            return await Task.Run(() => players.Select(ToSearchDto), token);
-        }
-
-        private static SearchPlayerResultDto ToSearchDto(Player player)
+        public static SearchPlayerResultDto ToSearchDto(this Player player)
         {
             if (player == null)
                 return null;
@@ -57,7 +41,7 @@ namespace MTDB.Core.Services.Extensions
                 position = string.Format("{0}/{1}", position, player.SecondaryPosition);
             }
 
-            return new SearchPlayerResultDto()
+            return new SearchPlayerResultDto
             {
                 Id = player.Id,
                 Name = player.Name,
@@ -103,7 +87,7 @@ namespace MTDB.Core.Services.Extensions
             }
 
 
-            return new PlayerDto
+            var playerDto = new PlayerDto
             {
                 Id = player.Id,
                 Name = player.Name,
@@ -119,9 +103,9 @@ namespace MTDB.Core.Services.Extensions
                 CollectionName = collectionName,
                 Height = player.Height,
                 Weight = player.Weight,
-                BronzeBadges = player.BronzeBadges,
-                SilverBadges = player.SilverBadges,
-                GoldBadges = player.GoldBadges,
+                BronzeBadges = player.Badges.Count(s => s.BadgeLevel == BadgeLevel.Bronze),
+                SilverBadges = player.Badges.Count(s => s.BadgeLevel == BadgeLevel.Silver),
+                GoldBadges = player.Badges.Count(s => s.BadgeLevel == BadgeLevel.Gold),
                 //Tier = player.Tier.ToDto(),
                 Attributes = player.Stats.ToDtos(),
                 Overall = player.Overall,
@@ -133,10 +117,38 @@ namespace MTDB.Core.Services.Extensions
                         Group = key,
                         Stats = statValues
                     })
-                    .Select(
-                        s => new GroupScoreDto { Id = s.Group.Id, Name = s.Group.Name, Average = (int)s.Stats.Average() })
-
+                    .Select(s => new GroupScoreDto { Id = s.Group.Id, Name = s.Group.Name, Average = (int)s.Stats.Average() }),
             };
+            playerDto.PlayerBadges = player.Badges
+                .OrderByDescending(psb => psb.BadgeLevel)
+                .Select(psb => new PlayerDto.PlayerBadgeDto
+                {
+                    Name = psb.Badge.Name,
+                    Description = psb.Badge.Description,
+                    IconUri = psb.Badge.BadgeGroupId.HasValue ? $"/content/images/badges/{psb.Badge.BadgeGroup.Name.ToLower()}_{psb.BadgeLevel.ToString("G").ToLower()}.png" : "/content/images/badges/personality.png"
+                })
+                .ToList();
+            playerDto.OffensiveTendencies = player.Tendencies
+                .Where(pt => pt.Tendency.Type == TendencyType.Offensive)
+                .OrderByDescending(pt => pt.Value)
+                .Select(psb => new PlayerDto.PlayerTendencyDto
+                {
+                    Name = psb.Tendency.Name,
+                    Abbreviation = psb.Tendency.Abbreviation,
+                    Value = psb.Value
+                })
+                .ToList();
+            playerDto.DefensiveTendencies = player.Tendencies
+                .Where(pt => pt.Tendency.Type == TendencyType.Defensive)
+                .OrderByDescending(pt => pt.Value)
+                .Select(psb => new PlayerDto.PlayerTendencyDto
+                {
+                    Name = psb.Tendency.Name,
+                    Abbreviation = psb.Tendency.Abbreviation,
+                    Value = psb.Value
+                })
+                .ToList();
+            return playerDto;
         }
 
         public static IEnumerable<StatDto> ToDtos(this IEnumerable<PlayerStat> stats)
@@ -151,7 +163,7 @@ namespace MTDB.Core.Services.Extensions
             if (tier == null)
                 return null;
 
-            return new TierDto() { Id = tier.Id, Name = tier.Name };
+            return new TierDto { Id = tier.Id, Name = tier.Name };
         }
 
         public static StatDto ToDto(this PlayerStat playerStat)
@@ -194,19 +206,19 @@ namespace MTDB.Core.Services.Extensions
                 Athleticism = athleticism,
                 Defending = defending,
                 Rebounding = rebounding,
-                PointGuard = lineup.Players.FirstOrDefault(p => p.LineupPosition == LineupPosition.PointGuard).ToLineupPlayerDto(),
-                ShootingGuard = lineup.Players.FirstOrDefault(p => p.LineupPosition == LineupPosition.ShootingGuard).ToLineupPlayerDto(),
-                SmallForward = lineup.Players.FirstOrDefault(p => p.LineupPosition == LineupPosition.SmallForward).ToLineupPlayerDto(),
-                PowerForward = lineup.Players.FirstOrDefault(p => p.LineupPosition == LineupPosition.PowerForward).ToLineupPlayerDto(),
-                Center = lineup.Players.FirstOrDefault(p => p.LineupPosition == LineupPosition.Center).ToLineupPlayerDto(),
-                Bench1 = lineup.Players.FirstOrDefault(p => p.LineupPosition == LineupPosition.Bench1).ToLineupPlayerDto(),
-                Bench2 = lineup.Players.FirstOrDefault(p => p.LineupPosition == LineupPosition.Bench2).ToLineupPlayerDto(),
-                Bench3 = lineup.Players.FirstOrDefault(p => p.LineupPosition == LineupPosition.Bench3).ToLineupPlayerDto(),
-                Bench4 = lineup.Players.FirstOrDefault(p => p.LineupPosition == LineupPosition.Bench4).ToLineupPlayerDto(),
-                Bench5 = lineup.Players.FirstOrDefault(p => p.LineupPosition == LineupPosition.Bench5).ToLineupPlayerDto(),
-                Bench6 = lineup.Players.FirstOrDefault(p => p.LineupPosition == LineupPosition.Bench6).ToLineupPlayerDto(),
-                Bench7 = lineup.Players.FirstOrDefault(p => p.LineupPosition == LineupPosition.Bench7).ToLineupPlayerDto(),
-                Bench8 = lineup.Players.FirstOrDefault(p => p.LineupPosition == LineupPosition.Bench8).ToLineupPlayerDto(),
+                PointGuard = lineup.Players.FirstOrDefault(p => p.LineupPosition == LineupPositionType.PointGuard).ToLineupPlayerDto(),
+                ShootingGuard = lineup.Players.FirstOrDefault(p => p.LineupPosition == LineupPositionType.ShootingGuard).ToLineupPlayerDto(),
+                SmallForward = lineup.Players.FirstOrDefault(p => p.LineupPosition == LineupPositionType.SmallForward).ToLineupPlayerDto(),
+                PowerForward = lineup.Players.FirstOrDefault(p => p.LineupPosition == LineupPositionType.PowerForward).ToLineupPlayerDto(),
+                Center = lineup.Players.FirstOrDefault(p => p.LineupPosition == LineupPositionType.Center).ToLineupPlayerDto(),
+                Bench1 = lineup.Players.FirstOrDefault(p => p.LineupPosition == LineupPositionType.Bench1).ToLineupPlayerDto(),
+                Bench2 = lineup.Players.FirstOrDefault(p => p.LineupPosition == LineupPositionType.Bench2).ToLineupPlayerDto(),
+                Bench3 = lineup.Players.FirstOrDefault(p => p.LineupPosition == LineupPositionType.Bench3).ToLineupPlayerDto(),
+                Bench4 = lineup.Players.FirstOrDefault(p => p.LineupPosition == LineupPositionType.Bench4).ToLineupPlayerDto(),
+                Bench5 = lineup.Players.FirstOrDefault(p => p.LineupPosition == LineupPositionType.Bench5).ToLineupPlayerDto(),
+                Bench6 = lineup.Players.FirstOrDefault(p => p.LineupPosition == LineupPositionType.Bench6).ToLineupPlayerDto(),
+                Bench7 = lineup.Players.FirstOrDefault(p => p.LineupPosition == LineupPositionType.Bench7).ToLineupPlayerDto(),
+                Bench8 = lineup.Players.FirstOrDefault(p => p.LineupPosition == LineupPositionType.Bench8).ToLineupPlayerDto(),
             };
         }
 
@@ -215,7 +227,7 @@ namespace MTDB.Core.Services.Extensions
             if (player?.Player == null)
                 return null;
             
-            return new LineupPlayerDto()
+            return new LineupPlayerDto
             {
                 Name = player.Player.Name,
                 Uri = player.Player.UriName,
@@ -232,11 +244,11 @@ namespace MTDB.Core.Services.Extensions
             };
         }
 
-        public static async Task<IEnumerable<LineupSearchDto>> ToSearchDtos(this IQueryable<Lineup> lineups, CancellationToken token)
+        public static IEnumerable<LineupSearchDto> ToSearchDtos(this IEnumerable<Lineup> lineups)
         {
             var dtos = new List<LineupSearchDto>();
 
-            foreach (var lineup in await lineups.ToListAsync(token))
+            foreach (var lineup in lineups)
             {
                 var name = lineup.Name;
 
@@ -246,7 +258,7 @@ namespace MTDB.Core.Services.Extensions
                 }
 
 
-                dtos.Add(new LineupSearchDto()
+                dtos.Add(new LineupSearchDto
                 {
                     Id = lineup.Id,
                     Name = name,
@@ -269,12 +281,12 @@ namespace MTDB.Core.Services.Extensions
             return dtos;
         }
 
-        public static LineupPlayer ToLineupPlayer(this Player player, LineupPosition position)
+        public static LineupPlayer ToLineupPlayer(this Player player, LineupPositionType position)
         {
             if (player == null)
                 return null;
 
-            return new LineupPlayer()
+            return new LineupPlayer
             {
                 Player = player,
                 LineupPosition = position
@@ -286,7 +298,7 @@ namespace MTDB.Core.Services.Extensions
             if (cardPack == null)
                 return null;
 
-            return new MtdbCardPackDto()
+            return new MtdbCardPackDto
             {
                 Id = cardPack.Id,
                 Name = cardPack.Name,
@@ -300,7 +312,7 @@ namespace MTDB.Core.Services.Extensions
             if (cardPackPlayer == null)
                 return null;
 
-            return new CardDto()
+            return new CardDto
             {
                 Id = cardPackPlayer.Id,
                 PlayerName = cardPackPlayer.Player.Name,
@@ -317,7 +329,7 @@ namespace MTDB.Core.Services.Extensions
             if (cardPack == null)
                 return null;
 
-            return new CardPackLeaderboardDto()
+            return new CardPackLeaderboardDto
             {
                 Id = cardPack.Id,
                 Name = cardPack.Name,
@@ -330,7 +342,7 @@ namespace MTDB.Core.Services.Extensions
 
         public static async Task<IEnumerable<CardPackLeaderboardDto>> ToLeaderboardDtos(this IQueryable<CardPack> cardPacks, CancellationToken cancellationToken)
         {
-            return await cardPacks.Select(cardPack => new CardPackLeaderboardDto()
+            return await cardPacks.Select(cardPack => new CardPackLeaderboardDto
             {
                 Id = cardPack.Id,
                 Name = cardPack.Name.Length > 50 ? cardPack.Name.Substring(0, 50) + "..." : cardPack.Name,
@@ -357,7 +369,7 @@ namespace MTDB.Core.Services.Extensions
 
         public static DraftCardDto ToDraftCardDto(this Player player)
         {
-            return new DraftCardDto()
+            return new DraftCardDto
             {
                 Athleticism = player.Athleticism.Value,
                 Defending = player.Defending.Value,

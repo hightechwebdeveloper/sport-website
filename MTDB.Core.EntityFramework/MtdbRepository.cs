@@ -18,12 +18,56 @@ namespace MTDB.Core.EntityFramework
 
         public MtdbRepository() : base("MTDBRepository")
         {
-
+            this.Database.CommandTimeout = int.MaxValue;
         }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<PlayerUpdate>().HasMany(p => p.Changes);
+            //modelBuilder.Entity<PlayerUpdate>()
+            //    .HasMany(p => p.Changes);
+
+            modelBuilder.Entity<PlayerUpdateChange>()
+                .Property(puc => puc.PlayerUpdateId)
+                .HasColumnName("PlayerUpdate_Id");
+            modelBuilder.Entity<PlayerUpdateChange>()
+                .HasRequired(puc => puc.PlayerUpdate)
+                .WithMany(pu => pu.Changes)
+                .HasForeignKey(puc => puc.PlayerUpdateId);
+
+            modelBuilder.Entity<PlayerUpdateChange>()
+                .Property(puc => puc.PlayerId)
+                .HasColumnName("Player_Id");
+            modelBuilder.Entity<PlayerUpdateChange>()
+                .HasRequired(puc => puc.Player)
+                .WithMany(p => p.Changes)
+                .HasForeignKey(puc => puc.PlayerId);
+
+            modelBuilder.Entity<Badge>()
+                      .HasOptional(x => x.BadgeGroup)
+                      .WithMany()
+                      .HasForeignKey(x => x.BadgeGroupId);
+            modelBuilder.Entity<PlayerBadge>()
+                .HasKey(pb => new { pb.PlayerId, pb.BadgeId });
+            modelBuilder.Entity<PlayerBadge>()
+                      .HasRequired(x => x.Player)
+                      .WithMany(x => x.Badges)
+                      .HasForeignKey(x => x.PlayerId);
+            modelBuilder.Entity<PlayerBadge>()
+                      .HasRequired(x => x.Badge)
+                      .WithMany()
+                      .HasForeignKey(x => x.BadgeId);
+
+            modelBuilder.Entity<PlayerTendency>()
+                .HasKey(pb => new { pb.PlayerId, pb.TendencyId });
+            modelBuilder.Entity<PlayerTendency>()
+                      .HasRequired(x => x.Player)
+                      .WithMany(x => x.Tendencies)
+                      .HasForeignKey(x => x.PlayerId);
+            modelBuilder.Entity<PlayerTendency>()
+                      .HasRequired(x => x.Tendency)
+                      .WithMany()
+                      .HasForeignKey(x => x.TendencyId);
+
             base.OnModelCreating(modelBuilder);
         }
 
@@ -33,19 +77,7 @@ namespace MTDB.Core.EntityFramework
         public DbSet<Stat> Stats { get; set; }
         public DbSet<StatCategory> StatCategories { get; set; }
         public DbSet<Lineup> Lineups { get; set; }
-
-        public IQueryable<Player> PlayersWithStats
-        {
-            get { return Players?.Include(p => p.Stats.Select(y => y.Stat.Category)).Include(p => p.Team).Include(p => p.Theme).Include(p => p.Tier).Include(p => p.Collection); }
-        }
-
-        public IQueryable<Lineup> LineupsWithPlayers
-        {
-            get { return Lineups?.Include(p => p.Players.Select(y => y.Player.Stats.Select(z => z.Stat.Category))).Include(l => l.User); }
-        }
-
         public DbSet<LineupPlayer> LineupPlayers { get; set; }
-
 
         public DbSet<Tier> Tiers { get; set; }
         public DbSet<Theme> Themes { get; set; }
@@ -54,16 +86,15 @@ namespace MTDB.Core.EntityFramework
         public DbSet<Team> Teams { get; set; }
         public DbSet<CardPack> CardPacks { get; set; }
         public DbSet<CardPackPlayer> CardPackPlayers { get; set; }
-
         public DbSet<Collection> Collections { get; set; }
-
         public DbSet<Comment> Comments { get; set; }
         public DbSet<PlayerUpdateChange> PlayerUpdateChanges { get; set; }
 
-        public IQueryable<Comment> CommentsWithUsers
-        {
-            get { return Comments.Include(x => x.User); }
-        }
+        public DbSet<Badge> Badges { get; set; }
+        public DbSet<PlayerBadge> PlayerBadges { get; set; }
+        public DbSet<BadgeGroup> BadgeGroups { get; set; }
+
+        public DbSet<Tendency> Tendencies { get; set; }
 
         public static MtdbRepository Create()
         {

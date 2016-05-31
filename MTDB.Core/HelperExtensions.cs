@@ -18,7 +18,7 @@ namespace MTDB.Core
             return !string.IsNullOrWhiteSpace(value);
         }
 
-        private static List<string> _blockedWords = new List<string>()
+        private static List<string> _blockedWords = new List<string>
         {
             "2KMTC",
             "2kMTCentral",

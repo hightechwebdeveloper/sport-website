@@ -47,7 +47,19 @@ namespace PlayerUpdateMigrator
                 }
             }
 
-            var toAdd = updates.Select(update => new PlayerUpdate() { CreatedDate = update.Key, Changes = update.Value, Visible = true }).ToList();
+            var toAdd = updates.Select(update =>
+            {
+                var playerUpdate = new PlayerUpdate
+                {
+                    CreatedDate = update.Key,
+                    Visible = true
+                };
+                foreach (var playerUpdateChange in update.Value)
+                {
+                    playerUpdate.Changes.Add(playerUpdateChange);
+                }
+                return playerUpdate;
+            }).ToList();
 
             repo.PlayerUpdates.AddRange(toAdd);
             repo.PlayerUpdateChanges.AddRange(toAdd.SelectMany(p => p.Changes));
@@ -108,11 +120,11 @@ namespace PlayerUpdateMigrator
                                     var newValue = GetValue(validFields, $"single_player_update_{i}_updates_{fieldId}_new");
 
 
-                                    yield return new PlayerUpdateChange()
+                                    yield return new PlayerUpdateChange
                                     {
                                         CreatedDate = createdDate,
                                         FieldName = attributeName,
-                                        IsStatUpdate = true,
+                                        UpdateType = PlayerUpdateType.Stat,
                                         OldValue = oldValue,
                                         NewValue = newValue,
                                         Player = player.Item3

@@ -4,25 +4,18 @@ namespace MTDB.Core.EntityFramework.Entities
 {
     public class Player : EntityBase
     {
-        public Player()
-        {
-            Stats = new List<PlayerStat>();
-        }
+        private ICollection<PlayerStat> _playerStats;
+        private ICollection<PlayerBadge> _badges;
+        private ICollection<PlayerTendency> _tendencies;
+        private ICollection<PlayerUpdateChange> _changes;
 
         public string Name { get; set; }
         public string UriName { get; set; }
         public int Age { get; set; }
-
-        public Theme Theme { get; set; }
-        public Team Team { get; set; }
-
-        public int BronzeBadges { get; set; }
-        public int SilverBadges { get; set; }
-        public int GoldBadges { get; set; }
+        
         public string Height { get; set; }
         public int Weight { get; set; }
 
-        public Tier Tier { get; set; }
         public int Overall { get; set; }
         public int? Xbox { get; set; }
         public int? PS4 { get; set; }
@@ -30,8 +23,6 @@ namespace MTDB.Core.EntityFramework.Entities
 
         public string PrimaryPosition { get; set; }
         public string SecondaryPosition { get; set; }
-        public ICollection<PlayerStat> Stats { get; set; }
-        public ApplicationUser User { get; set; }
 
         public int? OutsideScoring { get; set; }
         public int? InsideScoring { get; set; }
@@ -41,17 +32,38 @@ namespace MTDB.Core.EntityFramework.Entities
         public int? Rebounding { get; set; }
 
         public int? Points { get; set; }
-        public Collection Collection { get; set; }
         public int? NBA2K_ID { get; set; }
 
         public bool Private { get; set; }
-    }
 
-    public class Collection : EntityBase
-    {
-        public string Name { get; set; }
-        public string ThemeName { get; set; }
-        public string GroupName { get; set; }
-        public int? DisplayOrder { get; set; }
+        public virtual Tier Tier { get; set; }
+        public virtual Theme Theme { get; set; }
+        public virtual Team Team { get; set; }
+        public virtual ApplicationUser User { get; set; }
+        public virtual Collection Collection { get; set; }
+
+        public virtual ICollection<PlayerStat> Stats
+        {
+            get { return _playerStats ?? (_playerStats = new List<PlayerStat>()); }
+            protected set { _playerStats = value; }
+        }
+
+        public virtual ICollection<PlayerBadge> Badges
+        {
+            get { return _badges ?? (_badges = new List<PlayerBadge>()); }
+            protected set { _badges = value; }
+        }
+
+        public virtual ICollection<PlayerTendency> Tendencies
+        {
+            get { return _tendencies ?? (_tendencies = new List<PlayerTendency>()); }
+            protected set { _tendencies = value; }
+        }
+
+        public virtual ICollection<PlayerUpdateChange> Changes
+        {
+            get { return _changes ?? (_changes = new List<PlayerUpdateChange>()); }
+            protected set { _changes = value; }
+        }
     }
 }

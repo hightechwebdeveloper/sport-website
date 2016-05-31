@@ -5643,3 +5643,61 @@ hr {
 .entry-title {
     display: inline;
 }
+
+.player-badge {
+    background-color: #fff;
+    color: #555555;
+    width: 100%;
+    text-align: left;
+    margin-bottom: 10px;
+}
+.player-badge:after {
+    content: '.';
+    display: block;
+    height: 0;
+    clear: both;
+    visibility: hidden;
+}
+
+.player-badge .left {
+    float: left;
+    width: 50px;
+}
+.player-badge .right {
+    float: left;
+    white-space: normal;
+    width: calc(100% - 50px);
+}
+.player-badge .name {
+    display: block;
+    margin: 3px 0 7px 0;
+    font-size: 14px;
+    color: #292A2D;
+}
+@media (min-width: 1200px) {
+    #badges .col-lg-6:first-of-type {
+        border-right: 1px solid #DEE5E7;
+    }    
+}
+
+.tendency-list {
+    list-style: none;
+    padding-left: 3px;
+    font-size: 13px;
+}
+.tendency-list li {
+  margin-bottom: 1px;
+  border-bottom: 1px solid #E0E0E0;
+}
+.tendency-list li:nth-child(odd) { 
+  background-color:#F1F1F1; 
+}
+.tendency-list .value {
+    color: #fff;
+    background: #CCC;
+    padding: 0.2em;
+    min-width: 25px;
+    display: inline-block;
+    text-align: center;
+    font-weight: 600;
+}

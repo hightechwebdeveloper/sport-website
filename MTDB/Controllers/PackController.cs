@@ -222,7 +222,7 @@ namespace MTDB.Controllers
                 return RedirectToAction("CreateDraft");
             }
 
-            var results = new DraftResultsDto()
+            var results = new DraftResultsDto
             {
                 CCount = tracker.CCount,
                 PFCount = tracker.PFCount,

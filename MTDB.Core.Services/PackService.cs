@@ -26,8 +26,7 @@ namespace MTDB.Core.Services
 
         public async Task<MtdbCardPackDto> GetMtdbCardPackById(int id, CancellationToken cancellationToken)
         {
-            var pack = await _repository.CardPacks.Include(cp => cp.Players.Select(p => p.Player.Tier))
-                .Include(p => p.User)
+            var pack = await _repository.CardPacks
                 .Where(p => p.CardPackType == "mtdb")
                 .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
 
@@ -43,8 +42,7 @@ namespace MTDB.Core.Services
 
         public async Task<DraftResultsDto> GetDraftPackById(int id, CancellationToken cancellationToken)
         {
-            var pack = await _repository.CardPacks.Include(cp => cp.Players.Select(p => p.Player.Tier))
-                .Include(p => p.User)
+            var pack = await _repository.CardPacks
                 .Where(p => p.CardPackType == "draft")
                 .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
 
@@ -86,7 +84,7 @@ namespace MTDB.Core.Services
 
             foreach (var card in pack.Cards)
             {
-                cardPack.Players.Add(new CardPackPlayer() { CardPack = cardPack, Player = _repository.Players.AttachById(card.Id) });
+                cardPack.Players.Add(new CardPackPlayer { CardPack = cardPack, Player = _repository.Players.AttachById(card.Id) });
             }
 
             _repository.CardPacks.Add(cardPack);
@@ -111,7 +109,7 @@ namespace MTDB.Core.Services
 
             foreach (var card in pack.Picked)
             {
-                cardPack.Players.Add(new CardPackPlayer() { CardPack = cardPack, Player = _repository.Players.AttachById(card.Id) });
+                cardPack.Players.Add(new CardPackPlayer { CardPack = cardPack, Player = _repository.Players.AttachById(card.Id) });
             }
 
             _repository.CardPacks.Add(cardPack);
@@ -138,7 +136,7 @@ namespace MTDB.Core.Services
 
             var count = await query.CountAsync(cancellationToken);
 
-            return new LeaderboardDto()
+            return new LeaderboardDto
             {
                 CardPacks = cardPacks,
                 Pack = packType,
@@ -171,7 +169,7 @@ namespace MTDB.Core.Services
 
             var count = await query.CountAsync(cancellationToken);
 
-            return new LeaderboardDto()
+            return new LeaderboardDto
             {
                 CardPacks = cardPacks,
                 Pack = packType,

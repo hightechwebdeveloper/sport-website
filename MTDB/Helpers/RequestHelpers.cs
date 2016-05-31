@@ -44,7 +44,7 @@ namespace MTDB.Helpers
                 {
                     if (value >= 10)
                     {
-                        return new StatFilter() { UriName = kvp.Key, Value = value };
+                        return new StatFilter { UriName = kvp.Key, Value = value };
                     }
                 }
 

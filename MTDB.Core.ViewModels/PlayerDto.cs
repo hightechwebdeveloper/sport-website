@@ -5,6 +5,13 @@ namespace MTDB.Core.ViewModels
 {
     public class PlayerDto
     {
+        public PlayerDto()
+        {
+            this.PlayerBadges = new List<PlayerBadgeDto>();
+            this.OffensiveTendencies = new List<PlayerTendencyDto>();
+            this.DefensiveTendencies = new List<PlayerTendencyDto>();
+        }
+
         public int Id { get; set; }
         public string ImageUri { get; set; }
         public string UriName { get; set; }
@@ -27,6 +34,24 @@ namespace MTDB.Core.ViewModels
         public string CollectionName { get; set; }
         public string GroupName { get; set; }
         public bool Private { get; set; }
+
+        public IList<PlayerBadgeDto> PlayerBadges { get; set; }
+        public IList<PlayerTendencyDto> OffensiveTendencies { get; set; }
+        public IList<PlayerTendencyDto> DefensiveTendencies { get; set; }
+
+        public class PlayerBadgeDto
+        {
+            public string Name { get; set; }
+            public string Description { get; set; }
+            public string IconUri { get; set; } 
+        }
+
+        public class PlayerTendencyDto
+        {
+            public string Name { get; set; }
+            public string Abbreviation { get; set; }
+            public int Value { get; set; }
+        }
     }
 
 

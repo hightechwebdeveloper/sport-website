@@ -245,7 +245,7 @@ namespace PagedList.Mvc
             if (id.StartsWith("#"))
                 id = id.Substring(1);
 
-            var ajaxOptions = new AjaxOptions()
+            var ajaxOptions = new AjaxOptions
             {
                 HttpMethod = "GET",
                 InsertionMode = InsertionMode.Replace,

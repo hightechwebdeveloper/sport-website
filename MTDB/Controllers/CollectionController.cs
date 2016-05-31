@@ -42,7 +42,7 @@ namespace MTDB.Controllers
             if (collectionDetails == null)
                 return RedirectToAction("Index");
 
-            var collectionViewModel = new CollectionDetailsViewModel()
+            var collectionViewModel = new CollectionDetailsViewModel
             {
                 Name = collectionDetails.Name,
                 Athleticism = collectionDetails.Athleticism,
