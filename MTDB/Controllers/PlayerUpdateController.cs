@@ -53,41 +53,33 @@ namespace MTDB.Controllers
                 date = DateTime.Today;
             }
 
-            //var results = new List<PlayerUpdateViewModel>();
+            var results = new List<PlayerUpdateViewModel>();
 
-            //var updates = await Service.GetUpdatesForDate(date, (page - 1) * pageSize, pageSize, token);
-            //results.AddRange(updates.Results);
+            var updates = await Service.GetUpdatesForDate(date, (page - 1) * pageSize, pageSize, token);
+            results.AddRange(updates.Results);
 
-            ////if on page one get all new cards
-            //if (page == 1)
-            //{
-            //    PlayerUpdateDetails newCards = await Service.GetAllNewCardsForDate(date, token);
-            //    results.AddRange(newCards.Results);
-            //    results = results.DistinctBy(p => p.UriName).ToList();
-            //}
+            //if on page one get all new cards
+            if (page == 1)
+            {
+                PlayerUpdateDetails newCards = await Service.GetAllNewCardsForDate(date, token);
+                results.AddRange(newCards.Results);
+                results = results.DistinctBy(p => p.UriName).ToList();
+            }
 
-
-            //var vm = new PagedResults<PlayerUpdateViewModel>(results, page, pageSize, updates.TotalCount);
+            
+            var vm = new PagedResults<PlayerUpdateViewModel>(results, page, pageSize, updates.TotalCount);
 
             SetCommentsPageUrl($"{year}-{month}-{day}");
 
-            //var playerUpdateDetailViewModel = new PlayerUpdateDetailsViewModel
-            //{
-            //    Title = updates.Title,
-            //    Date = date,
-            //    Updates = vm,
-            //    Visible = updates.Visible,
-            //    DisplayNewCards = (page == 1)
-            //};
             var playerUpdateDetailViewModel = new PlayerUpdateDetailsViewModel
             {
-                Title = string.Empty,
+                Title = updates.Title,
                 Date = date,
-                Updates = new PagedResults<PlayerUpdateViewModel>(new List<PlayerUpdateViewModel>(), 1, 1, 1),
-                Visible = false,
+                Updates = vm,
+                Visible = updates.Visible,
                 DisplayNewCards = (page == 1)
             };
-            //playerUpdateDetailViewModel.TotalUpdateCount = await Service.GetToalUpdateCountForDate(date, token);
+            playerUpdateDetailViewModel.TotalUpdateCount = await Service.GetToalUpdateCountForDate(date, token);
 
             return View(playerUpdateDetailViewModel);
         }

@@ -120,7 +120,8 @@ namespace MTDB.Core.Services.Extensions
                     .Select(s => new GroupScoreDto { Id = s.Group.Id, Name = s.Group.Name, Average = (int)s.Stats.Average() }),
             };
             playerDto.PlayerBadges = player.Badges
-                .OrderByDescending(psb => psb.BadgeLevel)
+                .OrderByDescending(psb => psb.Badge.BadgeGroupId.HasValue)
+                .ThenByDescending(psb => psb.BadgeLevel)
                 .Select(psb => new PlayerDto.PlayerBadgeDto
                 {
                     Name = psb.Badge.Name,

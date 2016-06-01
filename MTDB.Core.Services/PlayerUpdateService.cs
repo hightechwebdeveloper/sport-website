@@ -8,7 +8,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using CsvHelper;
-using Flurl.Util;
 using MTDB.Core.EntityFramework;
 using MTDB.Core.EntityFramework.Entities;
 using MTDB.Core.Services.Extensions;
@@ -314,8 +313,7 @@ namespace MTDB.Core.Services
                 return false;
 
             var filePlayers = GetFilePlayers(path).ToList();
-
-            var playerService = new PlayerService(_repository);
+            
             // Load all the players into memory so this is quick
             var list = new Dictionary<int, Dictionary<int, object>>();
             foreach (var p in filePlayers)
@@ -328,28 +326,39 @@ namespace MTDB.Core.Services
             }
 
             var isNew = false;
-            var editPlayers = (await playerService.GetPlayersByNBAIds(token, list.Keys.ToArray())).ToList();
-
             // Check if there is an update today
             var update = await _repository.PlayerUpdates
-                .FilterByCreatedDate(DateTimeOffset.Now).FirstOrDefaultAsync(token);
-
+                .FilterByCreatedDate(DateTimeOffset.Now)
+                .FirstOrDefaultAsync(token);
             if (update == null)
             {
                 isNew = true;
                 update = new PlayerUpdate();
             }
 
-            var badges = await _repository.Badges.ToListAsync(token);
-            var tendencies = await _repository.Tendencies.ToListAsync(token);
+            var badges = await _repository.Badges
+                .ToListAsync(token);
+            var tendencies = await _repository.Tendencies
+                .ToListAsync(token);
+
+            var ids = list.Keys.ToArray();
+            var existingIds = await _repository.Players
+                .Where(p => p.NBA2K_ID.HasValue && ids.Contains(p.NBA2K_ID.Value))
+                .Select(p => p.NBA2K_ID.Value)
+                .ToListAsync(token);
 
             foreach (var filePlayer in list)
             {
-                var removeChanges = new List<PlayerUpdateChange>();
-                var player = editPlayers.FirstOrDefault(p => p.NBA2K_ID == filePlayer.Key);
-
-                if (player == null)
+                if (!existingIds.Contains(filePlayer.Key))
                     continue;
+
+                var removeChanges = new List<PlayerUpdateChange>();
+
+                var player = await _repository.Players
+                    .Include(p => p.Stats.Select(ps => ps.Stat))
+                    .Include(p => p.Badges)
+                    .Include(p => p.Tendencies)
+                    .FirstAsync(p => p.NBA2K_ID == filePlayer.Key, token);
 
                 bool shouldDelete;
                 var newOverall = this.GetIntValueFromHeader(filePlayer, 241);
@@ -357,13 +366,9 @@ namespace MTDB.Core.Services
                 if (overallChange != null)
                 {
                     if (!shouldDelete)
-                    {
                         update.Changes.Add(overallChange);
-                    }
                     else
-                    {
                         removeChanges.Add(overallChange);
-                    }
                 }
 
                 var newHeight = this.GetStringValueFromHeader(filePlayer, 10).Replace(" ", "");
@@ -371,13 +376,9 @@ namespace MTDB.Core.Services
                 if (heightChange != null)
                 {
                     if (!shouldDelete)
-                    {
                         update.Changes.Add(heightChange);
-                    }
                     else
-                    {
                         removeChanges.Add(heightChange);
-                    }
                 }
 
                 var newWeight = this.GetIntValueFromHeader(filePlayer, 3);
@@ -385,13 +386,9 @@ namespace MTDB.Core.Services
                 if (weightChange != null)
                 {
                     if (!shouldDelete)
-                    {
                         update.Changes.Add(weightChange);
-                    }
                     else
-                    {
                         removeChanges.Add(weightChange);
-                    }
                 }
 
                 foreach (var oldValue in player.Stats)
@@ -399,102 +396,72 @@ namespace MTDB.Core.Services
                     if (!filePlayer.Value.ContainsKey(oldValue.Stat.HeaderIndex))
                         continue;
 
-                    var possibleStat = filePlayer.Value[oldValue.Stat.HeaderIndex];
-
                     int newValue;
-
-                    if (!int.TryParse(possibleStat?.ToString(), out newValue))
+                    if (!int.TryParse(filePlayer.Value[oldValue.Stat.HeaderIndex]?.ToString(), out newValue))
                         continue;
 
                     var change = DetermineChange(update.Changes, player, oldValue.Stat.Name, oldValue.Value.ToString(), newValue.ToString(), PlayerUpdateType.Stat, out shouldDelete);
+                    if (change == null)
+                        continue;
 
-                    if (change != null)
-                    {
-                        if (!shouldDelete)
-                        {
-                            update.Changes.Add(change);
-                        }
-                        else
-                        {
-                            removeChanges.Add(change);
-                        }
-                    }
+                    if (!shouldDelete)
+                        update.Changes.Add(change);
+                    else
+                        removeChanges.Add(change);
                 }
-
                 
                 foreach (var badge in badges)
                 {
                     if (!filePlayer.Value.ContainsKey(badge.HeaderIndex))
                         continue;
 
-                    var oldLevel = 0;
-
                     var oldBadge = player.Badges.FirstOrDefault(pb => pb.BadgeId == badge.Id);
-                    if (oldBadge != null)
-                    {
-                        oldLevel = (int)oldBadge.BadgeLevel;
-                    }
+                    var oldLevel = oldBadge != null ? (int)oldBadge.BadgeLevel : 0;
 
                     int newLevel;
                     if (!int.TryParse(filePlayer.Value[badge.HeaderIndex]?.ToString(), out newLevel))
                         continue;
 
                     var change = DetermineChange(update.Changes, player, badge.Name, oldLevel, newLevel, PlayerUpdateType.Badge, out shouldDelete);
+                    if (change == null)
+                        continue;
 
-                    if (change != null)
-                    {
-                        if (!shouldDelete)
-                        {
-                            update.Changes.Add(change);
-                        }
-                        else
-                        {
-                            removeChanges.Add(change);
-                        }
-                    }
+                    if (!shouldDelete)
+                        update.Changes.Add(change);
+                    else
+                        removeChanges.Add(change);
                 }
 
                 foreach (var tendency in tendencies)
                 {
                     if (!filePlayer.Value.ContainsKey(tendency.HeaderIndex))
                         continue;
-
-                    var oldValue = 0;
-
+                    
                     var oldTendency = player.Tendencies.FirstOrDefault(pb => pb.TendencyId == tendency.Id);
-                    if (oldTendency != null)
-                    {
-                        oldValue = oldTendency.Value;
-                    }
+                    var oldValue = oldTendency?.Value ?? 0;
 
                     int newValue;
                     if (!int.TryParse(filePlayer.Value[tendency.HeaderIndex]?.ToString(), out newValue))
                         continue;
 
                     var change = DetermineChange(update.Changes, player, tendency.Abbreviation, oldValue, newValue, PlayerUpdateType.Tendency, out shouldDelete);
+                    if (change == null)
+                        continue;
 
-                    if (change != null)
-                    {
-                        if (!shouldDelete)
-                        {
-                            update.Changes.Add(change);
-                        }
-                        else
-                        {
-                            removeChanges.Add(change);
-                        }
-                    }
+                    if (!shouldDelete)
+                        update.Changes.Add(change);
+                    else
+                        removeChanges.Add(change);
                 }
 
                 foreach (var changeToRemove in removeChanges)
                 {
-                    this._repository.PlayerUpdateChanges.Remove(changeToRemove);
+                    _repository.PlayerUpdateChanges.Remove(changeToRemove);
                 }
             }
 
             if (update.Changes.Any())
             {
-
                 foreach (var change in update.Changes.Where(p => string.IsNullOrWhiteSpace(p.NewValue)).ToList())
                 {
                     update.Changes.Remove(change);
@@ -504,9 +471,7 @@ namespace MTDB.Core.Services
                 update.Visible = false;
 
                 if (isNew)
-                {
                     _repository.PlayerUpdates.Add(update);
-                }
 
                 await _repository.SaveChangesAsync(token);
             }
@@ -656,16 +621,20 @@ namespace MTDB.Core.Services
             foreach (var playerId in playerIds)
             {
                 //performance optimization! Be carefully
-                var player = await _repository.Players
-                    .Include(p => p.Badges.Select(pb => pb.Badge.BadgeGroup))
-                    .Include(p => p.Tendencies.Select(pt => pt.Tendency))
-                    .Include(p => p.Stats)
-                    .FirstAsync(p => p.Id == playerId, token);
-
-                //performance optimization! Be carefully
                 var playerChanges = await _repository.PlayerUpdateChanges
                     .Where(puc => puc.PlayerId == playerId && puc.PlayerUpdateId == update.Id)
                     .ToListAsync(token);
+
+                //performance optimization! Be carefully
+                var query = _repository.Players.AsQueryable();
+                if (playerChanges.Any(pc => pc.UpdateType == PlayerUpdateType.Badge))
+                    query = query.Include(p => p.Badges.Select(pb => pb.Badge.BadgeGroup));
+                if (playerChanges.Any(pc => pc.UpdateType == PlayerUpdateType.Tendency))
+                    query = query.Include(p => p.Tendencies.Select(pt => pt.Tendency));
+                if (playerChanges.Any(pc => pc.UpdateType == PlayerUpdateType.Stat))
+                    query = query.Include(p => p.Stats);
+                var player = await query
+                    .FirstAsync(p => p.Id == playerId, token);
 
                 foreach (var change in playerChanges)
                 {
@@ -687,9 +656,7 @@ namespace MTDB.Core.Services
                             }
                             break;
                         case PlayerUpdateType.Stat:
-                            // Update the player
                             var existingStat = player.Stats.FirstOrDefault(p => p.Stat.Name == change.FieldName);
-
                             if (existingStat == null)
                                 continue;
 
@@ -697,7 +664,6 @@ namespace MTDB.Core.Services
                             break;
                         case PlayerUpdateType.Badge:
                         {
-                            // Update the player
                             var playerBadge = player.Badges.FirstOrDefault(p => p.Badge.Name == change.FieldName);
 
                             var isNew = false;
@@ -729,7 +695,6 @@ namespace MTDB.Core.Services
                             break;
                         case PlayerUpdateType.Tendency:
                         {
-                            // Update the player
                             var playerTendency = player.Tendencies.FirstOrDefault(p => p.Tendency.Abbreviation == change.FieldName);
 
                             var isNew = false;
@@ -798,8 +763,7 @@ namespace MTDB.Core.Services
 
             return true;
         }
-
-
+        
         public async Task<bool> DeleteUpdate(DateTime date, CancellationToken token)
         {
             var update = await _repository.PlayerUpdates
