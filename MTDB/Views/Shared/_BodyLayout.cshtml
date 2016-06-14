@@ -35,17 +35,7 @@
             <!-- link and dropdown -->
             <!-- / link and dropdown -->
             <!-- search form -->
-            @using (Html.BeginForm("Index", "Player", FormMethod.Get, new { @class = "navbar-form navbar-form-sm navbar-left shift" }))
-            {
-                <div class="form-group">
-                    <div class="input-group">
-                        <input type="text" name="name" class="form-control input-sm bg-light no-border rounded padder" placeholder="Search players..." />
-                        <span class="input-group-btn">
-                            <button type="submit" class="btn btn-sm bg-light rounded"><i class="fa fa-search"></i></button>
-                        </span>
-                    </div>
-                </div>
-            }
+            @Html.Partial("_Search")
             <!-- / search form -->
             <!-- nabar right -->
             <ul class="nav navbar-nav navbar-right">
@@ -167,21 +157,6 @@
                 <!-- nav -->
                 <nav ui-nav class="navi clearfix">
                     <ul class="nav">
-                        <li class="hidden-folded padder m-t m-b-sm text-muted text-xs">
-                            <!-- mobile search form -->
-                            @using (Html.BeginForm("Index", "Player", FormMethod.Get, new { @class = "navbar-form navbar-form-sm navbar-left visible-xs" }))
-                            {
-                                <div class="form-group">
-                                    <div class="input-group">
-                                        <input type="text" name="name" class="form-control input-sm bg-light no-border rounded padder" placeholder="Search players..." />
-                                        <span class="input-group-btn">
-                                            <button type="submit" class="btn btn-sm bg-light rounded"><i class="fa fa-search"></i></button>
-                                        </span>
-                                    </div>
-                                </div>
-                            }
-                            <!-- / mobile search form -->
-                        </li>
                         <li class="hidden-folded padder m-t m-b-sm text-muted text-xs">
                             <span>NBA 2K16</span>
                         </li>

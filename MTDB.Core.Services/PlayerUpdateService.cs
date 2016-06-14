@@ -605,7 +605,6 @@ namespace MTDB.Core.Services
                 update.Name = title;
             }
 
-
             var playerService = new PlayerService(_repository);
             var tiers = await _repository.Tiers.ToListAsync(token);
             var badges = await _repository.Badges.ToListAsync(token);

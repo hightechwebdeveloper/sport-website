@@ -1,0 +1,59 @@
+﻿@using (Html.BeginForm("Index", "Player", FormMethod.Get, new { @class = "navbar-form navbar-form-sm navbar-left shift" }))
+{
+    <div class="form-group">
+        <div class="input-group">
+            <input id="topSearch" type="text" name="name" class="form-control input-sm bg-light no-border rounded padder" placeholder="Search players..." />
+            <span class="input-group-btn">
+                <button type="submit" class="btn btn-sm bg-light rounded"><i class="fa fa-search"></i></button>
+            </span>
+        </div>
+    </div>
+}
+
+<script type="text/javascript">
+    var thing = $('#topSearch').autocomplete({
+        source: '/players/autocomplete',
+        messages: {
+            noResults: '',
+            results: function() {}
+        },
+        minLength: 3,
+        select: function(event, ui) {
+            window.location = "/players/" + ui.item.UriName;
+            return false;
+        }
+    });
+    thing.autocomplete("instance")._renderItem = function (ul, item) {
+        var container = $("<div>", {
+            'data-href': '/players/' + item.UriName,
+            'class': 'autocomplete-container ' + item.Tier.toLowerCase()
+        });
+        var info = $("<div>",
+        {
+            'class': 'info'
+        });
+        info.append($("<img>",
+        {
+            src: item.ImageUri
+        }));
+        var inforContainer = $('<div>', {
+            'class': 'info-container'
+        });
+        inforContainer.append($('<span>', {
+            'class': 'name'
+        }).html(item.Name));
+
+        inforContainer.append($('<span>', {
+            'class': 'collestion'
+        }).html(item.Collection));
+        info.append(inforContainer);
+        container.append(info);
+
+        container.append($('<div>', {
+            'class': 'overhaul'
+        }).html(item.Position + ' ' + item.Overall));
+
+        var li = $("<li>").append(container);
+        return li.appendTo(ul);
+    };
+</script>

@@ -19,7 +19,10 @@ namespace MTDB
             bundles.Add(new ScriptBundle("~/bundles/datepicker").Include(
                         "~/Scripts/bootstrap-datepicker.min.js"));
 
-            bundles.Add(new ScriptBundle("~/bundles/jqueryval").Include(
+            bundles.Add(new ScriptBundle("~/bundles/autocomplete")
+                .Include("~/Scripts/jquery-ui.min.js"));
+
+             bundles.Add(new ScriptBundle("~/bundles/jqueryval").Include(
                         "~/Scripts/jquery.validate*"));
 
             // Use the development version of Modernizr to develop with and learn from. Then, when you're

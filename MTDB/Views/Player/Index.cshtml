@@ -444,7 +444,7 @@
     <!-- color of stats -->
     <script type="text/javascript">
         var cell = $('.statNum');
-        cell.each(function () {
+        cell.each(function() {
             var cell_value = $(this).html();
             if ((cell_value >= 0) && (cell_value <= 59)) {
                 $(this).css({ 'background': '#A52A2A' });
@@ -460,5 +460,52 @@
         });
     </script>
 
+    <script type="text/javascript">
+        var thing = $('#searchForm #@Html.IdFor(model => model.Name)').autocomplete({
+            source: '/players/autocomplete',
+            messages: {
+                noResults: '',
+                results: function () { }
+            },
+            minLength: 3,
+            select: function (event, ui) {
+                window.location = "/players/" + ui.item.UriName;
+                return false;
+            }
+        });
+        thing.autocomplete("instance")._renderItem = function (ul, item) {
+            var container = $("<div>", {
+                'data-href': '/players/' + item.UriName,
+                'class': 'autocomplete-container ' + item.Tier.toLowerCase()
+            });
+            var info = $("<div>",
+            {
+                'class': 'info'
+            });
+            info.append($("<img>",
+            {
+                src: item.ImageUri
+            }));
+            var inforContainer = $('<div>', {
+                'class': 'info-container'
+            });
+            inforContainer.append($('<span>', {
+                'class': 'name'
+            }).html(item.Name));
+
+            inforContainer.append($('<span>', {
+                'class': 'collestion'
+            }).html(item.Collection));
+            info.append(inforContainer);
+            container.append(info);
+
+            container.append($('<div>', {
+                'class': 'overhaul'
+            }).html(item.Position + ' ' + item.Overall));
+
+            var li = $("<li>").append(container);
+            return li.appendTo(ul);
+        };
+    </script>
 }
 

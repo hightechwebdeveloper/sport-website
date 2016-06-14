@@ -1,11 +1,9 @@
 ﻿@using MTDB.Core.ViewModels
 @using MTDB.Core.ViewModels.Lineups
-@using MTDB.Helpers
 @model CreateLineupDto
 
 @{
     ViewBag.Title = "Create";
-    var players = new SelectList(Model.Players, "Id", "Name");
 }
 
 <style>
@@ -14,7 +12,7 @@
     }
 </style>
 
-@helper LineupTemplate(MvcHtmlString hiddenField, MvcHtmlString dropDownList, MvcHtmlString text, LineupPlayerDto player = null)
+@helper LineupTemplate(MvcHtmlString hiddenField, MvcHtmlString text, LineupPlayerDto player = null)
 {
     <li class="lineup-player@(player != null ? " chosen" : string.Empty)">
         <div class="details whitebg" draggable="true">
@@ -45,7 +43,7 @@
                 <span class="player-position">- @text -</span>
                 <div class="lineup-players">
                     @hiddenField
-                    @dropDownList
+                    <input type="text" class="form-control m-b" placeholder="Enter Player Name">
                 </div>
             </div>
         </div>
@@ -63,11 +61,11 @@
             <br>
             <div class="col-md-12">
                 <ul class="list-unstyled lineup-starters text-center">
-                    @LineupTemplate(@Html.HiddenFor(model => model.PointGuardId), @Html.ChosenDropBox("pointGuardSelect", players), @Html.DisplayNameFor(model => model.PointGuardId), Model.PointGuard)
-                    @LineupTemplate(@Html.HiddenFor(model => model.ShootingGuardId), @Html.ChosenDropBox("shootingGuardSelect", players), @Html.DisplayNameFor(model => model.ShootingGuardId), Model.ShootingGuard)
-                    @LineupTemplate(@Html.HiddenFor(model => model.SmallForwardId), @Html.ChosenDropBox("pointGuardSelect", players), @Html.DisplayNameFor(model => model.SmallForwardId), Model.SmallForward)
-                    @LineupTemplate(@Html.HiddenFor(model => model.PowerForwardId), @Html.ChosenDropBox("pointGuardSelect", players), @Html.DisplayNameFor(model => model.PowerForwardId), Model.PowerForward)
-                    @LineupTemplate(@Html.HiddenFor(model => model.CenterId), @Html.ChosenDropBox("centerSelect", players), @Html.DisplayNameFor(model => model.CenterId), Model.Center)
+                    @LineupTemplate(@Html.HiddenFor(model => model.PointGuardId), @Html.DisplayNameFor(model => model.PointGuardId), Model.PointGuard)
+                    @LineupTemplate(@Html.HiddenFor(model => model.ShootingGuardId), @Html.DisplayNameFor(model => model.ShootingGuardId), Model.ShootingGuard)
+                    @LineupTemplate(@Html.HiddenFor(model => model.SmallForwardId), @Html.DisplayNameFor(model => model.SmallForwardId), Model.SmallForward)
+                    @LineupTemplate(@Html.HiddenFor(model => model.PowerForwardId), @Html.DisplayNameFor(model => model.PowerForwardId), Model.PowerForward)
+                    @LineupTemplate(@Html.HiddenFor(model => model.CenterId), @Html.DisplayNameFor(model => model.CenterId), Model.Center)
                 </ul>
             </div>
         </div>
@@ -75,14 +73,14 @@
         <div class="row">
             <div class="col-md-12">
                 <ul class="list-unstyled lineup-benched text-center">
-                    @LineupTemplate(@Html.HiddenFor(model => model.Bench1), @Html.ChosenDropBox("bench1Select", players), @Html.DisplayNameFor(model => model.Bench1Id), Model.Bench1)
-                    @LineupTemplate(@Html.HiddenFor(model => model.Bench2), @Html.ChosenDropBox("bench2Select", players), @Html.DisplayNameFor(model => model.Bench2Id), Model.Bench2)
-                    @LineupTemplate(@Html.HiddenFor(model => model.Bench3), @Html.ChosenDropBox("bench3Select", players), @Html.DisplayNameFor(model => model.Bench3Id), Model.Bench3)
-                    @LineupTemplate(@Html.HiddenFor(model => model.Bench4), @Html.ChosenDropBox("bench4Select", players), @Html.DisplayNameFor(model => model.Bench4Id), Model.Bench4)
-                    @LineupTemplate(@Html.HiddenFor(model => model.Bench5), @Html.ChosenDropBox("bench5Select", players), @Html.DisplayNameFor(model => model.Bench5Id), Model.Bench5)
-                    @LineupTemplate(@Html.HiddenFor(model => model.Bench6), @Html.ChosenDropBox("bench6Select", players), @Html.DisplayNameFor(model => model.Bench6Id), Model.Bench6)
-                    @LineupTemplate(@Html.HiddenFor(model => model.Bench7), @Html.ChosenDropBox("bench7Select", players), @Html.DisplayNameFor(model => model.Bench7Id), Model.Bench7)
-                    @LineupTemplate(@Html.HiddenFor(model => model.Bench8), @Html.ChosenDropBox("bench8Select", players), @Html.DisplayNameFor(model => model.Bench8Id), Model.Bench8)
+                    @LineupTemplate(@Html.HiddenFor(model => model.Bench1), @Html.DisplayNameFor(model => model.Bench1Id), Model.Bench1)
+                    @LineupTemplate(@Html.HiddenFor(model => model.Bench2), @Html.DisplayNameFor(model => model.Bench2Id), Model.Bench2)
+                    @LineupTemplate(@Html.HiddenFor(model => model.Bench3), @Html.DisplayNameFor(model => model.Bench3Id), Model.Bench3)
+                    @LineupTemplate(@Html.HiddenFor(model => model.Bench4), @Html.DisplayNameFor(model => model.Bench4Id), Model.Bench4)
+                    @LineupTemplate(@Html.HiddenFor(model => model.Bench5), @Html.DisplayNameFor(model => model.Bench5Id), Model.Bench5)
+                    @LineupTemplate(@Html.HiddenFor(model => model.Bench6), @Html.DisplayNameFor(model => model.Bench6Id), Model.Bench6)
+                    @LineupTemplate(@Html.HiddenFor(model => model.Bench7), @Html.DisplayNameFor(model => model.Bench7Id), Model.Bench7)
+                    @LineupTemplate(@Html.HiddenFor(model => model.Bench8), @Html.DisplayNameFor(model => model.Bench8Id), Model.Bench8)
                 </ul>
             </div>
         </div>
@@ -113,36 +111,73 @@
         $(function() {
             $('.lineup-player .remove').click(function() {
                 var container = $(this).parents('.lineup-player');
-                container.find('select').val('');
                 container.find('input[type=hidden]').val('');
-                container.find('select').trigger("chosen:updated");
                 container.removeClass('chosen');
             });
 
-            $('.lineup-player .lineup-players select').change(function() {
-                var container = $(this).parents('.lineup-player');
-                container.find('input[type=hidden]').val($(this).val());
+            $.each($('.lineup-player'), function (index, wrapper) {
+                var container = $(wrapper);
 
-                var playerId = $(this).val();
-                if (playerId.length) {
-                    $.get("/players/" + playerId, function(data) {
-                        container.addClass('chosen');
+                $(wrapper).find('.guest .lineup-player-details .lineup-players input[type=text]').autocomplete({
+                    source: '/players/autocomplete',
+                    messages: {
+                        noResults: '',
+                        results: function () { }
+                    },
+                    minLength: 3,
+                    select: function (event, ui) {
+                        container.find('input[type=hidden]').val(ui.item.Id);
+                        container.find('input[type=text]').val('');
+                        $.get("/players/" + ui.item.Id, function (data) {
+                            container.addClass('chosen');
 
-                        container.find('.details .picture img').attr("src", data.ImageUri);
-                        container.find('.playerOv').html(data.Overall);
-                        container.find('.playerOut').html(getAverageByName(data.GroupAverages, 'Outside Scoring'));
-                        container.find('.playerIn').html(getAverageByName(data.GroupAverages, 'Inside Scoring'));
-                        container.find('.playerPl').html(getAverageByName(data.GroupAverages, 'Playmaking'));
-                        container.find('.playerAt').html(getAverageByName(data.GroupAverages, 'Athleticism'));
-                        container.find('.playerDe').html(getAverageByName(data.GroupAverages, 'Defending'));
-                        container.find('.playerRe').html(getAverageByName(data.GroupAverages, 'Rebounding'));
+                            container.find('.details .picture img').attr("src", data.ImageUri);
+                            container.find('.playerOv').html(data.Overall);
+                            container.find('.playerOut').html(getAverageByName(data.GroupAverages, 'Outside Scoring'));
+                            container.find('.playerIn').html(getAverageByName(data.GroupAverages, 'Inside Scoring'));
+                            container.find('.playerPl').html(getAverageByName(data.GroupAverages, 'Playmaking'));
+                            container.find('.playerAt').html(getAverageByName(data.GroupAverages, 'Athleticism'));
+                            container.find('.playerDe').html(getAverageByName(data.GroupAverages, 'Defending'));
+                            container.find('.playerRe').html(getAverageByName(data.GroupAverages, 'Rebounding'));
 
-                        var cell = container.find('.statNum');
-                        SetColor(cell);
+                            var cell = $('.lineup-player-details .statNum');
+                            SetColor(cell);
+                        });
+                        return false;
+                    }
+                }).autocomplete("instance")._renderItem = function (ul, item) {
+                    var container = $("<div>", {
+                        'data-href': '/players/' + item.UriName,
+                        'class': 'autocomplete-container ' + item.Tier.toLowerCase()
                     });
-                } else {
-                    container.removeClass('chosen');
-                }
+                    var info = $("<div>",
+                    {
+                        'class': 'info'
+                    });
+                    info.append($("<img>",
+                    {
+                        src: item.ImageUri
+                    }));
+                    var inforContainer = $('<div>', {
+                        'class': 'info-container'
+                    });
+                    inforContainer.append($('<span>', {
+                        'class': 'name'
+                    }).html(item.Name));
+
+                    inforContainer.append($('<span>', {
+                        'class': 'collestion'
+                    }).html(item.Collection));
+                    info.append(inforContainer);
+                    container.append(info);
+
+                    container.append($('<div>', {
+                        'class': 'overhaul'
+                    }).html(item.Position + ' ' + item.Overall));
+
+                    var li = $("<li>").append(container);
+                    return li.appendTo(ul);
+                };
 
             });
             var cell = $('.lineup-player-details .statNum');
@@ -228,7 +263,7 @@
                     target.find('.lineup-stats').html(init.find('.lineup-stats').html());
 
                     init.parent().removeClass('chosen');
-                    init.parent().find('select').val('');
+                    init.parent().find('input[type=hidden]').val('');
                 }
             }
 

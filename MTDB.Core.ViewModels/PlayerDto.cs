@@ -81,5 +81,7 @@ namespace MTDB.Core.ViewModels
 
         public string CreatedDateString => CreatedDate.ToString("G");
         public bool Prvate { get; set; }
+        public string Tier { get; set; }
+        public string Collection { get; set; }
     }
 }

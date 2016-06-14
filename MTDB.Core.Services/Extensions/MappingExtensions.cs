@@ -38,7 +38,7 @@ namespace MTDB.Core.Services.Extensions
 
             if (player.SecondaryPosition != null)
             {
-                position = string.Format("{0}/{1}", position, player.SecondaryPosition);
+                position = $"{position}/{player.SecondaryPosition}";
             }
 
             return new SearchPlayerResultDto
@@ -48,6 +48,8 @@ namespace MTDB.Core.Services.Extensions
                 UriName = player.UriName,
                 ImageUri = player.GetImageUri(ImageSize.PlayerSearch),
                 Position = position,
+                Tier = player.Tier.Name,
+                Collection = player.Collection?.Name,
                 Xbox = player.Xbox,
                 PS4 = player.PS4,
                 PC = player.PC,

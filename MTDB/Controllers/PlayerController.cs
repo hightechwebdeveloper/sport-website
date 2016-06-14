@@ -104,33 +104,9 @@ namespace MTDB.Controllers
 
         [HttpGet]
         [Route("players/compare")]
-        public async Task<ActionResult> Compare(CompareDto compareDto, CancellationToken cancellationToken)
+        public ActionResult Compare(CancellationToken cancellationToken)
         {
-            if (compareDto == null)
-            {
-                compareDto = new CompareDto();
-            }
-
-            if (compareDto.Player1.HasValue() || compareDto.Player2.HasValue() || compareDto.Player3.HasValue())
-            {
-                var comparedPlayers = await Service.GetPlayerDtosByUri(cancellationToken, compareDto.Player1, compareDto.Player2, compareDto.Player3);
-
-                var order = new List<string>
-                {
-                    compareDto.Player1,
-                    compareDto.Player2,
-                    compareDto.Player3
-                };
-
-                compareDto.ComparedPlayers = order
-                    .Where(p => p.HasValue())
-                    .Select(player => comparedPlayers.FirstOrDefault(p => p.UriName == player))
-                    .Where(p => p != null).ToList();
-            }
-
-            compareDto.Players = await Service.GetComparisonPlayers(cancellationToken, User.IsInRole("Admin"));
-
-            return View("Compare", compareDto);
+            return View("Compare");
         }
 
         [HttpGet]
@@ -229,11 +205,28 @@ namespace MTDB.Controllers
             return RedirectToAction("Index");
         }
 
-
-        [AsyncTimeout(150)]
-        public async Task<IEnumerable<string>> AutoComplete(string term, CancellationToken cancellationToken)
+        [HttpGet]
+        [Route("players/autocomplete")]
+        public async Task<JsonResult> AutoComplete(string term, CancellationToken cancellationToken)
         {
-            return await Service.AutoCompleteSearch(term, CancellationToken.None);
+            return Json(await Service.AutoCompleteSearch(term, cancellationToken), JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpGet]
+        [Route("players/{playerUri}/compare")]
+        public async Task<PartialViewResult> ComparePlayerDetails(string playerUri, CancellationToken cancellationToken)
+        {
+            if (string.IsNullOrWhiteSpace(playerUri))
+                return null;
+
+            var player = await Service.GetPlayer(playerUri, cancellationToken);
+            if (player == null)
+                return null;
+
+            if (player.Private && !User.IsInRole("Admin"))
+                return null;
+
+            return PartialView("_ComparePlayer", player);
         }
 
         #region Manage

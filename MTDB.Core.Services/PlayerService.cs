@@ -14,6 +14,7 @@ using MTDB.Core.EntityFramework;
 using MTDB.Core.EntityFramework.Entities;
 using MTDB.Core.Services.Extensions;
 using MTDB.Core.ViewModels;
+using net.openstack.Core;
 
 namespace MTDB.Core.Services
 {
@@ -165,9 +166,41 @@ namespace MTDB.Core.Services
             return tiers.FirstOrDefault(p => p.Name == "Bronze");
         }
 
-        public async Task<IEnumerable<string>> AutoCompleteSearch(string name, CancellationToken token)
+        public async Task<List<SearchPlayerResultDto>> AutoCompleteSearch(string termString, CancellationToken token, bool showHidden = false)
         {
-            return await _repository.Players.FilterByName(name).Select(t => t.Name).ToListAsync(token);
+            if (string.IsNullOrWhiteSpace(termString))
+                return new List<SearchPlayerResultDto>();
+            
+            termString = new Regex("[ ]{2,}", RegexOptions.None)
+                .Replace(termString.Trim(), " ");
+
+            var terms = termString.Split(' ');
+
+            var query = _repository.Players
+                .AsQueryable();
+            
+            query = query
+                .Where(p => terms.All(term => p.Name.Contains(term)));
+
+            if (!showHidden)
+                query = query.Where(x => !x.Private);
+
+            //performance optimization
+            var preFiltered = await query
+                .Select(x => new { x.Id, x.Name})
+                .ToListAsync(token);
+            
+            var filtered = preFiltered
+                .Where(p => terms.All(term => p.Name.Split(' ').Any(pName => pName.StartsWith(term, StringComparison.InvariantCultureIgnoreCase))))
+                .Select(x => x.Id);
+
+            var players = await _repository.Players.Where(p => filtered.Contains(p.Id))
+                .ToListAsync(token);
+
+            return players
+                .Select(x => x.ToSearchDto())
+                .OrderByDescending(x => x.Overall)
+                .ToList();
         }
 
         public async Task<PlayerDto> GetPlayer(string uri, CancellationToken token)
@@ -1127,19 +1160,6 @@ namespace MTDB.Core.Services
         public int Rebounding { get; set; }
         public int ResultCount { get; set; }
         public IEnumerable<SearchPlayerResultDto> Results { get; set; }
-    }
-
-    public class CompareDto
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
-
-        public string Player1 { get; set; }
-        public string Player2 { get; set; }
-        public string Player3 { get; set; }
-
-        public IEnumerable<ComparePlayerDto> Players { get; set; }
-        public IEnumerable<PlayerDto> ComparedPlayers { get; set; }
     }
 
     public class ComparePlayerDto

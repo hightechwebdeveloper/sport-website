@@ -6,10 +6,6 @@ namespace MTDB.Core.ViewModels.Lineups
 {
     public class CreateLineupDto
     {
-        public CreateLineupDto()
-        {
-            this.Players = new List<LineupSearchPlayerDto>();
-        }
         [Required]
         public string Name { get; set; }
         public int? Id { get; set; }
@@ -53,8 +49,6 @@ namespace MTDB.Core.ViewModels.Lineups
         public LineupPlayerDto Bench6 { get; set; }
         public LineupPlayerDto Bench7 { get; set; }
         public LineupPlayerDto Bench8 { get; set; }
-
-        public IEnumerable<LineupSearchPlayerDto> Players { get; set; }
     }
 
     public class LineupSearchPlayerDto

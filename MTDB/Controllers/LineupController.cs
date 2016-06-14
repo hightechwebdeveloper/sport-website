@@ -40,40 +40,22 @@ namespace MTDB.Controllers
         }
 
         [HttpGet]
-        [AsyncTimeout(15000)]
         [Route("lineups/create")]
-        [Route("lineup/create")]
-        public async Task<ActionResult> Create(CancellationToken cancellationToken)
+        public ActionResult Create(CancellationToken cancellationToken)
         {
-            var dto = await CreateDto(null, cancellationToken);
+            var dto = new CreateLineupDto();
 
             return View(dto);
         }
 
-        private async Task<CreateLineupDto> CreateDto(CreateLineupDto dto, CancellationToken cancellationToken)
-        {
-            if (dto?.Players != null)
-                return dto;
-
-            var players = await Service.GetLineupPlayers(cancellationToken);
-
-            return new CreateLineupDto
-            {
-                Players = players
-            };
-        }
-
         [HttpPost]
-        [AsyncTimeout(15000)]
         [Route("lineups/create")]
-        [Route("lineup/create")]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Create(CreateLineupDto createLineup, CancellationToken cancellationToken)
         {
-            if (createLineup == null || !ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
-                var dto = await CreateDto(createLineup, cancellationToken);
-                return View(dto);
+                return View(createLineup);
             }
 
             var user = await GetAuthenticatedUser();
@@ -89,9 +71,7 @@ namespace MTDB.Controllers
         }
 
         [HttpGet]
-        [AsyncTimeout(15000)]
         [Route("lineups/edit")]
-        [Route("lineup/edit")]
         public async Task<ActionResult> Edit(int lineupId, CancellationToken cancellationToken)
         {
             var dto = await Service.GetLineup(lineupId, cancellationToken);
@@ -134,15 +114,11 @@ namespace MTDB.Controllers
                 Bench8Id = dto.Bench8?.Id,
             };
             
-            model.Players = await Service.GetLineupPlayers(cancellationToken);
-            
             return View(model);
         }
 
         [HttpPost]
-        [AsyncTimeout(15000)]
         [Route("lineups/edit")]
-        [Route("lineup/edit")]
         [ValidateAntiForgeryToken]
         public async Task<ActionResult> Edit(CreateLineupDto model, CancellationToken cancellationToken)
         {
@@ -179,27 +155,12 @@ namespace MTDB.Controllers
             model.Bench6 = model.Bench6Id.HasValue ? await Service.GetLineupPlayer(lineupId, model.Bench6Id.Value, LineupPositionType.Bench6, cancellationToken) : null;
             model.Bench7 = model.Bench7Id.HasValue ? await Service.GetLineupPlayer(lineupId, model.Bench7Id.Value, LineupPositionType.Bench7, cancellationToken) : null;
             model.Bench8 = model.Bench8Id.HasValue ? await Service.GetLineupPlayer(lineupId, model.Bench8Id.Value, LineupPositionType.Bench8, cancellationToken) : null;
-            model.Players = await Service.GetLineupPlayers(cancellationToken);
+            
             return View("Edit", model);
         }
 
-        private LineupPlayerDto GetUpdatedPlayer(LineupPlayerDto existingPlayer, int? newPlayerId)
-        {
-            if (newPlayerId == null)
-                return null;
-
-            if (existingPlayer.Id == newPlayerId)
-                return existingPlayer;
-
-            var newPlayer = new LineupPlayerDto { Id = newPlayerId.Value };
-
-            return newPlayer;
-        }
-
         [HttpGet]
-        [AsyncTimeout(15000)]
         [Route("lineups/{id:int}")]
-        [Route("lineup/{id:int}")]
         public async Task<ActionResult> Details(int id, CancellationToken cancellationToken)
         {
             if (id == 0)
@@ -219,24 +180,11 @@ namespace MTDB.Controllers
         }
 
         [HttpPost]
-        [AsyncTimeout(15000)]
         [Route("lineups/delete")]
-        [Route("lineup/delete")]
         public async Task<ActionResult> Delete(int id, CancellationToken cancellationToken)
         {
             await Service.DeleteLineup(id, cancellationToken);
             return RedirectToAction("Index");
         }
-    }
-
-    public class LineupsSearchViewModel
-    {
-        public IPagedList<LineupSearchDto> Lineups { get; set; }
-
-        public int PageSize { get; set; }
-
-        public string SortedBy { get; set; }
-
-        public SortOrder SortOrder { get; set; }
     }
 }

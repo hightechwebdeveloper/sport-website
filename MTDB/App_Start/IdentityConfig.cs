@@ -1,14 +1,14 @@
 ﻿using System;
+using System.Net;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Mailgun.AspNet.Identity;
-using Mailgun.Messages;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using MTDB.Core.EntityFramework;
+using SendGrid;
 
 namespace MTDB
 {
@@ -66,17 +66,8 @@ namespace MTDB
             //    Subject = "Security Code",
             //    BodyFormat = "Your security code is {0}"
             //});
-
-            // Set emails service
-            manager.EmailService = new MailgunMessageService(new MailgunMessageServiceOptions
-            {
-                ApiKey = "key-9wfvdd45sd08fek0398p-aws09mwa1y9",
-                Domain = "mg.mtdb.com",
-                DefaultFrom = new Recipient { DisplayName = "MTDB.com", Email = "noreply@mtdb.com" },
-                UseSsl = true,
-                UseHtmlBody = true,
-                BaseUrlOverride = "api.mailgun.net/v3"
-            });
+            
+            manager.EmailService = new SendGridMessageService();
 
             // Set user-token provider
             var dataProtectionProvider = options.DataProtectionProvider;

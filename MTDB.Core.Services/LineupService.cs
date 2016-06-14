@@ -189,7 +189,7 @@ namespace MTDB.Core.Services
 
             return new LineupSearchViewModel
             {
-                RecordCount = lineups.Count,
+                RecordCount = await _repository.Lineups.CountAsync(cancellationToken),
                 Records = lineups.ToSearchDtos()
             };
         }
