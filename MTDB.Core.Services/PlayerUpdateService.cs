@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
@@ -49,54 +50,39 @@ namespace MTDB.Core.Services
 
         public async Task<Paged<PlayerUpdatesViewModel>> GetUpdates(int skip, int take, CancellationToken token)
         {
-            var playerQuery = _repository.Players
-                .Select(p => new
-                {
-                    //Players = gr.Select(p => p.Id),
-                    Date = DbFunctions.TruncateTime(p.CreatedDate),
-                    Visible = true,
-                    Title = string.Empty
-                });
+            var query =
+                @"{0}select {1}
+                from (
+	                select DISTINCT un.* from (
+		                select cast(CreatedDate As Date) as CreatedDate, Id as PlayerId from Players
+		                where Private = 0
+		                UNION ALL
+		                select cast(pu.CreatedDate As Date) as CreatedDate, puc.Player_Id as PlayerId from PlayerUpdateChanges puc
+		                inner join PlayerUpdates pu on pu.Id = puc.PlayerUpdate_Id		
+	                ) as un
+                ) as dist
+                left join PlayerUpdates pu2 on cast(pu2.CreatedDate As Date) = dist.CreatedDate
+                group By dist.CreatedDate, pu2.Visible, pu2.Name                
+                {2}";
 
-            var updateQuery = _repository.PlayerUpdates
-                .Select(pu => new
-                {
-                    //Players = pu.Changes.Select(c => c.Player.Id),
-                    Date = DbFunctions.TruncateTime(pu.CreatedDate),
-                    pu.Visible,
-                    Title = pu.Name
-                })
-                .Concat(playerQuery)
-                .GroupBy(p => p.Date);
+            var wmsquery = _repository.Database.SqlQuery<PlayerUpdatesViewModel>(string.Format(query, 
+                string.Empty, 
+                "dist.CreatedDate as [Date], count(dist.PlayerId) as [Count], ISNULL(pu2.Visible, 1) as [Visible], ISNULL(pu2.Name, '') as [Title]",
+                "order by dist.CreatedDate desc\r\noffset (@skip) rows fetch next (@take) rows only"),
+                new SqlParameter("skip", skip),
+                new SqlParameter("take", take));
 
-            var vms = await updateQuery
-                .Select(p => new PlayerUpdatesViewModel
-                {
-                    //Count = p.SelectMany(gr => gr.Players)
-                    //    .Distinct()
-                    //    .Count(),
-                    Date = p.Key.Value,
-                    Visible = p.Select(s => s.Visible).FirstOrDefault(),
-                    Title = p.FirstOrDefault(s => s.Title != string.Empty).Title
-                })
-                .Sort("Date", SortOrder.Descending, "date", skip, take)
+            var countQ = _repository.Database.SqlQuery<int>(string.Format(query,
+                "select count(*) from (",
+                "dist.CreatedDate",
+                ") As Z"));
+
+            var vms = await wmsquery
                 .ToListAsync(token);
 
-            //dirty dice for fast result
-            foreach (var playerUpdatesViewModel in vms)
-            {
-                var updates = _repository.PlayerUpdates
-                .FilterByCreatedDate(playerUpdatesViewModel.Date)
-                .SelectMany(p => p.Changes)
-                .Select(pu => pu.Player)
-                .Concat(_repository.Players.FilterByCreatedDate(playerUpdatesViewModel.Date))
-                .Distinct();
-
-                playerUpdatesViewModel.Count = await updates.CountAsync(token);
-            }
-            //must be replaced with good code
-
-            var count = await updateQuery.CountAsync(token);
+            var count = await countQ
+                .FirstAsync(token);
+            
             return new Paged<PlayerUpdatesViewModel> { TotalCount = count, Results = vms };
         }
 

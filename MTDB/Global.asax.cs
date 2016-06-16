@@ -1,6 +1,7 @@
 ﻿using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
+using Microsoft.ApplicationInsights.Extensibility;
 
 namespace MTDB
 {
@@ -14,6 +15,10 @@ namespace MTDB
             BundleConfig.RegisterBundles(BundleTable.Bundles);
 
             MvcHandler.DisableMvcResponseHeader = true;
+
+            #if DEBUG
+            TelemetryConfiguration.Active.DisableTelemetry = true;
+            #endif
         }
     }
 }

@@ -7,6 +7,7 @@ using Microsoft.AspNet.Identity.Owin;
 
 namespace MTDB.Helpers
 {
+    [AsyncTimeout(300000)]
     public abstract class ServicedController<T> : Controller
     {
         private ApplicationUserManager _userManager;
