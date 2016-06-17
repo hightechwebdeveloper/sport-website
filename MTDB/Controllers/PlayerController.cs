@@ -137,7 +137,7 @@ namespace MTDB.Controllers
                 return View("Create", createPlayer);
             }
 
-            var newPlayer = await Service.CreatePlayer(createPlayer, cancellationToken);
+            var newPlayer = await Service.CreatePlayer(Server.MapPath("~/Content/Temp"), createPlayer, cancellationToken);
 
             if (newPlayer != null)
             {
@@ -181,7 +181,7 @@ namespace MTDB.Controllers
                 return View("Edit", editPlayer);
             }
 
-            var edited = await Service.UpdatePlayer(editPlayer,  cancellationToken);
+            var edited = await Service.UpdatePlayer(Server.MapPath("~/Content/Temp"), editPlayer,  cancellationToken);
 
             if (edited != null)
             {

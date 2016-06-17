@@ -368,7 +368,7 @@ namespace MTDB.Core.Services
                         .ToListAsync(token);
         }
 
-        public async Task<PlayerDto> CreatePlayer(CreatePlayerDto create, CancellationToken token)
+        public async Task<PlayerDto> CreatePlayer(string tempPath, CreatePlayerDto create, CancellationToken token)
         {
             if (create == null)
                 return null;
@@ -416,7 +416,7 @@ namespace MTDB.Core.Services
             _repository.Players.Add(player);
 
             await _repository.SaveChangesAsync(token);
-            await SaveImage(player.UriName, create.Image.InputStream);
+            await SaveImage(tempPath, player.UriName, create.Image.InputStream);
 
             return player.ToDto();
         }
@@ -453,17 +453,7 @@ namespace MTDB.Core.Services
             return name;
         }
 
-        public async Task UpdatePlayers(IEnumerable<UpdatePlayerDto> updates, CancellationToken token)
-        {
-            foreach (var update in updates)
-            {
-                await UpdatePlayer(update, token, true);
-            }
-
-            await _repository.SaveChangesAsync(token);
-        }
-
-        public async Task<PlayerDto> UpdatePlayer(UpdatePlayerDto update, CancellationToken token, bool batch = false)
+        public async Task<PlayerDto> UpdatePlayer(string tempPath, UpdatePlayerDto update, CancellationToken token, bool batch = false)
         {
             if (update == null)
                 return null;
@@ -617,7 +607,7 @@ namespace MTDB.Core.Services
             }
             if (update.Image != null && update.Image.ContentLength > 0)
             {
-                await SaveImage(oldPlayer.UriName, update.Image.InputStream);
+                await SaveImage(tempPath, oldPlayer.UriName, update.Image.InputStream);
             }
 
             return oldPlayer.ToDto();
@@ -716,10 +706,13 @@ namespace MTDB.Core.Services
             return heights.OrderBy(p => p, new HeightComparer());
         }
 
-        private async Task SaveImage(string name, Stream stream)
+        private async Task SaveImage(string tempPath, string name, Stream stream)
         {
+            if (!Directory.Exists(tempPath))
+                Directory.CreateDirectory(tempPath);
+
             // Save temporarily to disk
-            var path = Path.Combine(Path.GetTempPath(), name);
+            var path = Path.Combine(tempPath, name);
 
             var normalSize = path + ".png";
             var smallSize = path + "-40x56.png";
