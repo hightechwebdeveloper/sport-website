@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
@@ -18,254 +17,32 @@ namespace MTDB.Core.Services
 {
     public class PlayerUpdateService
     {
-        private readonly MtdbRepository _repository;
+        #region Fields
 
-        public PlayerUpdateService(MtdbRepository repository)
+        private readonly MtdbRepository _dbContext;
+
+        #endregion
+
+        #region Ctor
+
+        public PlayerUpdateService(MtdbRepository dbContext)
         {
-            _repository = repository;
+            _dbContext = dbContext;
         }
 
         public PlayerUpdateService() : this(new MtdbRepository())
         { }
 
-        public async Task UpdateTitle(DateTime dateTime, string title, CancellationToken token)
+        #endregion
+
+        #region Utilities
+        
+        private string GetAbbreviation(ChangeRow changeRow)
         {
-            var update = await _repository.PlayerUpdates.FilterByCreatedDate(dateTime).FirstOrDefaultAsync(token);
+            if (changeRow.FieldName == "Overall")
+                return changeRow.FieldName;
 
-            if (update == null)
-            {
-                update = new PlayerUpdate
-                {
-                    CreatedDate = new DateTimeOffset(dateTime),
-                    Visible = true
-                };
-
-                _repository.PlayerUpdates.Add(update);
-            }
-
-            update.Name = title;
-
-            await _repository.SaveChangesAsync(token);
-        }
-
-        public async Task<Paged<PlayerUpdatesViewModel>> GetUpdates(int skip, int take, CancellationToken token)
-        {
-            var query =
-                @"{0}select {1}
-                from (
-	                select DISTINCT un.* from (
-		                select cast(CreatedDate As Date) as CreatedDate, Id as PlayerId from Players
-		                where Private = 0
-		                UNION ALL
-		                select cast(pu.CreatedDate As Date) as CreatedDate, puc.Player_Id as PlayerId from PlayerUpdateChanges puc
-		                inner join PlayerUpdates pu on pu.Id = puc.PlayerUpdate_Id		
-	                ) as un
-                ) as dist
-                left join PlayerUpdates pu2 on cast(pu2.CreatedDate As Date) = dist.CreatedDate
-                group By dist.CreatedDate, pu2.Visible, pu2.Name                
-                {2}";
-
-            var wmsquery = _repository.Database.SqlQuery<PlayerUpdatesViewModel>(string.Format(query, 
-                string.Empty, 
-                "dist.CreatedDate as [Date], count(dist.PlayerId) as [Count], ISNULL(pu2.Visible, 1) as [Visible], ISNULL(pu2.Name, '') as [Title]",
-                "order by dist.CreatedDate desc\r\noffset (@skip) rows fetch next (@take) rows only"),
-                new SqlParameter("skip", skip),
-                new SqlParameter("take", take));
-
-            var countQ = _repository.Database.SqlQuery<int>(string.Format(query,
-                "select count(*) from (",
-                "dist.CreatedDate",
-                ") As Z"));
-
-            var vms = await wmsquery
-                .ToListAsync(token);
-
-            var count = await countQ
-                .FirstAsync(token);
-            
-            return new Paged<PlayerUpdatesViewModel> { TotalCount = count, Results = vms };
-        }
-
-        public async Task<int> GetToalUpdateCountForDate(DateTime date, CancellationToken token)
-        {
-            var updates = _repository.PlayerUpdates
-                .Select(p => new { Count = p.Changes.Select(s => s.Player.Id).Distinct().Count(), Date = DbFunctions.TruncateTime(p.CreatedDate), Visible = p.Visible, Title = p.Name })
-                .Concat(_repository.Players.GroupBy(p => DbFunctions.TruncateTime(p.CreatedDate)).Select(p => new { Count = p.Count(), Date = p.Key, Visible = true, Title = "" }))
-                .GroupBy(p => p.Date)
-                .CountAsync(token);
-
-            return await updates;
-
-        }
-
-        private class StatUpdate
-        {
-            public Player Player { get; set; }
-            public bool IsStatUpdate { get; set; }
-            public string FieldName { get; set; }
-            public string OldValue { get; set; }
-            public string NewValue { get; set; }
-            public DateTimeOffset CreatedDate { get; set; }
-        }
-
-        public async Task<PlayerUpdateDetails> GetUpdatesForDate(DateTimeOffset date, int skip, int take, CancellationToken token)
-        {
-            // Updates
-            var updates = GetAllStatUpdatesForDate(date);
-
-            var pulled = await updates
-                .GroupBy(p => p.Player)
-                .OrderByDescending(p => p.Key.Overall)
-                .Skip(skip)
-                .Take(take)
-                .ToListAsync(token);
-
-            var playerUpdateDetails = await BuildPlayerUpdateDetails(date, pulled, updates, token);
-
-            return playerUpdateDetails;
-        }
-
-        private async Task<PlayerUpdateDetails> BuildPlayerUpdateDetails(DateTimeOffset date, List<IGrouping<Player, StatUpdate>> pulled, IOrderedQueryable<StatUpdate> updates, CancellationToken token)
-        {
-            var results = new List<PlayerUpdateViewModel>();
-            var count = await updates.Select(p => p.Player.Id).Distinct().CountAsync(token);
-
-            foreach (var update in pulled)
-            {
-                var playerUpdates = updates.Where(p2 => p2.Player.Id == update.Key.Id).ToList();
-                var hasFieldChanges = playerUpdates.All(p => !string.IsNullOrEmpty(p.FieldName));
-                var fieldUpdates = new List<PlayerFieldUpdateViewModel>();
-
-                PlayerUpdateModelType updateType = PlayerUpdateModelType.New;
-
-                if (hasFieldChanges)
-                {
-                    updateType = PlayerUpdateModelType.Update;
-
-                    var overallUpdates = playerUpdates.Where(p => p.FieldName == "Overall");
-                    if (overallUpdates.Any())
-                    {
-                        fieldUpdates.AddRange(overallUpdates.Select(u => new PlayerFieldUpdateViewModel
-                        {
-                            IsStatUpdate = u.IsStatUpdate,
-                            Name = u.FieldName,
-                            OldValue = u.OldValue,
-                            NewValue = u.NewValue,
-                            Change = GetChange(u.OldValue, u.NewValue),
-                            Abbreviation = GetAbbreviation(u.FieldName, u.IsStatUpdate),
-                        }));
-                    }
-
-                    fieldUpdates.AddRange(playerUpdates.Where(p => !string.IsNullOrEmpty(p.FieldName))
-                        .Where(p => p.FieldName != "Overall")
-                        .Select(
-                            u =>
-                                new PlayerFieldUpdateViewModel
-                                {
-                                    IsStatUpdate = u.IsStatUpdate,
-                                    Name = u.FieldName,
-                                    OldValue = u.OldValue,
-                                    NewValue = u.NewValue,
-                                    Change = GetChange(u.OldValue, u.NewValue),
-                                    Abbreviation = GetAbbreviation(u.FieldName, u.IsStatUpdate),
-                                }));
-                }
-
-                results.Add(new PlayerUpdateViewModel
-                {
-                    Name = update.Key.Name,
-                    Overall = update.Key.Overall,
-                    ImageUri = update.Key.GetImageUri(ImageSize.Full),
-                    UriName = update.Key.UriName,
-                    UpdateType = updateType,
-                    FieldUpdates = fieldUpdates
-                });
-            }
-
-            var playerUpdate = await _repository.PlayerUpdates
-                .FilterByCreatedDate(date)
-                .FirstOrDefaultAsync(token);
-
-            bool visible;
-            string title = null;
-            if (playerUpdate != null)
-            {
-                title = playerUpdate.Name;
-                visible = playerUpdate.Visible;
-            }
-            else
-            {
-                visible = results.All(p => p.UpdateType == PlayerUpdateModelType.New);
-            }
-
-            var playerUpdateDetails = new PlayerUpdateDetails
-            {
-                Title = title,
-                Visible = visible,
-                TotalCount = count,
-                Results = results.OrderBy(p => p.UpdateType).ThenByDescending(p => p.Overall).ToList()
-            };
-
-            return playerUpdateDetails;
-        }
-
-        private IOrderedQueryable<StatUpdate> GetAllStatUpdatesForDate(DateTimeOffset date)
-        {
-            var updates = _repository.PlayerUpdates
-                .FilterByCreatedDate(date)
-                .SelectMany(p => p.Changes)
-                .Select(
-                    pu =>
-                        new StatUpdate
-                        {
-                            Player = pu.Player,
-                            IsStatUpdate = pu.UpdateType == PlayerUpdateType.Stat,
-                            FieldName = pu.FieldName,
-                            OldValue = pu.OldValue,
-                            NewValue = pu.NewValue,
-                            CreatedDate = pu.CreatedDate
-                        })
-                .Concat(
-                    _repository.Players.FilterByCreatedDate(date)
-                        .Select(
-                            p =>
-                                new StatUpdate
-                                {
-                                    Player = p,
-                                    IsStatUpdate = false,
-                                    FieldName = string.Empty,
-                                    OldValue = string.Empty,
-                                    NewValue = string.Empty,
-                                    CreatedDate = p.CreatedDate
-                                }))
-                .OrderByDescending(p => p.Player.Overall);
-            return updates;
-        }
-
-        public async Task<PlayerUpdateDetails> GetAllNewCardsForDate(DateTimeOffset date, CancellationToken token)
-        {
-            var updates = GetAllStatUpdatesForDate(date);
-
-            var pulled = await updates.GroupBy(p => p.Player).OrderByDescending(p => p.Key.Overall)
-                .ToListAsync(token);
-
-            var playerUpdateDetails = await BuildPlayerUpdateDetails(date, pulled, updates, token);
-
-            playerUpdateDetails.Results = playerUpdateDetails.Results.Where(r => r.UpdateType == PlayerUpdateModelType.New);
-
-            return playerUpdateDetails;
-        }
-
-        private string GetAbbreviation(string fieldName, bool isStatUpdate)
-        {
-            if (!isStatUpdate)
-                return fieldName;
-
-            if (fieldName == "Overall")
-                return fieldName;
-
-            return _repository.Stats.FirstOrDefault(s => s.Name == fieldName)?.Abbreviation;
-
+            return changeRow.Abbreviation ?? changeRow.FieldName;
         }
 
         private string GetChange(string oldValue, string newValue)
@@ -293,13 +70,13 @@ namespace MTDB.Core.Services
             return "-" + changed;
         }
 
-        public async Task<bool> UpdatePlayersFromFile(string path, CancellationToken token)
+        private async Task<bool> UpdatePlayersFromFile(string path, CancellationToken token)
         {
             if (!File.Exists(path))
                 return false;
 
             var filePlayers = GetFilePlayers(path).ToList();
-            
+
             // Load all the players into memory so this is quick
             var list = new Dictionary<int, Dictionary<int, object>>();
             foreach (var p in filePlayers)
@@ -313,7 +90,7 @@ namespace MTDB.Core.Services
 
             var isNew = false;
             // Check if there is an update today
-            var update = await _repository.PlayerUpdates
+            var update = await _dbContext.PlayerUpdates
                 .FilterByCreatedDate(DateTimeOffset.Now)
                 .FirstOrDefaultAsync(token);
             if (update == null)
@@ -322,13 +99,13 @@ namespace MTDB.Core.Services
                 update = new PlayerUpdate();
             }
 
-            var badges = await _repository.Badges
+            var badges = await _dbContext.Badges
                 .ToListAsync(token);
-            var tendencies = await _repository.Tendencies
+            var tendencies = await _dbContext.Tendencies
                 .ToListAsync(token);
 
             var ids = list.Keys.ToArray();
-            var existingIds = await _repository.Players
+            var existingIds = await _dbContext.Players
                 .Where(p => p.NBA2K_ID.HasValue && ids.Contains(p.NBA2K_ID.Value))
                 .Select(p => p.NBA2K_ID.Value)
                 .ToListAsync(token);
@@ -340,7 +117,7 @@ namespace MTDB.Core.Services
 
                 var removeChanges = new List<PlayerUpdateChange>();
 
-                var player = await _repository.Players
+                var player = await _dbContext.Players
                     .Include(p => p.Stats.Select(ps => ps.Stat))
                     .Include(p => p.Badges)
                     .Include(p => p.Tendencies)
@@ -395,7 +172,7 @@ namespace MTDB.Core.Services
                     else
                         removeChanges.Add(change);
                 }
-                
+
                 foreach (var badge in badges)
                 {
                     if (!filePlayer.Value.ContainsKey(badge.HeaderIndex))
@@ -422,7 +199,7 @@ namespace MTDB.Core.Services
                 {
                     if (!filePlayer.Value.ContainsKey(tendency.HeaderIndex))
                         continue;
-                    
+
                     var oldTendency = player.Tendencies.FirstOrDefault(pb => pb.TendencyId == tendency.Id);
                     var oldValue = oldTendency?.Value ?? 0;
 
@@ -442,7 +219,7 @@ namespace MTDB.Core.Services
 
                 foreach (var changeToRemove in removeChanges)
                 {
-                    _repository.PlayerUpdateChanges.Remove(changeToRemove);
+                    _dbContext.PlayerUpdateChanges.Remove(changeToRemove);
                 }
             }
 
@@ -457,9 +234,9 @@ namespace MTDB.Core.Services
                 update.Visible = false;
 
                 if (isNew)
-                    _repository.PlayerUpdates.Add(update);
+                    _dbContext.PlayerUpdates.Add(update);
 
-                await _repository.SaveChangesAsync(token);
+                await _dbContext.SaveChangesAsync(token);
             }
 
             if (File.Exists(path))
@@ -467,7 +244,7 @@ namespace MTDB.Core.Services
 
             return true;
         }
-
+        
         private int? GetIntValueFromHeader(KeyValuePair<int, Dictionary<int, object>> filePlayer, int headerIndex)
         {
             decimal num;
@@ -501,35 +278,7 @@ namespace MTDB.Core.Services
             }
             return null;
         }
-
-        public async Task<bool> UpdatePlayersFromFile(HttpPostedFileBase file, CancellationToken token)
-        {
-            var tempFileName = Path.GetTempFileName();
-            file.SaveAs(tempFileName);
-
-            return await UpdatePlayersFromFile(tempFileName, token);
-        }
-
-        private PlayerUpdateChange CreateUpdateIfNecessary(Player player, object newValue, object oldValue, string fieldName, PlayerUpdateType updateType = PlayerUpdateType.Default)
-        {
-            var newString = newValue?.ToString();
-            var oldString = oldValue?.ToString();
-
-            if (string.Equals(newString, oldString, StringComparison.OrdinalIgnoreCase))
-            {
-                return null;
-            }
-
-            return new PlayerUpdateChange
-            {
-                Player = player,
-                FieldName = fieldName,
-                NewValue = newString,
-                OldValue = oldString,
-                UpdateType = updateType,
-            };
-        }
-
+        
         private IEnumerable<Dictionary<int, object>> GetFilePlayers(string path)
         {
             using (var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
@@ -566,20 +315,207 @@ namespace MTDB.Core.Services
             }
         }
 
-        private void AddIfNotNull(List<PlayerUpdateChange> updates, PlayerUpdateChange update)
+        #endregion
+
+        #region Methods
+
+        public async Task<Paged<PlayerUpdatesViewModel>> GetUpdates(int skip, int take, CancellationToken token)
         {
-            if (update != null)
-            {
-                updates.Add(update);
-            }
+            var request =
+                @"{0}select {1}
+                from (
+	                select DISTINCT un.* from (
+		                select cast(CreatedDate As Date) as CreatedDate, Id as PlayerId from Players
+		                where Private = 0
+		                UNION ALL
+		                select cast(pu.CreatedDate As Date) as CreatedDate, puc.Player_Id as PlayerId from PlayerUpdateChanges puc
+		                inner join PlayerUpdates pu on pu.Id = puc.PlayerUpdate_Id		
+	                ) as un
+                ) as dist
+                left join PlayerUpdates pu2 on cast(pu2.CreatedDate As Date) = dist.CreatedDate
+                group By dist.CreatedDate, pu2.Visible, pu2.Name                
+                {2}";
+
+            var wmsquery = _dbContext.Database.SqlQuery<PlayerUpdatesViewModel>(string.Format(request,
+                string.Empty,
+                "dist.CreatedDate as [Date], count(dist.PlayerId) as [Count], ISNULL(pu2.Visible, 1) as [Visible], ISNULL(pu2.Name, '') as [Title]",
+                "order by dist.CreatedDate desc\r\noffset (@skip) rows fetch next (@take) rows only"),
+                new SqlParameter("skip", skip),
+                new SqlParameter("take", take));
+
+            var countQ = _dbContext.Database.SqlQuery<int>(string.Format(request,
+                "select count(*) from (",
+                "dist.CreatedDate",
+                ") As Z"));
+
+            var vms = await wmsquery
+                .ToListAsync(token);
+
+            var count = await countQ
+                .FirstAsync(token);
+
+            return new Paged<PlayerUpdatesViewModel> { TotalCount = count, Results = vms };
         }
 
+        public async Task<PlayerUpdateDetailsModel> GetUpdate(DateTimeOffset date, int skip, int take, CancellationToken token)
+        {
+            var update = await _dbContext.PlayerUpdates
+                .FilterByCreatedDate(date)
+                .Select(x => new { x.Name, x.Visible })
+                .FirstOrDefaultAsync(token);
+
+            const string changesRequest =
+                @"select players.UriName, Players.UpdateType, puc.UpdateType as StatUpdateType, puc.FieldName, puc.OldValue, puc.NewValue, s.Abbreviation, players.PlayerOverall from (
+	                select DISTINCT c.PlayerId as PlayerId, c.UriName as UriName, c.PlayerOverall as PlayerOverall, UpdateType = c.UpdateType, PlayerUpdateId = c.PlayerUpdateId  from (
+		                select p.Id as PlayerId, p.UriName as UriName, p.Overall as PlayerOverall, UpdateType = 1, PlayerUpdateId = puc.PlayerUpdate_Id from PlayerUpdateChanges puc
+		                inner join Players p on p.Id = puc.Player_Id
+		                where cast(puc.CreatedDate As Date) = cast(@date As Date) and cast(p.CreatedDate As Date) != cast(@date As Date)
+	                ) as c
+	                order by c.PlayerOverall desc
+	                offset @skip rows fetch next @take rows only
+                ) as players
+                inner join PlayerUpdateChanges puc on puc.Player_Id = players.PlayerId and puc.PlayerUpdate_Id = players.PlayerUpdateId
+                left join [Stats] s on s.Name = puc.FieldName";
+
+            const string countRequest =
+                @"select count(*) from (
+	                select DISTINCT un.Id from (
+		                select p.Id from PlayerUpdateChanges puc
+		                inner join Players p on p.Id = puc.Player_Id
+		                where cast(puc.CreatedDate As Date) = cast(@date As Date) and cast(p.CreatedDate As Date) != cast(@date As Date)
+	                ) as un
+                ) As Z";
+
+
+            var changesQuery = _dbContext.Database.SqlQuery<ChangeRow>(changesRequest,
+                new SqlParameter("skip", skip),
+                new SqlParameter("take", take),
+                new SqlParameter("date", date));
+            var countQuery = _dbContext.Database.SqlQuery<int>(countRequest,
+                new SqlParameter("date", date));
+
+            var changes = new List<ChangeRow>();
+            
+            changes.AddRange(await changesQuery
+                .ToListAsync(token));
+            var count = await countQuery
+                .FirstAsync(token);
+
+            var playerUpdates = changes
+                .GroupBy(c => new { c.UriName, c.UpdateType, c.PlayerOverall })
+                .OrderByDescending(gr => gr.Key.PlayerOverall )
+                .Select(gr =>
+                    new PlayerUpdateViewModel
+                    {
+                        UriName = gr.Key.UriName,
+                        ImageUri = ServiceExtensions.GetImageUri(gr.Key.UriName, ImageSize.Full),
+                        UpdateType = gr.Key.UpdateType,
+                        FieldUpdates = gr.Select(u => new PlayerFieldUpdateViewModel
+                        {
+                            IsStatUpdate = u.StatUpdateType.Value == PlayerUpdateType.Stat,
+                            Name = u.FieldName,
+                            OldValue = u.OldValue,
+                            NewValue = u.NewValue,
+                            Change = GetChange(u.OldValue, u.NewValue),
+                            Abbreviation = GetAbbreviation(u),
+                        })
+                    });
+            var model = new PlayerUpdateDetailsModel
+            {
+                Title = update.Name,
+                Visible = update.Visible,
+                Results = playerUpdates,
+                TotalCount = count
+            };
+
+            return model;
+        }
+
+        public async Task<List<PlayerUpdateViewModel>> GetAllNewCards(DateTimeOffset date, CancellationToken token)
+        {
+            const string newCardsRequest =
+                @"select p.UriName, UpdateType = 0, StatUpdateType = null, FieldName = null, OldValue = null, NewValue = null, Abbreviation = null from Players p
+		        where cast(p.CreatedDate As Date) = cast(@date As Date)
+                order by p.Overall desc";
+
+            var newCardsQuery = _dbContext.Database.SqlQuery<ChangeRow>(newCardsRequest,
+                    new SqlParameter("date", date));
+
+            var newCards = await newCardsQuery
+                .ToListAsync(token);
+
+            var playerUpdates = newCards
+                .GroupBy(c => new { c.UriName, c.UpdateType })
+                .Select(gr =>
+                    new PlayerUpdateViewModel
+                    {
+                        UriName = gr.Key.UriName,
+                        ImageUri = ServiceExtensions.GetImageUri(gr.Key.UriName, ImageSize.Full),
+                        UpdateType = gr.Key.UpdateType
+                    })
+                .ToList();
+
+            return playerUpdates;
+        }
+
+        public async Task<int> GetToalUpdateCountForDate(DateTimeOffset date,
+            CancellationToken token)
+        {
+            const string countRequest =
+                @"select count(*) from (
+	                select DISTINCT un.Id from (
+		                select p.Id from Players p
+		                where cast(p.CreatedDate As Date) = cast(@date As Date)
+		                UNION ALL
+		                select p.Id from PlayerUpdateChanges puc
+		                inner join Players p on p.Id = puc.Player_Id
+		                where cast(puc.CreatedDate As Date) = cast(@date As Date) and cast(p.CreatedDate As Date) != cast(@date As Date)
+	                ) as un
+                ) As Z";
+
+            var countQuery = _dbContext.Database.SqlQuery<int>(countRequest,
+                new SqlParameter("date", date));
+            
+            var count = await countQuery
+                .FirstAsync(token);
+
+            return count;
+        }
+        
+        public async Task UpdateTitle(DateTime dateTime, string title, CancellationToken token)
+        {
+            var update = await _dbContext.PlayerUpdates.FilterByCreatedDate(dateTime).FirstOrDefaultAsync(token);
+
+            if (update == null)
+            {
+                update = new PlayerUpdate
+                {
+                    CreatedDate = new DateTimeOffset(dateTime),
+                    Visible = true
+                };
+
+                _dbContext.PlayerUpdates.Add(update);
+            }
+
+            update.Name = title;
+
+            await _dbContext.SaveChangesAsync(token);
+        }
+        
+        public async Task<bool> UpdatePlayersFromFile(HttpPostedFileBase file, CancellationToken token)
+        {
+            var tempFileName = Path.GetTempFileName();
+            file.SaveAs(tempFileName);
+
+            return await UpdatePlayersFromFile(tempFileName, token);
+        }
+        
         public async Task<bool> PublishUpdate(DateTime date, string title, CancellationToken token)
         {
             // Get the updates
             var update =
                 await
-                    _repository.PlayerUpdates
+                    _dbContext.PlayerUpdates
                         .FilterByCreatedDate(date)
                         .FirstOrDefaultAsync(token);
 
@@ -591,13 +527,13 @@ namespace MTDB.Core.Services
                 update.Name = title;
             }
 
-            var playerService = new PlayerService(_repository);
-            var tiers = await _repository.Tiers.ToListAsync(token);
-            var badges = await _repository.Badges.ToListAsync(token);
-            var tendencies = await _repository.Tendencies.ToListAsync(token);
+            var playerService = new PlayerService(_dbContext);
+            var tiers = await _dbContext.Tiers.ToListAsync(token);
+            var badges = await _dbContext.Badges.ToListAsync(token);
+            var tendencies = await _dbContext.Tendencies.ToListAsync(token);
 
             //performance optimization! Be carefully 
-            var playerIds = await _repository.PlayerUpdateChanges
+            var playerIds = await _dbContext.PlayerUpdateChanges
                 .Where(puc => puc.PlayerUpdateId == update.Id)
                 .Select(puc => puc.PlayerId)
                 .Distinct()
@@ -606,12 +542,12 @@ namespace MTDB.Core.Services
             foreach (var playerId in playerIds)
             {
                 //performance optimization! Be carefully
-                var playerChanges = await _repository.PlayerUpdateChanges
+                var playerChanges = await _dbContext.PlayerUpdateChanges
                     .Where(puc => puc.PlayerId == playerId && puc.PlayerUpdateId == update.Id)
                     .ToListAsync(token);
 
                 //performance optimization! Be carefully
-                var query = _repository.Players.AsQueryable();
+                var query = _dbContext.Players.AsQueryable();
                 if (playerChanges.Any(pc => pc.UpdateType == PlayerUpdateType.Badge))
                     query = query.Include(p => p.Badges.Select(pb => pb.Badge.BadgeGroup));
                 if (playerChanges.Any(pc => pc.UpdateType == PlayerUpdateType.Tendency))
@@ -744,23 +680,23 @@ namespace MTDB.Core.Services
 
             update.Visible = true;
 
-            await _repository.SaveChangesAsync(token);
+            await _dbContext.SaveChangesAsync(token);
 
             return true;
         }
         
         public async Task<bool> DeleteUpdate(DateTime date, CancellationToken token)
         {
-            var update = await _repository.PlayerUpdates
+            var update = await _dbContext.PlayerUpdates
                 .FilterByCreatedDate(date)
                 .FirstOrDefaultAsync(token);
 
             if (update == null)
                 return false;
 
-            _repository.PlayerUpdateChanges.RemoveRange(update.Changes);
-            _repository.PlayerUpdates.Remove(update);
-            await _repository.SaveChangesAsync(token);
+            _dbContext.PlayerUpdateChanges.RemoveRange(update.Changes);
+            _dbContext.PlayerUpdates.Remove(update);
+            await _dbContext.SaveChangesAsync(token);
 
             return true;
         }
@@ -807,11 +743,23 @@ namespace MTDB.Core.Services
 
             return null;
         }
-    }
 
-    public class PlayerUpdateDetails : Paged<PlayerUpdateViewModel>
-    {
-        public string Title { get; set; }
-        public bool Visible { get; set; }
+        #endregion
+
+        #region Nested classes
+
+        private class ChangeRow
+        {
+            public string UriName { get; set; }
+            public PlayerUpdateModelType UpdateType { get; set; }
+            public PlayerUpdateType? StatUpdateType { get; set; }
+            public string FieldName { get; set; }
+            public string OldValue { get; set; }
+            public string NewValue { get; set; }
+            public string Abbreviation { get; set; }
+            public int PlayerOverall { get; set; }
+        }
+        
+        #endregion
     }
 }

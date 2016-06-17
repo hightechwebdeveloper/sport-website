@@ -11,12 +11,12 @@ namespace MTDB.Core.EntityFramework
 
     public class MtdbRepository : IdentityDbContext<ApplicationUser>
     {
-        public MtdbRepository(string connectionString) : base(connectionString)
+        public MtdbRepository(string connectionString) : base(connectionString, throwIfV1Schema: false)
         {
 
         }
 
-        public MtdbRepository() : base("MTDBRepository")
+        public MtdbRepository() : base("MTDBRepository", throwIfV1Schema: false)
         {
             this.Database.CommandTimeout = int.MaxValue;
         }

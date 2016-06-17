@@ -10,11 +10,11 @@
             {
                 if (Model.Visible)
                 {
-                    <h1 class="m-n font-thin h3 text-black">@Model.Date.ToString("d") - @Model.Title - @Model.Updates.Results.TotalItemCount Updates</h1>
+                    <h1 class="m-n font-thin h3 text-black">@Model.Date.ToString("d") - @Model.Title - @Model.TotalUpdateCount Updates</h1>
                 }
                 else
                 {
-                    <h1 class="m-n font-thin h3 text-black">@Model.Date.ToString("d") - @Model.Title - @Model.Updates.Results.TotalItemCount Updates (Hidden)</h1>
+                    <h1 class="m-n font-thin h3 text-black">@Model.Date.ToString("d") - @Model.Title - @Model.TotalUpdateCount Updates (Hidden)</h1>
                 }
 
             }
@@ -22,26 +22,33 @@
             {
                 if (Model.Visible)
                 {
-                    <h1 class="m-n font-thin h3 text-black">@Model.Date.ToString("d") - @Model.Updates.Results.TotalItemCount Updates</h1>
+                    <h1 class="m-n font-thin h3 text-black">@Model.Date.ToString("d") - @Model.TotalUpdateCount Updates</h1>
                 }
                 else
                 {
-                    <h1 class="m-n font-thin h3 text-black">@Model.Date.ToString("d") - @Model.Updates.Results.TotalItemCount Updates (Hidden)</h1>
+                    <h1 class="m-n font-thin h3 text-black">@Model.Date.ToString("d") - @Model.TotalUpdateCount Updates (Hidden)</h1>
                 }
             }
         </div>
-        @if (Request.IsAuthenticated && User.IsInRole("Admin"))
-        {
-            <div class="col-sm-6 col-xs-12 text-right">
-
+        <div class="col-sm-6 text-right">
+            <div class="inline text-left">
+                @Html.ActionLink("View All Updates", "Index", new {controller = "PlayerUpdate"}, new {@class = "btn btn-primary"})
+            </div>
+        </div>
+    </div>
+    @if (Request.IsAuthenticated && User.IsInRole("Admin"))
+    {
+        <div class="row">
+            <div class="col-xs-12 text-right">
+                <br/>
                 @if (Model.Visible)
                 {
-                    using (Html.BeginForm("UpdateTitle", "PlayerUpdate", FormMethod.Post, new { @class = "form-inline", @role = "form", @id = "submitForm" }))
+                    using (Html.BeginForm("UpdateTitle", "PlayerUpdate", FormMethod.Post, new {@class = "form-inline", @role = "form", @id = "submitForm"}))
                     {
                         @Html.AntiForgeryToken()
                         <div class="form-group">
                             <label class="sr-only" for="exampleInputEmail2">Update Title</label>
-                            @Html.TextBoxFor(m => m.Title, new { placeholder = "Enter update title", @id = "exampleInputEmail2", @class = "form-control" })
+                            @Html.TextBoxFor(m => m.Title, new {placeholder = "Enter update title", @id = "exampleInputEmail2", @class = "form-control"})
                             @Html.ValidationMessageFor(m => m.Title)
                         </div>
                         <button id="submitButton" type="button" class="btn btn-primary">Save Title</button>
@@ -49,34 +56,29 @@
                 }
                 else
                 {
-                    using (Html.BeginForm("PublishUpdate", "PlayerUpdate", FormMethod.Post, new { @class = "form-inline", @role = "form", @id = "submitForm" }))
+                    using (Html.BeginForm("PublishUpdate", "PlayerUpdate", FormMethod.Post, new {@class = "form-inline", @role = "form", @id = "submitForm"}))
                     {
                         @Html.AntiForgeryToken()
 
                         <div class="form-group">
                             <label class="sr-only" for="exampleInputEmail2">Title</label>
-                            @Html.TextBoxFor(m => m.Title, new { placeholder = "Enter update title", @id = "exampleInputEmail2", @class = "form-control" })
+                            @Html.TextBoxFor(m => m.Title, new {placeholder = "Enter update title", @id = "exampleInputEmail2", @class = "form-control"})
                             @Html.ValidationMessageFor(m => m.Title)
                         </div>
                         <button id="submitButton" type="button" class="btn btn-primary">Publish</button>
                     }
 
-                    @Html.ActionLink("Delete", "DeleteUpdate", new { year = Model.Date.Year, month = Model.Date.Month, day = Model.Date.Day })
+                    @Html.ActionLink("Delete", "DeleteUpdate", new {year = Model.Date.Year, month = Model.Date.Month, day = Model.Date.Day})
                 }
             </div>
-        }
-        <div class="col-sm-6 text-right">
-            <div class="inline m-r text-left">
-                @Html.ActionLink("View All Updates", "Index", new { controller = "PlayerUpdate" }, new { @class = "btn btn-primary" })
-            </div>
         </div>
-    </div>
+    }
 </div>
 <div class="wrapper-md">
     <hr class="m-b-xs m-t-none">
     <div class="row">
         <div class="col-sm-8 text-left">
-            <small class="text-muted inline m-t-sm m-b-sm">Showing @Model.Updates.Results.FirstItemOnPage-@Model.Updates.Results.LastItemOnPage of @Model.Updates.Results.TotalItemCount items</small>
+            <small class="text-muted inline m-t-sm m-b-sm">Showing @Model.Updates.Results.FirstItemOnPage-@Model.Updates.Results.LastItemOnPage of @Model.TotalUpdateCount items</small>
         </div>
         @Html.ThemedPager(Model.Updates.Results, page => Url.Action("Details", new { page = page }))
     </div>
@@ -167,7 +169,7 @@
     <!-- paging -->
     <div class="row">
         <div class="col-sm-8 text-left">
-            <small class="text-muted inline m-t-sm m-b-sm">Showing @Model.Updates.Results.FirstItemOnPage-@Model.Updates.Results.LastItemOnPage of @Model.Updates.Results.TotalItemCount items</small>
+            <small class="text-muted inline m-t-sm m-b-sm">Showing @Model.Updates.Results.FirstItemOnPage-@Model.Updates.Results.LastItemOnPage of @Model.TotalUpdateCount items</small>
         </div>
         @Html.ThemedPager(Model.Updates.Results, page => Url.Action("Details", new { page = page }))
     </div>

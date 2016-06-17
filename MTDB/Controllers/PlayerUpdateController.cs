@@ -16,7 +16,6 @@ namespace MTDB.Controllers
 {
     public class PlayerUpdateController : ServicedController<PlayerUpdateService>
     {
-
         public PlayerUpdateController()
         { }
 
@@ -30,7 +29,6 @@ namespace MTDB.Controllers
 
         [HttpGet]
         [Route("playerupdates")]
-        //[OutputCache(Duration = 300, Location = OutputCacheLocation.ServerAndClient)]
         public async Task<ActionResult> Index(CancellationToken cancellationToken, int page = 1, int pageSize = 25)
         {
             var updates = await Service.GetUpdates((page - 1) * pageSize, pageSize, cancellationToken);
@@ -40,8 +38,7 @@ namespace MTDB.Controllers
 
         [HttpGet]
         [Route("playerupdates/{year}-{month}-{day}")]
-        //[OutputCache(Duration = 300, Location = OutputCacheLocation.ServerAndClient)]
-        public async Task<ActionResult> Details(CancellationToken token, int year, int month, int day, int page = 1, int pageSize = 24)
+        public async Task<ActionResult> Details(CancellationToken token, int year, int month, int day, int page = 1, int pageSize = 21)
         {
             DateTime date;
             try
@@ -52,38 +49,31 @@ namespace MTDB.Controllers
             {
                 date = DateTime.Today;
             }
+            SetCommentsPageUrl($"{year}-{month}-{day}");
 
             var results = new List<PlayerUpdateViewModel>();
-
-            var updates = await Service.GetUpdatesForDate(date, (page - 1) * pageSize, pageSize, token);
-            results.AddRange(updates.Results);
 
             //if on page one get all new cards
             if (page == 1)
             {
-                PlayerUpdateDetails newCards = await Service.GetAllNewCardsForDate(date, token);
-                results.AddRange(newCards.Results);
-                results = results.DistinctBy(p => p.UriName).ToList();
+                var newCards = await Service.GetAllNewCards(date, token);
+                results.AddRange(newCards);
             }
 
+            var updates = await Service.GetUpdate(date, (page - 1) * pageSize, pageSize, token);
+            results.AddRange(updates.Results);
             
-            var vm = new PagedResults<PlayerUpdateViewModel>(results, page, pageSize, updates.TotalCount);
-
-            SetCommentsPageUrl($"{year}-{month}-{day}");
-
-            var playerUpdateDetailViewModel = new PlayerUpdateDetailsViewModel
+            var model = new PlayerUpdateDetailsViewModel
             {
                 Title = updates.Title,
                 Date = date,
-                Updates = vm,
+                Updates = new PagedResults<PlayerUpdateViewModel>(results, page, pageSize, updates.TotalCount),
                 Visible = updates.Visible,
-                DisplayNewCards = (page == 1)
+                DisplayNewCards = page == 1,
+                TotalUpdateCount = await Service.GetToalUpdateCountForDate(date, token)
             };
-            playerUpdateDetailViewModel.TotalUpdateCount = await Service.GetToalUpdateCountForDate(date, token);
-
-            return View(playerUpdateDetailViewModel);
+            return View(model);
         }
-
 
         [HttpPost]
         [Route("playerupdates/{year}-{month}-{day}")]
@@ -169,12 +159,6 @@ namespace MTDB.Controllers
             return RedirectToAction("Index");
 
         }
-    }
-
-    public class PlayerUpdateCreateViewModel
-    {
-        [Required]
-        public HttpPostedFileBase CsvFile { get; set; }
     }
 
     public class PlayerUpdateDetailsViewModel

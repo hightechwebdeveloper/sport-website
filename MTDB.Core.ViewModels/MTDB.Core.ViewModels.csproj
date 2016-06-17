@@ -58,6 +58,7 @@
     <Compile Include="PagedResults.cs" />
     <Compile Include="PlayerUpdates\Paged.cs" />
     <Compile Include="PlayerUpdates\PlayerFieldUpdateViewModel.cs" />
+    <Compile Include="PlayerUpdates\PlayerUpdateDetailsModel.cs" />
     <Compile Include="PlayerUpdates\PlayerUpdatesViewModel.cs" />
     <Compile Include="PlayerUpdates\PlayerUpdateModelType.cs" />
     <Compile Include="PlayerUpdates\PlayerUpdateViewModel.cs" />

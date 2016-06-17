@@ -164,24 +164,15 @@ namespace MTDB.Core.Services.Extensions
 
         public static string GetImageUri(this Player player, ImageSize imageSize)
         {
-            string baseUrl = ConfigurationManager.AppSettings["cdn:ImageUrl"];
-            if (imageSize == ImageSize.Full)
-            {
-                return $"{baseUrl}{player.UriName}.png";
-            }
-
-            return $"{baseUrl}{player.UriName}-40x56.png";
+            return GetImageUri(player.UriName, imageSize);
         }
 
         public static string GetImageUri(string playerUri, ImageSize imageSize)
         {
-            string baseUrl = ConfigurationManager.AppSettings["cdn:ImageUrl"];
-            if (imageSize == ImageSize.Full)
-            {
-                return $"{baseUrl}{playerUri}.png";
-            }
-
-            return $"{baseUrl}{playerUri}-40x56.png";
+            var baseUrl = ConfigurationManager.AppSettings["cdn:ImageUrl"];
+            return imageSize == ImageSize.Full 
+                ? $"{baseUrl}{playerUri}.png" 
+                : $"{baseUrl}{playerUri}-40x56.png";
         }
 
         public static async Task<IEnumerable<Player>> ToPlayers(this IEnumerable<CardDto> cards, MtdbRepository repository)
