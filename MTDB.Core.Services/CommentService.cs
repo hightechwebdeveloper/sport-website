@@ -8,6 +8,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using MTDB.Core.Services.Extensions;
 
 namespace MTDB.Core.Services
 {
@@ -40,10 +41,8 @@ namespace MTDB.Core.Services
 
             var aggregatedResult = result.Where(x => x.ParentId == null).Select(x =>
             {
-                var comment = Mapper.Map<CommentDto>(x);
-
-                comment.Children = Mapper.Map<IEnumerable<CommentDto>>(result.Where(y => y.ParentId == x.Id));
-
+                var comment = x.ToDto();
+                comment.Children = result.Where(y => y.ParentId == x.Id).Select(sub => sub.ToDto());
                 return comment;
             });
 

@@ -214,7 +214,7 @@ namespace MTDB.Controllers
 
         [HttpGet]
         [Route("players/{playerUri}/compare")]
-        public async Task<PartialViewResult> ComparePlayerDetails(string playerUri, CancellationToken cancellationToken)
+        public async Task<JsonResult> ComparePlayerDetails(string playerUri, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(playerUri))
                 return null;
@@ -226,7 +226,7 @@ namespace MTDB.Controllers
             if (player.Private && !User.IsInRole("Admin"))
                 return null;
 
-            return PartialView("_ComparePlayer", player);
+            return Json(player, JsonRequestBehavior.AllowGet);
         }
 
         #region Manage

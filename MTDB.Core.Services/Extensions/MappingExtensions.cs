@@ -412,5 +412,10 @@ namespace MTDB.Core.Services.Extensions
             };
         }
 
+        public static CommentDto ToDto(this Comment comment)
+        {
+            return Mapper.Map<CommentDto>(comment);
+        }
+
     }
 }

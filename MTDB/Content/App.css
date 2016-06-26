@@ -5775,3 +5775,139 @@ ul.ui-autocomplete .overhaul {
     display: inline-block;
     float: right;
 }
+
+
+div.player-compare table {
+    border-collapse: separate;
+    border-spacing: 3px;
+    margin: 0 0 10px 0;
+}
+div.player-compare h2 {
+    display: block;
+    text-align: center;
+    text-transform: uppercase;
+    font-weight: normal;
+    background-color: #777;
+    color: #fff;
+    margin: 0 2px;
+    line-height: 40px;
+}
+div.player-compare table {
+    border-collapse: separate;
+    border-spacing: 3px;
+    margin: 0 0 10px 0;
+    width: 100%;
+    font-size: 13px;
+    font-family: "Roboto",Helvetica,Arial,sans-serif;
+}
+div.player-compare table tr {
+    height: 30px;
+}
+div.player-compare table th,
+div.player-compare table td {
+    text-align: center;
+}
+div.player-compare table .add-remove {
+    display: block;
+    width: 176px;
+    height: 30px;
+    line-height: 30px;
+    text-transform: uppercase;
+    border: 1px solid #6a6a6a;
+    background-color: #b7b7b7;
+    clear: both;
+    text-align: center;
+    color: #fff !important;
+    font-weight: normal;
+}
+div.player-compare table tr.player-cards th:not(.radar-chart) {
+    width: 190px !important;
+    text-align: left;
+    padding-left: 8px;
+}
+div.player-compare table th:first-child:not(.radar-chart) {
+    background-color: #b7b7b7;
+    color: #fff;
+    border: 1px solid #fff;
+    font-weight: normal;
+    text-transform: uppercase;
+    border-spacing: 0;
+}
+div.player-compare table td {
+    text-align: center;
+    background-color: #fff;
+    line-height: 30px;
+    width: 190px !important;
+    border: 1px solid #fff;
+    position: relative;
+}
+div.player-compare table td.stat-worse {
+    background-color: #fff0f0;
+}
+div.player-compare table td.stat-better {
+    background-color: #f0fff0;
+}
+div.player-compare table td::before {
+    content: '';
+    display: block;
+    width: 5px;
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+}
+div.player-compare table td.stat-same::before {
+    background-color: #999;
+}
+div.player-compare table td.stat-worse::before {
+    background-color: #b33b3b;
+}
+div.player-compare table td.stat-better::before {
+    background-color: #65b33b;
+}
+div.player-compare table th div.card {
+    width: 176px;
+    height: 246px;
+    margin: 2px auto 7px;
+}
+div.player-compare table th div.card img {
+    width: 176px;
+}
+div.player-compare table th input {
+    line-height: 30px;
+    padding: 0 5px;
+    box-sizing: border-box;
+    background-color: #fff;
+    border: 1px solid #6a6a6a;
+    border-radius: 0;
+    width: 176px;
+    height: 32px;
+}
+div.player-compare table tr[data-source*=stat-]:first-child,
+div.player-compare table tr[data-source=overall] {
+    font-size: 20px;
+    font-weight: bold;
+}
+div.player-compare table tr[data-source*=stat-] {
+    color: #fff;
+}
+
+#loading {
+    display: none;
+}
+#loading.show {
+    background: #000;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 1000;
+    opacity: 0.6;
+}
+#loading .loading-image {
+    background: url('/content/images/loading.gif') 100% 100% no-repeat;
+    background-size: cover;
+    width: 150px;
+    height: 150px;
+    margin: auto;
+    margin-top: 200px;
+}

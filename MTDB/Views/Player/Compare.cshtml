@@ -9,83 +9,658 @@
     </div>
 </div>
 <div class="wrapper-lg">
-
     <div class="row">
-        <div class="col-xs-4" data-compare-wrapper="1">
-            <div data-compare-chosen="1">
-                <div class="panel panel-default">
-                    <div class="panel-heading font-bold">Player 1</div>
-                    <div class="panel-body">
-                        <input type="text" class="form-control m-b" placeholder="Enter Player Name">
-                    </div>
-                </div>
+        <section class="primary-content" role="main" id="playerCompare">
+            <div class="player-compare">
+            <table>
+                <tr id="compare-header" class="player-cards">
+                    <th class="radar-chart">
+                    </th>
+                    <th draggable="true">
+                        <div data-target="player-image" class="card">
+                        </div>
+                        <input type="text" class="add-player ac_input" data-autocomplete-position="1" placeholder="Search for a Player" autocomplete="off">
+                        <input data-target="uri" type="hidden"/>
+                        <button class="add-remove" style="display: none" data-remove-position="1">Remove</button>
+                    </th>
+                    <th draggable="true">
+                        <div data-target="player-image" class="card">
+                        </div>
+                        <input type="text" class="add-player ac_input" data-autocomplete-position="2" placeholder="Search for a Player" autocomplete="off">
+                        <input data-target="uri" type="hidden" />
+                        <button class="add-remove" style="display: none" data-remove-position="2">Remove</button>
+                    </th>
+                    <th draggable="true">
+                        <div data-target="player-image" class="card">
+                        </div>
+                        <input type="text" class="add-player ac_input" data-autocomplete-position="3" placeholder="Search for a Player" autocomplete="off">
+                        <input data-target="uri" type="hidden"/>
+                        <button class="add-remove" style="display: none" data-remove-position="3">Remove</button>
+                    </th>
+                </tr>
+            </table>
+
+            <h2 class="section-header">General</h2>
+            <table>
+                <tr data-source="overall">
+                    <th>Overall</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr data-source="collection">
+                    <th>Collection</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr data-source="position">
+                    <th>Position</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr data-source="age">
+                    <th>Age</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr data-source="weight">
+                    <th>Weight</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr data-type="feet" data-source="height">
+                    <th>Height</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </table>
+
+            <h2 class="section-header">Badges</h2>
+            <table>
+                <tr data-source="gold-badges">
+                    <th>Gold</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr data-source="silver-badges">
+                    <th>Silver</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr data-source="bronze-badges">
+                    <th>Bronze</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </table>
+
+            <h2 class="section-header">Prices</h2>
+            <table>
+                <tr data-source="xbox-price">
+                    <th>Xbox</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr data-source="ps-price">
+                    <th>PlayStation 4</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr data-source="pc-price">
+                    <th>PC</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </table>
+
+            <h2 class="section-header">Stats</h2>
+            <table>
+                <tr data-source="stat-Outside Scoring">
+                    <th>Outside Scoring</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr data-source="stat-Standing Shot Mid">
+                    <th>Standing Shot Mid</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr data-source="stat-Standing Shot 3pt">
+                    <th>Standing Shot 3pt</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr data-source="stat-Moving Shot Mid">
+                    <th>Moving Shot Mid</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr data-source="stat-Moving Shot 3pt">
+                    <th>Moving Shot 3pt</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr data-source="stat-Shot IQ">
+                    <th>Shot IQ</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr data-source="stat-Free Throw">
+                    <th>Free Throw</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr data-source="stat-Offensive Consistency">
+                    <th>Offensive Consistency</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </table>
+            <table>
+                <tr data-source="stat-Inside Scoring">
+                    <th>Inside Scoring</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr data-source="stat-Standing Shot Close">
+                    <th>Standing Shot Close</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr data-source="stat-Moving Shot Close">
+                    <th>Moving Shot Close</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr data-source="stat-Standing Layup">
+                    <th>Standing Layup</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr data-source="stat-Driving Layup">
+                    <th>Driving Layup</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr data-source="stat-Standing Dunk">
+                    <th>Standing Dunk</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr data-source="stat-Driving Dunk">
+                    <th>Driving Dunk</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr data-source="stat-Contact Dunk">
+                    <th>Contact Dunk</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr data-source="stat-Draw Foul">
+                    <th>Draw Foul</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr data-source="stat-Post Control">
+                    <th>Post Control</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr data-source="stat-Post Hook">
+                    <th>Post Hook</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr data-source="stat-Post Fadeaway">
+                    <th>Post Fadeaway</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr data-source="stat-Hands">
+                    <th>Hands</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </table>
+            <table>
+                <tr data-source="stat-Playmaking">
+                    <th>Playmaking</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr data-source="stat-Ball Control">
+                    <th>Ball Control</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr data-source="stat-Passing Accuracy">
+                    <th>Passing Accuracy</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr data-source="stat-Passing Vision">
+                    <th>Passing Vision</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr data-source="stat-Passing IQ">
+                    <th>Passing IQ</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </table>
+            <table>
+                <tr data-source="stat-Athleticism">
+                    <th>Athleticism</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr data-source="stat-Speed">
+                    <th>Speed</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr data-source="stat-Acceleration">
+                    <th>Acceleration</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr data-source="stat-Vertical">
+                    <th>Vertical</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr data-source="stat-Strength">
+                    <th>Strength</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr data-source="stat-Stamina">
+                    <th>Stamina</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr data-source="stat-Hustle">
+                    <th>Hustle</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr data-source="stat-Misc Durability">
+                    <th>Misc Durability</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </table>
+            <table>
+                <tr data-source="stat-Defending">
+                    <th>Defending</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr data-source="stat-On-Ball Defense IQ">
+                    <th>On-Ball Defense IQ</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr data-source="stat-Low Post Defense IQ">
+                    <th>Low Post Defense IQ</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr data-source="stat-Pick And Roll Defense IQ">
+                    <th>Pick And Roll Defense IQ</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr data-source="stat-Help Defense IQ">
+                    <th>Help Defense IQ</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr data-source="stat-Lateral Quickness">
+                    <th>Lateral Quickness</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr data-source="stat-Pass Perception">
+                    <th>Pass Perception</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr data-source="stat-Steal">
+                    <th>Steal</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr data-source="stat-Block">
+                    <th>Block</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr data-source="stat-Shot Contest">
+                    <th>Shot Contest</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr data-source="stat-Defensive Consistency">
+                    <th>Defensive Consistency</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </table>
+            <table>
+                <tr data-source="stat-Rebounding">
+                    <th>Rebounding</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr data-source="stat-Offensive Rebound">
+                    <th>Offensive Rebound</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr data-source="stat-Defensive Rebound">
+                    <th>Defensive Rebound</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+                <tr data-source="stat-Boxout">
+                    <th>Boxout</th>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </table>
             </div>
-            <div class="compare-player-container" data-compare-player="1" style="display: none">
-                <div class="close"><i class="fa fa-close"></i>
-                </div>
-                <div class="player-container"></div>
-            </div>
-        </div>
-        <div class="col-xs-4" data-compare-wrapper="2">
-            <div data-compare-chosen="2">
-                <div class="panel panel-default">
-                    <div class="panel-heading font-bold">Player 2</div>
-                    <div class="panel-body">
-                        <input type="text" class="form-control m-b" placeholder="Enter Player Name">
-                    </div>
-                </div>
-            </div>
-            <div class="compare-player-container" data-compare-player="2" style="display: none">
-                <div class="close">
-                    <i class="fa fa-close"></i>
-                </div>
-                <div class="player-container"></div>
-            </div>
-        </div>
-        <div class="col-xs-4" data-compare-wrapper="3">
-            <div data-compare-chosen="3">
-                <div class="panel panel-default">
-                    <div class="panel-heading font-bold">Player 3</div>
-                    <div class="panel-body">
-                        <input type="text" class="form-control m-b" placeholder="Enter Player Name">
-                    </div>
-                </div>
-            </div>
-            <div class="compare-player-container" data-compare-player="3" style="display: none">
-                <div class="close">
-                    <i class="fa fa-close"></i>
-                </div>
-                <div class="player-container"></div>
-            </div>
-        </div>
+        </section>
     </div>
 
 </div>
 @section scripts {
-    <script type="text/javascript">
-        $.each($('*[data-compare-wrapper]'), function (index, wrapper) {
-            var chosenContainer = $(wrapper).find('*[data-compare-chosen]');
-            var playerContainer = $(wrapper).find('*[data-compare-player]');
+    <script>
+        function pushPlayerData(data, position) {
+            $('#compare-header th:eq(' + position + ') input[data-target="uri"]').val(data.UriName);
+            $('#compare-header th:eq(' + position + ') [data-target=player-image]').html($('<img>', { src: data.ImageUri }));
 
-            $(chosenContainer).find('input').autocomplete({
+            pulldata('overall', data.Overall, position);
+            pulldata('collection', data.CollectionName, position);
+            pulldata('position', data.PrimaryPosition, position);
+            pulldata('age', data.Age, position);
+            pulldata('weight', data.Weight, position);
+            pulldata('height', data.Height, position);
+
+            pulldata('gold-badges', data.GoldBadges, position);
+            pulldata('silver-badges', data.SilverBadges, position);
+            pulldata('bronze-badges', data.BronzeBadges, position);
+
+            pulldata('xbox-price', data.Xbox, position);
+            pulldata('ps-price', data.PS4, position);
+            pulldata('pc-price', data.PC, position);
+
+            $.each(data.GroupAverages, function(index, attribute) {
+                pulldata('stat-' + attribute.Name, attribute.Average, position);
+            });
+
+            $.each(data.Attributes, function(index, attribute) {
+                pulldata('stat-' + attribute.Name, attribute.Value, position);
+            });
+
+            updateTable();
+        }
+
+        function updateTable() {
+            updateUri();
+            setCompareColor();
+            setCompareValue();
+            setStatsColor();
+            updateButtonView();
+        }
+
+        function updateButtonView() {
+            $.each($('#compare-header th:not(:first) input[data-target="uri"]'), function(index, hidden) {
+                if ($(hidden).val() != "") {
+                    $(hidden).parent().find('[data-remove-position]').show();
+                    $(hidden).parent().find('[data-autocomplete-position]').hide();
+                } else {
+                    $(hidden).parent().find('[data-remove-position]').hide();
+                    $(hidden).parent().find('[data-autocomplete-position]').show();
+                }
+            });
+
+        }
+
+        function setStatsColor() {
+            var cell = $('#playerCompare tr[data-source*=stat-] td');
+            cell.each(function() {
+                var cell_value = $(this).attr('data-value');
+                if (cell_value == "" || typeof (cell_value) == "undefined") {
+                    $(this).css({ 'background': 'transparent' });
+                } else if ((cell_value >= 0) && (cell_value <= 59)) {
+                    $(this).css({ 'background': 'rgba(165, 42, 42, 0.7)' });
+                } else if ((cell_value >= 60) && (cell_value <= 69)) {
+                    $(this).css({ 'background': 'rgba(210, 105, 30, 0.7)' });
+                } else if ((cell_value >= 70) && (cell_value <= 79)) {
+                    $(this).css({ 'background': 'rgba(218, 165, 32, 0.7)' });
+                } else if ((cell_value >= 80) && (cell_value <= 89)) {
+                    $(this).css({ 'background': 'rgba(0, 128, 0, 0.7)' });
+                } else if (cell_value >= 90) {
+                    $(this).css({ 'background': 'rgba(50, 205, 50, 0.7)' });
+                }
+            });
+        }
+
+        var cachedHash = "";
+
+        function updateUri() {
+            var array = [];
+            $.each($('#compare-header th input[data-target="uri"]'), function(index, input) {
+                var value = $(input).val();
+                if (value != "")
+                    array.push(value);
+            });
+            var uri = array.join("&");
+            cachedHash = uri;
+            document.location.hash = uri;
+        }
+
+        function setCompareColor() {
+            $.each($('#playerCompare tr[data-source] td'), function(index, td) {
+                $(td).removeClass();
+            });
+
+            $.each($('#playerCompare tr[data-source]'), function(index, tr) {
+                var tds = $(tr).find("td");
+                var firstValue = null;
+                for (var i = 0; i < tds.length; i++) {
+                    var td = $(tds[i]);
+                    if (td.attr('data-value') == "" || typeof (td.attr('data-value')) == "undefined")
+                        continue;
+
+                    //var value = parseInt(td.attr('data-value'));
+                    //if (value == "NaN") {
+                    //    td.attr('class', 'stat-same');
+                    //    continue;
+                    //}
+
+                    //if (firstValue == null || value == firstValue) {
+                    //    td.attr('class', 'stat-same');
+                    //} else if (value > firstValue) {
+                    //    td.attr('class', 'stat-better');
+                    //} else if (value < firstValue) {
+                    //    td.attr('class', 'stat-worse');
+                    //}
+                    //firstValue = value;
+                    td.attr('class', 'stat-same');
+                }
+            });
+        }
+
+        function compareFeet(firstValue, seconValue, ref) {
+            var html = '';
+
+            var a = seconValue.split("'");
+            var feet = parseInt(a[0]);
+            var inch = parseInt(a[1]);
+            var total = feet * 12 + inch;
+            ref.value = total;
+            if (firstValue != null && ref.value != "NaN") {
+                var diff = (total - firstValue);
+                if (diff < 0)
+                    diff = -1 * diff;
+
+                if (ref.value > firstValue) {
+                    html = html + (' (+' + ((diff / 12) | 0) + "'" + (diff % 12) + '")');
+                } else if (ref.value < firstValue) {
+                    html = html + (' (-' + ((diff / 12) | 0) + "'" + (diff % 12) + '")');
+                }
+            }
+            return html;
+        }
+
+        function compareDefault(firstValue, seconValue, ref) {
+            var html = '';
+            ref.value = parseInt(seconValue);
+            if (firstValue != null && ref.value != "NaN") {
+                if (ref.value > firstValue) {
+                    html = html + (' (+' + (ref.value - firstValue) + ')');
+                } else if (ref.value < firstValue) {
+                    html = html + (' (-' + (firstValue - ref.value) + ')');
+                }
+            }
+            return html;
+        }
+
+        function setCompareValue() {
+            $.each($('#playerCompare tr[data-source] td'), function(index, td) {
+                $(td).html('');
+            });
+
+            $.each($('#playerCompare tr[data-source]'), function(index, tr) {
+                var tds = $(tr).find("td");
+                var firstValue = null;
+                for (var i = 0; i < tds.length; i++) {
+                    var td = $(tds[i]);
+                    if (td.attr('data-value') == "" || typeof (td.attr('data-value')) == "undefined")
+                        continue;
+                    var html = td.attr('data-value');
+
+                    var ref = {};
+                    if ($(tr).attr('data-type') == "feet") {
+                        html = html + compareFeet(firstValue, td.attr('data-value'), ref);
+                    } else {
+                        html = html + compareDefault(firstValue, td.attr('data-value'), ref);
+                    }
+
+                    td.html(html);
+                    if (firstValue == null && ref.value != "NaN")
+                        firstValue = ref.value;
+                }
+            });
+        }
+
+        function pulldata(source, data, position) {
+            var td = $('#playerCompare tr[data-source="' + source + '"] td')[position - 1];
+            $(td).attr('data-value', data);
+        }
+
+        $.each($('#playerCompare [data-remove-position]'), function(index, button) {
+            var position = $(button).attr('data-remove-position');
+            $(button).click(function() {
+                var th = $('#compare-header th:eq(' + position + ')');
+                th.find('input[data-target="uri"]').val('');
+                th.find('[data-target=player-image]').html('');
+                $.each($('#playerCompare tr[data-source]'), function(index2, tr) {
+                    $(tr).find('td:eq(' + (parseInt(position) - 1) + ')').html('');
+                    $(tr).find('td:eq(' + (parseInt(position) - 1) + ')').attr('data-value', '');
+                });
+                updateTable();
+            });
+        });
+
+        $.each($('#playerCompare input[data-autocomplete-position]'), function(index, input) {
+            $(input).autocomplete({
                 source: '/players/autocomplete',
                 messages: {
                     noResults: '',
-                    results: function () { }
+                    results: function() {}
                 },
                 minLength: 3,
                 select: function (event, ui) {
-                    $.get(
-                      "/players/" + ui.item.UriName + "/compare",
-                      function (data) {
-                          chosenContainer.hide();
-                          playerContainer.show();
-                          playerContainer.find('.player-container').html(data);
-                      }
-                    );
-                    return false;
+                    var position = $(input).attr("data-autocomplete-position");
+                    $('#compare-header th:eq(' + position + ') input[data-target="uri"]').val(ui.item.UriName);
+                    updateUri();
+                    location.reload(true);
+                    //$.get(
+                    //    "/players/" + ui.item.UriName + "/compare",
+                    //    function(data) {
+                    //        var position = $(input).attr("data-autocomplete-position");
+                    //        $(input).val('');
+                    //        pushPlayerData(data, position);
+                    //    }
+                    //);
+                    //return false;
                 }
-            }).autocomplete("instance")._renderItem = function (ul, item) {
+            }).autocomplete("instance")._renderItem = function(ul, item) {
                 var container = $("<div>", {
                     'data-href': '/players/' + item.UriName,
                     'class': 'autocomplete-container ' + item.Tier.toLowerCase()
@@ -118,12 +693,106 @@
                 var li = $("<li>").append(container);
                 return li.appendTo(ul);
             };
-            playerContainer.find('.close').click(function() {
-                chosenContainer.show();
-                playerContainer.hide();
-            });
 
         });
-        
+
+        $(function () {
+            var uri = document.location.hash;
+            if (uri.match("#")) {
+                uri = uri.substring(1);
+                var array = uri.split("&");
+                var loader = array.length;
+                if (array.length > 0) {
+                    $('#loading').addClass('show');
+                    $.each(array, function (index, playerUri) {
+                        //loader++;
+                        $.get(
+                            "/players/" + playerUri + "/compare",
+                            function (data) {
+                                loader--;
+                                if (loader <= 0)
+                                    $('#loading').removeClass('show');
+                                if (data) {
+                                    var position = index + 1;
+                                    pushPlayerData(data, position);
+                                }
+                            }
+                        );
+                    });
+                }
+            }
+        });
+
+        $(window).on('hashchange', function() {
+            if (cachedHash != document.location.hash.substring(1)) {
+                location.reload(true);
+            }
+        });
+
+        [].forEach.call($('#compare-header th:not(:first)'), function(container) {
+            container.addEventListener('dragstart', handleDragStart, false);
+            container.addEventListener('dragover', handleDragOver, false);
+            container.addEventListener('drop', handleDrop, false);
+            //container.addEventListener('dragend', handleDragEnd, false);
+        });
+
+        var dragSrcEl = null;
+
+        function handleDragStart(e) {
+            dragSrcEl = this;
+            e.dataTransfer.setData('text/plain', 'player'); //firefox require set dataTransfer
+        }
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            return false;
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            if (e.dataTransfer.getData('text/plain') != 'player')
+                return false;
+
+            if (dragSrcEl != this) {
+                var init = $(dragSrcEl);
+                var target = $(this);
+
+                var initPosition = parseInt(init.find('[data-autocomplete-position]').attr('data-autocomplete-position'));
+                var targetPosition = parseInt(target.find('[data-autocomplete-position]').attr('data-autocomplete-position'));
+
+                if ($('#compare-header th:eq(' + initPosition + ') [data-target=uri]').val() == "" && $('#compare-header th:eq(' + targetPosition + ') [data-target=uri]').val() == "")
+                    return;
+
+                if ($('#compare-header th:eq(' + initPosition + ') [data-target=uri]').val() != "" && $('#compare-header th:eq(' + targetPosition + ') [data-target=uri]').val() == "") {
+                    $('#compare-header th:eq(' + targetPosition + ') [data-target=player-image]').html($('#compare-header th:eq(' + initPosition + ') [data-target=player-image]').html());
+                    $('#compare-header th:eq(' + initPosition + ') [data-target=player-image]').html('');
+                } else if ($('#compare-header th:eq(' + initPosition + ') [data-target=uri]').val() == "" && $('#compare-header th:eq(' + targetPosition + ') [data-target=uri]').val() != "") {
+                    $('#compare-header th:eq(' + initPosition + ') [data-target=player-image]').html($('#compare-header th:eq(' + targetPosition + ') [data-target=player-image]').html());
+                    $('#compare-header th:eq(' + targetPosition + ') [data-target=player-image]').html('');
+                } else {
+                    var tempImg = $('#compare-header th:eq(' + initPosition + ') img').attr('src');
+                    $('#compare-header th:eq(' + initPosition + ') img').attr('src', $('#compare-header th:eq(' + targetPosition + ') img').attr('src'));
+                    $('#compare-header th:eq(' + targetPosition + ') img').attr('src', tempImg);
+                }
+
+                var tempUri = $('#compare-header th:eq(' + initPosition + ') [data-target=uri]').val();
+                $('#compare-header th:eq(' + initPosition + ') [data-target=uri]').val($('#compare-header th:eq(' + targetPosition + ') [data-target=uri]').val());
+                $('#compare-header th:eq(' + targetPosition + ') [data-target=uri]').val(tempUri);
+
+                $.each($('#playerCompare tr[data-source]'), function(index, tr) {
+                    changeValues($(tr).find('td:eq(' + (initPosition - 1) + ')'), $(tr).find('td:eq(' + (targetPosition - 1) + ')'));
+                });
+
+                updateTable();
+            }
+
+            return false;
+        }
+
+        function changeValues(initValue, targetValue) {
+            var tempValue = initValue.attr('data-value');
+            initValue.attr('data-value', typeof (targetValue.attr('data-value')) != "undefined" ? targetValue.attr('data-value') : '');
+            targetValue.attr('data-value', typeof (tempValue) != "undefined" ? tempValue : '');
+        }
     </script>
 }

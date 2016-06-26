@@ -259,7 +259,9 @@
 
             <div class="hbox hbox-auto-xs hbox-auto-sm" ng-init="app.settings.asideFolded=false;app.settings.asideDock=false;">
                 <!-- main -->
-                <div class="col">
+                <div class="col" style="position: relative;">
+                    <div id="loading">
+                        <div class="loading-image"></div></div>
                     @RenderBody()
                     <div class="wrapper-md">
                         <!-- stats -->
@@ -315,7 +317,6 @@
                             <div class="wrapper-md">
                                 @if (Convert.ToBoolean(ConfigurationManager.AppSettings["EnableAds"]))
                                 {
-    <!-- ad 1 -->
                                     <hr>
                                     <div class="advert">
                                         <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
@@ -325,25 +326,21 @@
                                              data-ad-client="ca-pub-5458113028612071"
                                              data-ad-slot="7528018513"></ins>
                                         <script>
-                                                (adsbygoogle = window.adsbygoogle || []).push({});
+                                            (adsbygoogle = window.adsbygoogle || []).push({});
                                         </script>
                                     </div>
-    <!-- ad 1 -->
-    <!-- ad 2 -->
 
-                                        <div class="advert">
-                                            <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
-                                            <!-- website300x250v2 -->
-                                            <ins class="adsbygoogle"
-                                                 style="display: inline-block; width: 300px; height: 250px"
-                                                 data-ad-client="ca-pub-5458113028612071"
-                                                 data-ad-slot="9004751715"></ins>
-                                            <script>
-                                                (adsbygoogle = window.adsbygoogle || []).push({});
-                                            </script>
-                                        </div>
+                                    <div class="advert">
+                                        <!-- website300x250v2 -->
+                                        <ins class="adsbygoogle"
+                                             style="display: inline-block; width: 300px; height: 250px"
+                                             data-ad-client="ca-pub-5458113028612071"
+                                             data-ad-slot="9004751715"></ins>
+                                        <script>
+                                            (adsbygoogle = window.adsbygoogle || []).push({});
+                                        </script>
+                                    </div>
                                 }
-                                <!-- ad 2 -->
 
                             </div>
                         </div>
