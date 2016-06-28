@@ -5798,14 +5798,9 @@ div.player-compare table {
     margin: 0 0 10px 0;
     width: 100%;
     font-size: 13px;
-    font-family: "Roboto",Helvetica,Arial,sans-serif;
 }
 div.player-compare table tr {
     height: 30px;
-}
-div.player-compare table th,
-div.player-compare table td {
-    text-align: center;
 }
 div.player-compare table .add-remove {
     display: block;
@@ -5826,20 +5821,32 @@ div.player-compare table tr.player-cards th:not(.radar-chart) {
     padding-left: 8px;
 }
 div.player-compare table th:first-child:not(.radar-chart) {
-    background-color: #b7b7b7;
-    color: #fff;
+    padding-left: 10px;
+    background-color: #fff;
     border: 1px solid #fff;
     font-weight: normal;
     text-transform: uppercase;
     border-spacing: 0;
 }
+div.player-compare table tr:nth-child(odd) th,
+div.player-compare table tr:nth-child(odd) td {
+    background-color: #F1F1F1 !important;
+}
 div.player-compare table td {
-    text-align: center;
+    padding-left: 10px;
     background-color: #fff;
     line-height: 30px;
     width: 190px !important;
     border: 1px solid #fff;
     position: relative;
+}
+div.player-compare table td .stat {
+    color: #fff;
+    padding: 0.2em 10px;
+    min-width: 25px;
+    display: inline-block;
+    text-align: center;
+    font-weight: 600;
 }
 div.player-compare table td.stat-worse {
     background-color: #fff0f0;
@@ -5889,7 +5896,7 @@ div.player-compare table tr[data-source=overall] {
     font-weight: bold;
 }
 div.player-compare table tr[data-source*=stat-] {
-    color: #fff;
+    /*color: #fff;*/
 }
 
 #loading {
