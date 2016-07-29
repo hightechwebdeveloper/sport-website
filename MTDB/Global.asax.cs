@@ -9,6 +9,7 @@ namespace MTDB
     {
         protected void Application_Start()
         {
+            mvcForum.Web.ApplicationConfiguration.Initialize();
             AreaRegistration.RegisterAllAreas();
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             RouteConfig.RegisterRoutes(RouteTable.Routes);

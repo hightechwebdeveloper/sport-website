@@ -47,12 +47,56 @@
     <PublishDatabases>false</PublishDatabases>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ApplicationBoilerplate, Version=0.7.3.31109, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MVCBootstrap.0.7.3.31109\lib\net40\ApplicationBoilerplate.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="CodeKicker.BBCode, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MVCForum.1.4.5.40417\lib\net40\CodeKicker.BBCode.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Commons.Web.Mvc.PrecompiledViews, Version=1.0.5.0, Culture=neutral, PublicKeyToken=b66b1a10e1d96b4d, processorArchitecture=MSIL">
+      <HintPath>..\packages\MVCForum.1.4.5.40417\lib\net40\Commons.Web.Mvc.PrecompiledViews.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="CreativeMinds.BotScout, Version=0.5.1202.1901, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\BotScout.Net.0.5.0\lib\net40\CreativeMinds.BotScout.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="CreativeMinds.Security, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MVCForum.1.4.5.40417\lib\net40\CreativeMinds.Security.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="CreativeMinds.StopForumSpam, Version=0.5.12.218, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\StopForumSpam.Net.0.5.0\lib\net40\CreativeMinds.StopForumSpam.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Elmah, Version=1.2.13605.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\elmah.corelibrary.1.2\lib\Elmah.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Elmah.Mvc, Version=2.1.2.1389, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Elmah.Mvc.2.1.2\lib\net40\Elmah.Mvc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="HtmlAgilityPack, Version=1.4.6.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
+      <HintPath>..\packages\HtmlAgilityPack.1.4.6\lib\Net45\HtmlAgilityPack.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
+      <HintPath>..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Joel.Net.Akismet, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MVCForum.1.4.5.40417\lib\net40\Joel.Net.Akismet.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Lucene.Net, Version=3.0.3.0, Culture=neutral, PublicKeyToken=85089178b9ac3181, processorArchitecture=MSIL">
+      <HintPath>..\packages\Lucene.Net.3.0.3\lib\NET40\Lucene.Net.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="markdownsharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MVCForum.1.4.5.40417\lib\net40\markdownsharp.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.AI.Agent.Intercept, Version=1.2.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -100,8 +144,56 @@
       <HintPath>..\packages\Microsoft.Bcl.Async.1.0.168\lib\net40\Microsoft.Threading.Tasks.Extensions.Desktop.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="MVCBootstrap, Version=0.7.3.31109, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MVCBootstrap.0.7.3.31109\lib\net40\MVCBootstrap.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="MVCBootstrap.EntityFramework, Version=0.7.3.31109, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MVCBootstrap.0.7.3.31109\lib\net40\MVCBootstrap.EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="MVCBootstrap.Ninject, Version=0.7.3.31109, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MVCBootstrap.0.7.3.31109\lib\net40\MVCBootstrap.Ninject.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="mvcForum.AddOns, Version=1.4.5.40417, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MVCForum.1.4.5.40417\lib\net40\mvcForum.AddOns.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="mvcForum.Core, Version=1.4.5.40417, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MVCForum.1.4.5.40417\lib\net40\mvcForum.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="mvcForum.DataProvider.EntityFramework, Version=1.4.5.40417, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MVCForum.1.4.5.40417\lib\net40\mvcForum.DataProvider.EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="mvcForum.SearchProvider.Lucene, Version=1.4.5.40417, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MVCForum.1.4.5.40417\lib\net40\mvcForum.SearchProvider.Lucene.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="mvcForum.Web, Version=1.4.5.40417, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MVCForum.1.4.5.40417\lib\net40\mvcForum.Web.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="MVCThemes, Version=0.3.3.40222, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MVCThemes.0.3.3\lib\net40\MVCThemes.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Ninject, Version=3.0.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ninject.3.0.1.10\lib\net45-full\Ninject.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Ninject.Web.Common, Version=3.0.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ninject.Web.Common.3.0.0.7\lib\net45-full\Ninject.Web.Common.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Ninject.Web.Mvc, Version=3.0.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Ninject.MVC3.3.0.0.6\lib\net45-full\Ninject.Web.Mvc.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="NWebsec, Version=4.2.0.0, Culture=neutral, PublicKeyToken=3613da5f958908a1, processorArchitecture=MSIL">
@@ -116,6 +208,10 @@
       <HintPath>..\packages\reCAPTCH.MVC.1.0.1\lib\net45\reCAPTCHA.MVC.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="RestSharp, Version=104.1.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MVCForum.1.4.5.40417\lib\net40\RestSharp.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="SendGrid, Version=6.3.4.0, Culture=neutral, PublicKeyToken=4f047e93159395ca, processorArchitecture=MSIL">
       <HintPath>..\packages\Sendgrid.6.3.4\lib\SendGrid.dll</HintPath>
       <Private>True</Private>
@@ -126,6 +222,22 @@
     </Reference>
     <Reference Include="SendGridMail, Version=6.3.4.0, Culture=neutral, PublicKeyToken=4f047e93159395ca, processorArchitecture=MSIL">
       <HintPath>..\packages\Sendgrid.6.3.4\lib\SendGridMail.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SimpleAuthentication.Core, Version=0.3.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MVCForum.1.4.5.40417\lib\net40\SimpleAuthentication.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="SimpleAuthentication.Mvc, Version=0.3.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\MVCForum.1.4.5.40417\lib\net40\SimpleAuthentication.Mvc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="simplelocalisation, Version=0.9.6.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SimpleLocalisation.0.9.6\lib\net40\simplelocalisation.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="simplelocalisation.web, Version=0.9.6.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\SimpleLocalisation.0.9.6\lib\net40\simplelocalisation.web.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -185,6 +297,14 @@
       <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml.Linq" />
+    <Reference Include="WebActivator, Version=1.5.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\WebActivator.1.5\lib\net40\WebActivator.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="WebActivatorEx, Version=2.0.0.0, Culture=neutral, PublicKeyToken=7b26dc2a43f6a0d4, processorArchitecture=MSIL">
+      <HintPath>..\packages\MVCForum.1.4.5.40417\lib\net40\WebActivatorEx.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="WebGrease">
       <Private>True</Private>
       <HintPath>..\packages\WebGrease.1.5.2\lib\WebGrease.dll</HintPath>
@@ -266,6 +386,11 @@
     <Compile Include="Helpers\ServicedController.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="MVCForumIdentity\AuthenticationService.cs" />
+    <Compile Include="MVCForumIdentity\IdentityBuilder.cs" />
+    <Compile Include="MVCForumIdentity\IdentityDbContext.cs" />
+    <Compile Include="MVCForumIdentity\IdentityUserProvider.cs" />
+    <Compile Include="MVCForumIdentity\MembershipService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
@@ -610,6 +735,90 @@
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Areas\ForumAdmin\Views\accessmask\update.cshtml" />
+    <Content Include="Areas\ForumAdmin\Views\antispam\index.cshtml" />
+    <Content Include="Areas\ForumAdmin\Views\basicinstall\index.cshtml" />
+    <Content Include="Areas\ForumAdmin\Views\basicinstall\status.cshtml" />
+    <Content Include="Areas\ForumAdmin\Views\board\newaccessmaskmodal.cshtml" />
+    <Content Include="Areas\ForumAdmin\Views\board\newcategorymodal.cshtml" />
+    <Content Include="Areas\ForumAdmin\Views\board\update.cshtml" />
+    <Content Include="Areas\ForumAdmin\Views\category\newforummodal.cshtml" />
+    <Content Include="Areas\ForumAdmin\Views\category\update.cshtml" />
+    <Content Include="Areas\ForumAdmin\Views\forum\newsubforummodal.cshtml" />
+    <Content Include="Areas\ForumAdmin\Views\forum\update.cshtml" />
+    <Content Include="Areas\ForumAdmin\Views\group\index.cshtml" />
+    <Content Include="Areas\ForumAdmin\Views\group\newgroupmodal.cshtml" />
+    <Content Include="Areas\ForumAdmin\Views\group\update.cshtml" />
+    <Content Include="Areas\ForumAdmin\Views\home\index.cshtml" />
+    <Content Include="Areas\ForumAdmin\Views\home\newboardmodal.cshtml" />
+    <Content Include="Areas\ForumAdmin\Views\search\index.cshtml" />
+    <Content Include="Areas\ForumAdmin\Views\settings\index.cshtml" />
+    <Content Include="Areas\ForumAdmin\Views\settings\userregistration.cshtml" />
+    <Content Include="Areas\ForumAdmin\Views\shared\accessflag.cshtml" />
+    <Content Include="Areas\ForumAdmin\Views\shared\adminlayout.cshtml" />
+    <Content Include="Areas\ForumAdmin\Views\shared\breadcrumbnavigation.cshtml" />
+    <Content Include="Areas\ForumAdmin\Views\shared\pageheader.cshtml" />
+    <Content Include="Areas\ForumAdmin\Views\shared\topnavigation.cshtml" />
+    <Content Include="Areas\ForumAdmin\Views\user\index.cshtml" />
+    <Content Include="Areas\ForumAdmin\Views\user\newmembershipmodal.cshtml" />
+    <Content Include="Areas\ForumAdmin\Views\user\newusermodal.cshtml" />
+    <Content Include="Areas\ForumAdmin\Views\user\update.cshtml" />
+    <Content Include="Areas\ForumAdmin\Views\web.config" />
+    <Content Include="Areas\Forum\Views\Account\Activate.cshtml" />
+    <Content Include="Areas\Forum\Views\Account\External.cshtml" />
+    <Content Include="Areas\Forum\Views\Account\LogOn.cshtml" />
+    <Content Include="Areas\Forum\Views\Account\Register.cshtml" />
+    <Content Include="Areas\Forum\Views\Account\Success.cshtml" />
+    <Content Include="Areas\Forum\Views\Category\Index.cshtml" />
+    <Content Include="Areas\Forum\Views\File\Attach.cshtml" />
+    <Content Include="Areas\Forum\Views\Forum\Index.cshtml" />
+    <Content Include="Areas\Forum\Views\Home\Index.cshtml" />
+    <Content Include="Areas\Forum\Views\Message\Create.cshtml" />
+    <Content Include="Areas\Forum\Views\Message\Delete.cshtml" />
+    <Content Include="Areas\Forum\Views\Message\Edit.cshtml" />
+    <Content Include="Areas\Forum\Views\Message\Moderate.cshtml" />
+    <Content Include="Areas\Forum\Views\Message\Report.cshtml" />
+    <Content Include="Areas\Forum\Views\Message\Undelete.cshtml" />
+    <Content Include="Areas\Forum\Views\Moderate\Delete.cshtml" />
+    <Content Include="Areas\Forum\Views\Moderate\Index.cshtml" />
+    <Content Include="Areas\Forum\Views\Moderate\Merge.cshtml" />
+    <Content Include="Areas\Forum\Views\Moderate\Move.cshtml" />
+    <Content Include="Areas\Forum\Views\Moderate\Report.cshtml" />
+    <Content Include="Areas\Forum\Views\Moderate\ReportList.cshtml" />
+    <Content Include="Areas\Forum\Views\Moderate\Split.cshtml" />
+    <Content Include="Areas\Forum\Views\Moderate\Topic.cshtml" />
+    <Content Include="Areas\Forum\Views\NoAccess\Index.cshtml" />
+    <Content Include="Areas\Forum\Views\Profile\Index.cshtml" />
+    <Content Include="Areas\Forum\Views\Profile\Update.cshtml" />
+    <Content Include="Areas\Forum\Views\Search\Index.cshtml" />
+    <Content Include="Areas\Forum\Views\Search\Unanswered Topics.cshtml" />
+    <Content Include="Areas\Forum\Views\Shared\AttachmentPartial.cshtml" />
+    <Content Include="Areas\Forum\Views\Shared\BBCodeEditor.cshtml" />
+    <Content Include="Areas\Forum\Views\Shared\BottomScripts.cshtml" />
+    <Content Include="Areas\Forum\Views\Shared\Breadcrumb.cshtml" />
+    <Content Include="Areas\Forum\Views\Shared\CategoryPartial.cshtml" />
+    <Content Include="Areas\Forum\Views\Shared\Footer.cshtml" />
+    <Content Include="Areas\Forum\Views\Shared\ForumButtonsPartial.cshtml" />
+    <Content Include="Areas\Forum\Views\Shared\forumlayout.cshtml" />
+    <Content Include="Areas\Forum\Views\Shared\ForumPagingPartial.cshtml" />
+    <Content Include="Areas\Forum\Views\Shared\ForumPartial.cshtml" />
+    <Content Include="Areas\Forum\Views\Shared\LastMessagePartial.cshtml" />
+    <Content Include="Areas\Forum\Views\Shared\LastTopicPartial.cshtml" />
+    <Content Include="Areas\Forum\Views\Shared\MarkDownEditor.cshtml" />
+    <Content Include="Areas\Forum\Views\Shared\MessagePosterPartial.cshtml" />
+    <Content Include="Areas\Forum\Views\Shared\ModelStateErrors.cshtml" />
+    <Content Include="Areas\Forum\Views\Shared\OlderPosts.cshtml" />
+    <Content Include="Areas\Forum\Views\Shared\RegularEditor.cshtml" />
+    <Content Include="Areas\Forum\Views\Shared\TopicPartial.cshtml" />
+    <Content Include="Areas\Forum\Views\Shared\TopNavigation.cshtml" />
+    <Content Include="Areas\Forum\Views\Topic\Create.cshtml" />
+    <Content Include="Areas\Forum\Views\Topic\Edit.cshtml" />
+    <Content Include="Areas\Forum\Views\Topic\Index.cshtml" />
+    <Content Include="Areas\Forum\Views\Topic\MessagePartial.cshtml" />
+    <Content Include="Areas\Forum\Views\Topic\Moderate.cshtml" />
+    <Content Include="Areas\Forum\Views\Topic\TopicButtonsPartial.cshtml" />
+    <Content Include="Areas\Forum\Views\Topic\TopicPagingPartial.cshtml" />
+    <Content Include="Areas\Forum\Views\web.config" />
     <None Include="Properties\PublishProfiles\mtdb - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\mtdb - Web Deploy.pubxml" />
     <Content Include="Web.config">
