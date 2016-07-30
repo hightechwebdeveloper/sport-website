@@ -1,0 +1,30 @@
+﻿@model mvcForum.Web.ViewModels.UnansweredTopicsViewModel
+@using mvcForum.Web.Helpers;
+@{
+	ViewBag.Title = ForumHelper.GetString("SearchUnanswered.Title");
+
+	Layout = Url.GetThemeBaseUrl() + "areas/forum/views/shared/forumlayout.cshtml";
+}
+<!-- Views/Search/UnansweredPosts.cshtml-->
+@Html.Partial("Breadcrumb", Model.Path)
+
+	<span class="pull-right muted">@ForumHelper.GetString("CurrentTime", new object[] { DateTime.UtcNow })</span>
+
+	<h2>@ForumHelper.GetString("SearchUnanswered.Heading")</h2>
+
+
+		<table class="table">
+			<thead>
+				<tr class="heading">
+					<th colspan="2">@ForumHelper.GetString("Labels.Topics")</th>
+					<th>@ForumHelper.GetString("Labels.Replies")</th>
+					<th>@ForumHelper.GetString("Labels.Views")</th>
+					<th>@ForumHelper.GetString("Labels.LastPost")</th>
+				</tr>
+			</thead>
+			<tbody>
+@foreach (var topic in Model.Topics) {
+@Html.Partial("TopicPartial", topic)
+}
+			</tbody>
+		</table>

@@ -1,0 +1,47 @@
+﻿@model mvcForum.Web.ViewModels.UserViewModel
+@using mvcForum.Web.Helpers;
+@{
+	ViewBag.Title = ForumHelper.GetString("User.Title", new { Name = Model.Name });
+
+	Layout = Url.GetThemeBaseUrl() + "areas/forum/views/shared/forumlayout.cshtml";
+}
+<!-- Views/Profile/Index.cshtml -->
+@Html.Partial("Breadcrumb", Model.Path)
+
+	<span class="pull-right muted">@ForumHelper.GetString("CurrentTime", new object[] { DateTime.UtcNow })</span>
+
+	<h2>@ForumHelper.GetString("ShowUser.UserProfile", new { User = Model })</h2>
+	<hr />
+
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="col-lg-2">
+				<strong>Name</strong>
+			</div>
+			<div class="col-lg-10">
+				@Html.DisplayFor(t => t.Name, new { @class = "form-control" })
+			</div>
+			<div class="col-lg-2">
+				<strong>First visit</strong>
+			</div>
+			<div class="col-lg-10">
+				@Model.FirstVisit.ToLocalDateTime().ToString("f")
+			</div>
+			<div class="col-lg-2">
+				<strong>Last visit</strong>
+			</div>
+			<div class="col-lg-10">
+				@Model.LastVisit.ToLocalDateTime().ToString("f")
+			</div>
+
+@if ((Model.UserFlag & mvcForum.Core.UserFlag.PublicEmailAddress) == mvcForum.Core.UserFlag.PublicEmailAddress) {
+			<div class="col-lg-2">
+				<strong>E-mail Address</strong>
+			</div>
+			<div class="col-lg-10">
+				@Html.DisplayFor(t => t.Email, new { @class = "form-control" })
+			</div>
+}
+		</div>
+	</div>
+	<hr />

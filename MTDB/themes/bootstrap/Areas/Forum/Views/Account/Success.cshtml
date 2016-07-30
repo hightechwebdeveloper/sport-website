@@ -1,0 +1,12 @@
+﻿@using mvcForum.Web.Helpers;
+@{
+	ViewBag.Title = ForumHelper.GetString("Success.Title");
+
+	Layout = Url.GetThemeBaseUrl() + "areas/forum/views/shared/forumlayout.cshtml";
+}
+	<div class="row">
+		<div class="col-md-12">
+			<h3>@ForumHelper.GetString("Success.Headline")</h3>
+			<p>@TempData["Status"]</p>
+		</div>
+	</div>

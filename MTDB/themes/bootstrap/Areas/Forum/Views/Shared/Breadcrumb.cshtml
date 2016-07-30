@@ -1,0 +1,16 @@
+﻿@model Dictionary<string, string>
+@using mvcForum.Web.Helpers;
+<!-- Views/Shared/Breadcrumb.cshtml -->
+											<ol class="breadcrumb">
+												<li><a href="/forum">@ForumHelper.GetString("Forum")</a></li>
+@if (Model != null) {
+	foreach (var pair in Model.Select((item, index) => new { item, index })) {
+		if (pair.index == Model.Count - 1) {
+												<li class="active">@pair.item.Value</li>
+		}
+		else {
+												<li><a href="@pair.item.Key">@pair.item.Value</a></li>
+		}
+	}
+}
+											</ol>

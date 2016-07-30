@@ -1,0 +1,40 @@
+﻿@model mvcForum.Web.ViewModels.MessageViewModel
+@using mvcForum.Core;
+@using mvcForum.Web.Helpers;
+@{
+	Boolean quarantined = (Model.Flag & PostFlag.Quarantined) != 0;
+	Dictionary<String, String> texts = new Dictionary<String, String>();
+	texts.Add("Delete", ForumHelper.GetString("ViewMessage.Delete"));
+	texts.Add("Edit", ForumHelper.GetString("ViewMessage.Edit"));
+	texts.Add("Report", ForumHelper.GetString("ViewMessage.Report"));
+	texts.Add("Quote", ForumHelper.GetString("ViewMessage.Quote"));
+	texts.Add("Moderate", ForumHelper.GetString("ViewMessage.Moderate"));
+}
+				<ul class="list-inline pull-right">
+					<li><a class="btn btn-success btn-xs" href="#top" title="Top">Top</a>
+@if (quarantined) {
+	if (Model.CanDelete) {
+					<li>@Html.ActionLink(texts["Delete"], "delete", "message", new { id = Model.Id }, new { @class = "btn btn-success btn-xs", title = texts["Delete"] })</li>
+	}
+	if (Model.CanEdit) {
+					<li>@Html.ActionLink(texts["Edit"], "edit", "message", new { id = Model.Id }, new { @class = "btn btn-success btn-xs", title = texts["Edit"] })</li>
+	}
+}
+else {
+	if (Model.Authenticated) {
+					<li>@Html.ActionLink(texts["Report"], "report", "message", new { id = Model.Id }, new { @class = "btn btn-success btn-xs", title = texts["Report"] })</li>
+	}
+	if (Model.CanDelete && Model.Position != 0) {
+					<li>@Html.ActionLink(texts["Delete"], "delete", "message", new { id = Model.Id }, new { @class = "btn btn-success btn-xs", title = texts["Delete"] })</li>
+	}
+	if (Model.CanPost) {
+					<li>@Html.ActionLink(texts["Quote"], "create", "message", new { id = Model.TopicId, replytoid = Model.Id }, new { @class = "btn btn-success btn-xs", title = texts["Quote"] })</li>
+	}
+	if (Model.CanEdit) {
+					<li>@Html.ActionLink(texts["Edit"], "edit", (Model.Position == 0 ? "topic" : "message"), new { id = (Model.Position == 0 ? Model.TopicId : Model.Id) }, new { @class = "btn btn-success btn-xs", title = texts["Edit"] })</li>
+	}
+	if (Model.IsModerator) {
+					<li>@Html.ActionLink(texts["Moderate"], "moderate", (Model.Position == 0 ? "topic" : "message"), new { id = (Model.Position == 0 ? Model.TopicId : Model.Id) }, new { @class = "btn btn-success btn-xs", title = texts["Moderate"] })</li>
+	 }
+}
+				</ul>

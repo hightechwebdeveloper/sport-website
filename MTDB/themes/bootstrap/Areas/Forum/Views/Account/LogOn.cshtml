@@ -1,0 +1,31 @@
+﻿@model mvcForum.Web.ViewModels.LogOnModel
+@using mvcForum.Web.Helpers;
+@using SimpleAuthentication.Core.Config;
+@{
+	ViewBag.Title = ForumHelper.GetString("LogOn.Title");
+
+	Layout = Url.GetThemeBaseUrl() + "areas/forum/views/shared/forumlayout.cshtml";
+}
+	<div class="row">
+		<div class="@if (!(Model.AllowOpenAuthUsers && Model.AllowLocalUsers)) {<text>col-md-12</text>}
+			  else {<text>col-md-6</text>}">
+@if (Model.AllowOpenAuthUsers) {
+			<h3>@ForumHelper.GetString("LogOn.Headline2")</h3>
+			<div class="media">
+	@foreach (ProviderKey provider in ProviderConfigHelper.UseConfig().Providers) {
+				<a class="pull-left" href="/simpleauthentication/redirecttoprovider?providerName=@provider.Name.ToLowerInvariant()">
+					<img src="/content/@(provider.Name).png" alt="Login with your @provider.Name account." class="media-object"/>
+				</a>
+ }
+			</div>
+}
+else if (Model.AllowLocalUsers && !Model.AllowOpenAuthUsers) {
+			@Html.Partial("LocalLogOn", Model)
+}
+		</div>
+@if (Model.AllowLocalUsers && Model.AllowOpenAuthUsers) {
+		<div class="col-md-6">
+			@Html.Partial("LocalLogOn", Model)
+		</div>
+}
+	</div>

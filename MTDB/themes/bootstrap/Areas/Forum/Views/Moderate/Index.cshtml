@@ -1,0 +1,79 @@
+﻿@model mvcForum.Web.ViewModels.ModerateViewModel
+@using mvcForum.Web.Extensions;
+@using mvcForum.Web.Helpers;
+@{
+    if (Model.SelectedForum != null) {
+        ViewBag.Title = ForumHelper.GetString("Moderate.Title", new { Name = Model.SelectedForum.Name });
+    }
+    else {
+        ViewBag.Title = ForumHelper.GetString("Moderate.TitleMain");
+    }
+
+	Layout = Url.GetThemeBaseUrl() + "areas/forum/views/shared/forumlayout.cshtml";
+}
+<!-- Views/Moderate/Index.cshtml -->
+@Html.Partial("Breadcrumb", new Dictionary<String, String>())
+
+	<span class="pull-right muted">@ForumHelper.GetString("CurrentTime", new object[] { DateTime.UtcNow })</span>
+
+	<h2>@ForumHelper.GetHtmlString("Moderator.TopTitle")</h2>
+	<hr />
+
+	<div class="row">
+		<div class="col-md-12">
+			<ul class="list-inline">
+				<li>@Html.ActionLink(ForumHelper.GetLinkText("PostReports"), "reportlist", "moderate", null, new { @class = "btn btn-primary btn-sm" })</li>
+			</ul>
+		</div>
+	</div>
+
+    @using (Html.BeginForm("index", "moderate", new { area = "forum" }, FormMethod.Post, new { @class = "form-inline" })) {
+		<div class="form-group">
+			<div class="form-group">
+			    @Html.DropDownList("id", Model.AccessibleForums.ToSelectList(Model.SelectedForum), new { @class = "form-control col-lg-2" })
+			</div>
+			<button class="btn btn-primary btn-sm" type="submit">@ForumHelper.GetString("Moderate.Button")</button>
+		</div>
+	}
+
+		@Html.Partial("ForumPagingPartial", Model.SelectedForum.Paging)
+
+    @using (Html.BeginForm("execute", "moderate", new { area = "forum" })) {
+		<input type="hidden" name="id" value="@Model.SelectedForum.Id" />
+		<table class="table">
+			<thead>
+				<tr class="heading">
+					<td>@ForumHelper.GetString("Moderate.TopicsHeading")</td>
+					<td>@ForumHelper.GetString("Moderate.RepliesHeading")</td>
+					<td>@ForumHelper.GetString("Moderate.ViewsHeading")</td>
+					<td>@ForumHelper.GetString("Moderate.LastPostHeading")</td>
+					<td></td>
+				</tr>
+			</thead>
+			<tbody>
+@foreach (var topic in Model.SelectedForum.Topics) {
+				<tr>
+					<td>@(topic.Deleted ? ForumHelper.GetString("Moderate.Deleted") : topic.Quarantined ? ForumHelper.GetString("Moderate.Quarantined") : topic.Moved ? ForumHelper.GetString("Moderate.Moved") : "")
+						@Html.ActionLink(topic.Title, "topic", "moderate", new { id = topic.Id }, new { @class = "topictitle" })
+						<br />
+					    @ForumHelper.GetHtmlString("Topic.LastPost", new object[] { topic.Author.Wrap("<a href=\"" + Url.RouteUrl("ShowProfile", new RouteValueDictionary { { "id", topic.AuthorId }, { "name", topic.Author.ToSlug() } }) + "\">{#}</a>"), topic.Posted })</td>
+					<td>@topic.MessageCount</td>
+					<td>@topic.Views</td>
+					<td>@Html.Partial("LastMessagePartial", topic)</td>
+					<td><input type="checkbox" name="topics" value="@topic.Id" /></td>
+				</tr>
+}
+			</tbody>
+		</table>
+
+		@Html.Partial("ForumPagingPartial", Model.SelectedForum.Paging)
+			<div class="col-sm-offset-9 col-lg-2">
+				<select name="action" class="form-control col-lg-2">
+					<option>@ForumHelper.GetString("Moderate.ActionDelete")</option>
+					<option>@ForumHelper.GetString("Moderate.ActionMerge")</option>
+					<option>@ForumHelper.GetString("Moderate.ActionMove")</option>
+					<option>@ForumHelper.GetString("Moderate.ActionSplit")</option>
+				</select>
+			</div>
+			<button type="submit" class="btn btn-primary btn-sm">@ForumHelper.GetString("Moderate.ExecuteAction")</button>
+		}

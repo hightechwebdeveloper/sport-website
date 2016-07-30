@@ -1,0 +1,12 @@
+﻿table.posts tr td div.row div h3 {
+    margin-top: 5px;
+}
+table.posts tr td div.row div h4 {
+    margin-top: 5px;
+}
+table.posts tr td hr {
+    margin-top: 5px;
+}
+.muted {
+    color: #999;
+}

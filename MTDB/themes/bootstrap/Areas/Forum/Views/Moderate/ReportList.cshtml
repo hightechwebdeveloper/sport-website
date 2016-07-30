@@ -1,0 +1,36 @@
+﻿@model IEnumerable<mvcForum.Web.ViewModels.PostReportViewModel>
+@using mvcForum.Web.Helpers;
+@using mvcForum.Web.ViewModels;
+@{
+	ViewBag.Title = ForumHelper.GetString("PostReports.Title");
+
+	Layout = Url.GetThemeBaseUrl() + "areas/forum/views/shared/forumlayout.cshtml";
+}
+<!-- Views/Moderate/ReportList.cshtml -->
+@Html.Partial("Breadcrumb", new Dictionary<String, String>())
+
+	<span class="pull-right muted">@ForumHelper.GetString("CurrentTime", new object[] { DateTime.UtcNow })</span>
+
+	<h2>@ForumHelper.GetHtmlString("PostReports.TopTitle")</h2>
+	<hr />
+
+	<table class="table">
+		<thead>
+			<tr>
+				<th>@ForumHelper.GetString("Labels.Posts")</th>
+				<th>@ForumHelper.GetString("Labels.Author")</th>
+				<th>@ForumHelper.GetString("Labels.Reported")</th>
+				<th>@ForumHelper.GetString("Labels.Reporter")</th>
+			</tr>
+		</thead>
+		<tbody>
+@foreach (PostReportViewModel report in Model) {
+			<tr>
+				<td>@Html.ActionLink(report.IsTopic ? report.Title : report.Subject, "report", "moderate", new { id = report.Id }, null)</td>
+				<td>@report.Author</td>
+				<td>@report.Posted.ToLocalDateTime().ToString("F")</td>
+				<td>@report.ReporterName</td>
+			</tr>
+}
+		</tbody>
+	</table>

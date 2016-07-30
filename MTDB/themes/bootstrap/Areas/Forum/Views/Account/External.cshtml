@@ -1,0 +1,14 @@
+﻿@using mvcForum.Web.Helpers;
+@{
+	ViewBag.Title = ForumHelper.GetString("External.Title");
+
+	Layout = Url.GetThemeBaseUrl() + "areas/forum/views/shared/forumlayout.cshtml";
+}
+	<div class="row">
+		<div class="col-md-12">
+			<h3>@ForumHelper.GetString("External.Headline")</h3>
+			<p>
+				@ForumHelper.GetString("External.Body")
+			</p>
+		</div>
+	</div>

@@ -1,0 +1,22 @@
+﻿@model mvcForum.Web.ViewModels.ForumViewModel
+@using mvcForum.Web.Helpers;
+<!-- Views/Shared/ForumButtonsPartial.cshtml -->
+<div class="row">
+	<div class="col-md-12">
+	<ul class="list-inline">
+		<li>@Html.ActionLink(ForumHelper.GetString("Forum.PostTopic"), "create", "topic", new { id = Model.Id }, new { @class = "btn btn-primary btn-sm" }) </li>
+@if (ForumHelper.Authenticated()) {
+		<li>@Html.ActionLink(ForumHelper.GetString("LinkText.MarkAsRead"), "mark as read", "forum", new { id = Model.Id }, new { @class = "btn btn-info btn-sm" })</li>
+	if (Model.Following) {
+		@Html.ActionLink(ForumHelper.GetString("Forum.Unfollow"), "unfollow", new { forumId = Model.Id }, new { @class = "btn btn-info btn-sm" })
+ }
+ else {
+		@Html.ActionLink(ForumHelper.GetString("Forum.Follow"), "follow", new { forumId = Model.Id }, new { @class = "btn btn-info btn-sm" })
+ }
+ if (Model.IsModerator) {
+        <li>@Html.ActionLink(ForumHelper.GetLinkText("ModeratorCP"), "index", "moderate", new { id = Model.Id }, new { @class = "btn btn-warning btn-sm" })</li>
+    }
+}
+	</ul>
+	</div>
+</div>

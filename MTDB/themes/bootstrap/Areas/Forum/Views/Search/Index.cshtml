@@ -1,0 +1,62 @@
+﻿@model mvcForum.Web.ViewModels.SearchViewModel
+@using mvcForum.Web.Extensions;
+@using mvcForum.Web.Helpers;
+@{
+	ViewBag.Title = ForumHelper.GetString("Search.Title");
+
+	Layout = Url.GetThemeBaseUrl() + "areas/forum/views/shared/forumlayout.cshtml";
+
+	String ns = "mvcForum.Web.Search";
+}
+@Html.Partial("Breadcrumb", new Dictionary<String, String>())
+
+	<h2>@ForumHelper.GetHtmlString("Headline", ns, null)</h2>
+
+@if (Model.Results != null && Model.Results.Any()) {
+		<h3>@ForumHelper.GetHtmlString("FoundTitle", ns, new { Query = Model.Query, Results = Model.Results.Count() })</h3>
+		<p>@Html.ActionLink(ForumHelper.GetLinkText("BackToAdvanced", null, ns), "index", "search", new { area = "forum" }, new { @class = "left", title = ForumHelper.GetString("Search.BackToAdvancedTitle") })</p>
+
+		<table class="table">
+			<thead>
+				<tr class="heading">
+					<th colspan="2">@ForumHelper.GetString("Labels.Topics")</th>
+					<th>@ForumHelper.GetString("Labels.Replies")</th>
+					<th>@ForumHelper.GetString("Labels.Views")</th>
+					<th>@ForumHelper.GetString("Labels.LastPost")</th>
+				</tr>
+			</thead>
+			<tbody>
+@foreach (var topic in Model.Results) {
+@Html.Partial("TopicPartial", topic)
+}
+			</tbody>
+		</table>
+}
+else {
+	if (Model.Results != null) {
+		<p>@ForumHelper.GetHtmlString("NoResults", ns, new { Query = Model.Query })</p>
+	}
+	<div class="row">
+		<div class="col-md-12">
+			@using (Html.BeginForm("index", "search", FormMethod.Post, new { enctype = "multipart/form-data", @class = "form-horizontal" })) {
+				<div class="form-group">
+					@Html.LabelFor(t => t.Query, new { @class = "col-lg-2 control-label" })
+					<div class="col-lg-10">
+						@Html.TextBoxFor(t => t.Query, new { @class = "form-control" })
+					</div>
+				</div>
+				<div class="form-group">
+					@Html.LabelFor(t => t.Forums, new { @class = "col-lg-2 control-label" })
+					<div class="col-lg-10">
+						@ForumHelper.GetForumMultiSelect("Forums", Model.Forums, new Dictionary<String, Object> { { "class", "form-control" } })
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-lg-offset-2 col-lg-10">
+						<button type="submit" class="btn btn-primary">@ForumHelper.GetString("SearchButton", null, ns)</button>
+					</div>
+				</div>
+   }
+		</div>
+	</div>
+}

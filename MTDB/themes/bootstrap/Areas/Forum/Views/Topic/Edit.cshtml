@@ -1,0 +1,47 @@
+﻿@model mvcForum.Web.ViewModels.Update.UpdateTopicViewModel
+@using mvcForum.Web.Helpers;
+@{
+	ViewBag.Title = ForumHelper.GetString("EditTopic.Title", new { Title = Model.Title });
+
+	Layout = Url.GetThemeBaseUrl() + "areas/forum/views/shared/forumlayout.cshtml";
+}
+@Html.Partial("Breadcrumb", Model.Path)
+
+	<h2>@Model.Title</h2>
+
+	<div class="row">
+		<div class="col-md-12">
+			@using (Html.BeginForm("edit", "topic", FormMethod.Post, new { @class = "form-horizontal" })) {
+				@Html.HiddenFor(x => x.Id)
+				<h3>@ForumHelper.GetString("EditTopic.EditTopic")</h3>
+				<div class="form-group">
+					@Html.LabelFor(t => t.Title, new { @class = "col-lg-2 control-label" })
+					<div class="col-lg-10">
+						@Html.TextBoxFor(t => t.Title, new { @class = "form-control" })
+					</div>
+				</div>
+				<div class="form-group">
+					@Html.LabelFor(t => t.Body, new { @class = "col-lg-2 control-label" })
+					<div class="col-lg-10">
+						@Html.Partial(ForumHelper.GetEditorString() + "Editor", String.IsNullOrWhiteSpace(Model.Body) ? String.Empty : Model.Body)
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-lg-offset-2 col-lg-10">
+						<button type="submit" class="btn btn-primary">@ForumHelper.GetString("EditTopic.Submit")</button>
+					</div>
+				</div>
+			}
+		</div>
+	</div>
+@if (ForumHelper.Debug) {
+<!-- For Selenium Test -->
+<div id="forum_topic_edit" style="display: none;"></div>
+}
+
+@section scripts {
+	@Html.Partial(ForumHelper.GetEditorString() + "Scripts", String.IsNullOrEmpty(Model.Body) ? "" : Model.Body)
+}
+@section styles {
+	@Html.Partial(ForumHelper.GetEditorString() + "Styles", String.IsNullOrEmpty(Model.Body) ? "" : Model.Body)
+}

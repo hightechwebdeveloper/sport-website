@@ -1,0 +1,52 @@
+﻿@model mvcForum.Web.ViewModels.LogOnModel
+@using mvcForum.Web.Helpers;
+			@using (Html.BeginForm("logon", "account", FormMethod.Post, new { @class = "form-horizontal" })) {
+				<h3>@ForumHelper.GetString("LogOn.Headline")</h3>
+				<div class="form-group">
+					@Html.LabelFor(t => t.EmailAddress, new { @class = "col-lg-2 control-label" })
+					<div class="col-lg-10">
+						@Html.TextBoxFor(x => x.EmailAddress, new { @class = "form-control" })
+					</div>
+				</div>
+				<div class="form-group">
+					@Html.LabelFor(t => t.Password, new { @class = "col-lg-2 control-label" })
+					<div class="col-lg-10">
+						@Html.PasswordFor(x => x.Password, new { @class = "form-control" })
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-lg-10">
+						<label class="col-lg-2 control-label" for="RememberMe">
+							@Html.CheckBoxFor(x => x.RememberMe)
+							@ForumHelper.GetString("LogOn.RememberMe", null, "mvcForum.Web")
+						</label>
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-lg-offset-2 col-lg-10">
+						<button type="submit" class="btn btn-primary">@ForumHelper.GetString("LogOn.Submit")</button>
+					</div>
+				</div>
+			}
+@if (Model.AllowSignUp) {
+@ForumHelper.GetHtmlString("LogOn.RegisterText")
+}
+@if (TempData.ContainsKey("ForgottenStatus")) {
+			<div class="alert alert-info">
+	@TempData["ForgottenStatus"]
+			</div>
+}
+			@using (Html.BeginForm("forgottenpassword", "account", FormMethod.Post, new { @class = "form-horizontal" })) {
+				<h3>@ForumHelper.GetString("Headline", null, "mvcForum.Web.ForgottenPassword")</h3>
+				<div class="form-group">
+					@Html.LabelFor(t => t.EmailAddress, new { @class = "col-lg-2 control-label" })
+					<div class="col-lg-10">
+						@Html.TextBoxFor(x => x.EmailAddress, new { @class = "form-control" })
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-lg-offset-2 col-lg-10">
+						<button type="submit" class="btn btn-primary">@ForumHelper.GetString("SubmitButton", null, "mvcForum.Web.ForgottenPassword")</button>
+					</div>
+				</div>
+			}

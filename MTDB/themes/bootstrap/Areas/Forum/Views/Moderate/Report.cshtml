@@ -1,0 +1,144 @@
+﻿@model mvcForum.Web.ViewModels.PostReportViewModel
+@using mvcForum.Web.Extensions;
+@using mvcForum.Web.Helpers;
+@{
+	ViewBag.Title = ForumHelper.GetString("PostReport.Title", new { Subject = Model.IsTopic ? Model.Title : Model.Subject });
+
+	Layout = Url.GetThemeBaseUrl() + "areas/forum/views/shared/forumlayout.cshtml";
+
+	Dictionary<String, String> path = new Dictionary<String, String> {
+		{ Url.Action("ReportList", "Moderate", new { area = "forum" }), ForumHelper.GetString("PostReport.Reports") },
+		{ "", Model.IsTopic ? Model.Title : Model.Subject }
+	};
+}
+<!-- Views/Moderate/Report.cshtml-->
+@Html.Partial("Breadcrumb", path)
+
+	<span class="pull-right muted">@ForumHelper.GetString("CurrentTime", new object[] { DateTime.UtcNow })</span>
+
+	<h2>@ForumHelper.GetHtmlString("PostReport.TitleTop", new { Subject = Model.IsTopic ? Model.Title : Model.Subject })</h2>
+
+	<table class="table posts">
+		<tbody>
+			<tr>
+				<td>@Html.RouteLink(Model.Author, "ShowProfile", new RouteValueDictionary { { "id", Model.AuthorId }, { "name", Model.Author.ToSlug() } }, new Dictionary<String, object> { { "class", "profile-link" }, { "id", "link1" } })</td>
+				<td>
+					<div class="row">
+						<div class="col-md-9">
+@if (Model.IsTopic) {
+							<h3>@Model.Title</h3>
+}
+else {
+							<h4>@Model.Subject</h4>
+}
+						</div>
+						<div class="col-md-3">
+							<p class="text-right muted">@Model.Posted.ToLocalDateTime().ToString("F")</p>
+						</div>
+					</div>
+					<hr />
+					<div class="row">
+						<div class="col-md-12">
+							@ForumHelper.ParseContent(Model.Content)
+						</div>
+					</div>
+@if (Model.LastEdited.HasValue) {
+					<div class="row">
+						<div class="col-md-6 muted">
+				@ForumHelper.GetString("ViewMessage.Edited", new { Editor = (Model.ModeratorChanged ? ForumHelper.GetString("Moderator") : Model.Author), Timestamp = Model.LastEdited.Value })
+						</div>
+						<div class="col-md-6">
+						</div>
+					</div>
+}
+				</td>
+			</tr>
+			<tr>
+				<td>@Html.RouteLink(Model.ReporterName, "ShowProfile", new RouteValueDictionary { { "id", Model.ReporterId }, { "name", Model.ReporterName.ToSlug() } }, new Dictionary<String, object> { { "class", "profile-link" }, { "id", "link1" } })</td>
+				<td>
+					<div class="row">
+						<div class="col-md-9">
+							<h3>@ForumHelper.GetHtmlString("PostReport.Reason")</h3>
+						</div>
+						<div class="col-md-3">
+							<p class="text-right muted">@Model.Timestamp.ToLocalDateTime().ToString("F")</p>
+						</div>
+					</div>
+					<hr />
+					<div class="row">
+						<div class="col-md-12">
+							@Model.Reason
+						</div>
+					</div>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+
+	<div class="row">
+		<div class="col-md-12">
+			@using (Html.BeginForm("moderate", "topic", FormMethod.Post, new { @class = "form-horizontal" })) {
+				@Html.HiddenFor(x => x.Id)
+				<h3>@ForumHelper.GetString(Model.IsTopic ? "PostReport.EditTopic" : "PostReport.EditPost", null, "mvcForum.Web")</h3>
+				<div class="form-group">
+					@Html.LabelFor(t => t.Resolved, new { @class = "col-lg-2 control-label" })
+					<div class="col-lg-10">
+						@Html.CheckBoxFor(t => t.Resolved)
+					</div>
+				</div>
+				<div class="form-group">
+@if (Model.IsTopic) {
+					@Html.LabelFor(t => t.Title, new { @class = "col-lg-2 control-label" })
+					<div class="col-lg-10">
+						@Html.TextBoxFor(t => t.Title, new { @class = "form-control" })
+					</div>
+}
+else {
+					@Html.LabelFor(t => t.Subject, new { @class = "col-lg-2 control-label" })
+					<div class="col-lg-10">
+						@Html.TextBoxFor(t => t.Subject, new { @class = "form-control" })
+					</div>
+}
+				</div>
+if (Model.IsTopic) {
+				<div class="form-group">
+					@Html.LabelFor(t => t.TopicType, new { @class = "col-lg-2 control-label" })
+					<div class="col-lg-10">
+						@Html.DropDownListFor(t => t.TopicType, ForumHelper.GetTopicTypes(Model.TopicType), new { @class = "form-control" })
+					</div>
+				</div>
+				<div class="form-group">
+					@Html.LabelFor(t => t.TopicFlag, new { @class = "col-lg-2 control-label" })
+					<div class="col-lg-10">
+						@Html.DropDownListFor(t => t.TopicFlag, ForumHelper.GetTopicFlags(Model.TopicFlag), new { @class = "form-control" })
+					</div>
+				</div>
+}
+else {
+				<div class="form-group">
+					@Html.LabelFor(t => t.PostFlag, new { @class = "col-lg-2 control-label" })
+					<div class="col-lg-10">
+						@Html.DropDownListFor(t => t.PostFlag, ForumHelper.GetPostFlags(Model.PostFlag), new { @class = "form-control" })
+					</div>
+				</div>
+}
+				<div class="form-group">
+					@Html.LabelFor(t => t.Reason, new { @class = "col-lg-2 control-label" })
+					<div class="col-lg-10">
+						@Html.TextAreaFor(t => t.Reason, new { @class = "form-control", rows = 6 })
+					</div>
+				</div>
+				<div class="form-group">
+					@Html.LabelFor(t => t.Content, new { @class = "col-lg-2 control-label" })
+					<div class="col-lg-10">
+						@Html.Partial(ForumHelper.GetEditorString() + "Editor", String.IsNullOrWhiteSpace(Model.Content) ? String.Empty : Model.Content)
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-lg-offset-2 col-lg-10">
+						<button type="submit" class="btn btn-primary">@ForumHelper.GetString("PostReport.Submit")</button>
+					</div>
+				</div>
+			}
+		</div>
+	</div>

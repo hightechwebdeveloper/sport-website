@@ -1,0 +1,12 @@
+﻿@using mvcForum.Web.Helpers;
+@{
+	TimeSpan ts = TimezoneHelper.GetTimeZoneInfo().BaseUtcOffset;
+	Double totalOffset = ts.TotalMinutes;
+	Int32 hours = ts.Hours;
+	Int32 minutes = ts.Minutes;
+}
+	<div class="row">
+		<div class="col-md-12">
+			<span class="pull-right muted">@ForumHelper.GetHtmlString("TimeOffset", new { TotalOffset = totalOffset, OffsetHours = hours, OffsetMinutes = minutes })</span>
+		</div>
+	</div>

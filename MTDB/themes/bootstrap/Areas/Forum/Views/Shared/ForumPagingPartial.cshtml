@@ -1,0 +1,23 @@
+﻿@model mvcForum.Web.ViewModels.PagingModel
+@using mvcForum.Web.Helpers
+<!-- Views/Shared/ForumPagingPartial.cshtml -->
+<div class="row">
+	<div class="col-md-12">
+		<p class="text-right">
+				@ForumHelper.GetHtmlString("Paging.Forum", new { TopicCount = Model.ActualCount, PageIndex = Model.Page, PageCount = Model.Pages })
+@if (Model.Pages > 1) {
+	<text>&bull; </text><span>@for (int index = 1; index <= Model.Pages; index++) {
+				  if (Model.Page > 1) {
+<span class="page-sep">, </span>
+				  }
+				  if (Model.Page == index) {
+	 <strong>@index</strong>
+				  }
+				  else { 
+	<a href="?page=@index">@index</a>
+				  }
+			  }</span>
+}
+		</p>
+	</div>
+</div>

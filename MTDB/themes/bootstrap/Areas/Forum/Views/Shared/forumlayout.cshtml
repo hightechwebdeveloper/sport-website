@@ -1,0 +1,50 @@
+﻿@using mvcForum.Web.Extensions;
+@using mvcForum.Web.Helpers;
+@{
+	String ns = "mvcForum.Web";
+	String editor = ForumHelper.GetEditorString().ToLower();
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<meta http-equiv="content-language" content="en-gb" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="">
+	<meta name="author" content="">
+	<title>@ViewBag.Title</title>
+
+	<link href="/themes/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+
+	<link href="/themes/bootstrap/css/additional.css" rel="stylesheet">
+	<!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+	<!--[if lt IE 9]>
+  <script src="../assets/js/html5shiv.js"></script>
+  <script src="../assets/js/respond.min.js"></script>
+<![endif]-->
+	<link rel="shortcut icon" href="/favicon.ico" />
+	<link rel="stylesheet" type="text/css" href="/content/css/markitup/style.css" />
+	@RenderSection("styles", false)
+</head>
+<body>
+@Html.Partial("TopNavigation")
+	<div class="container">
+@RenderBody()
+@Html.Partial("Footer")
+		<div class="row">
+			<div class="col-md-12">
+				<p class="text-center">
+					@ForumHelper.GetHtmlString("PoweredBy", new { Product = "MVC Forum".Wrap("<a target=\"_blank\" href=\"http://mvcforum.org\">{#}</a>"), EndYear = DateTime.Now.Year, ShortVersion = ForumHelper.GetShortVersion(), LongVersion = ForumHelper.GetVersion(), CopyrightOwner = "creativeminds".Wrap("<a target=\"_blank\" href=\"http://creativeminds.dk\">{#}</a>") })
+					<br />
+					We've been <a href="http://getbootstrap.com">Bootstrap</a>ed, support open source!
+				</p>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript" src="/scripts/jquery-1.7.2.min.js"></script>
+	<script type="text/javascript" src="/scripts/markitup/jquery.markitup.js"></script>
+	@RenderSection("scripts", false)
+@Html.Partial("BottomScripts")
+	</body>
+</html>

@@ -1,0 +1,40 @@
+﻿@model mvcForum.Web.ViewModels.Update.ReportMessageViewModel
+@using mvcForum.Web.Helpers;
+@{
+	ViewBag.Title = ForumHelper.GetString("ReportMessage.Title", new { Subject = Model.Subject });
+
+	Layout = Url.GetThemeBaseUrl() + "areas/forum/views/shared/forumlayout.cshtml";
+}
+	<!-- Views/Forum/Message/Report.cshtml -->
+@Html.Partial("Breadcrumb", Model.Path)
+
+	<h2>@Model.Subject</h2>
+
+	<div class="row">
+		<div class="col-md-12">
+			@using (Html.BeginForm("report", "message", FormMethod.Post, new { @class = "form-horizontal" })) {
+				@Html.HiddenFor(x => x.Id)
+				@Html.ValidationSummary()
+				<h3>@ForumHelper.GetString("ReportMessage.ReportMessage")</h3>
+				<div class="form-group">
+					<div class="col-lg-10">
+						<label class="col-lg-2 control-label" for="Delete">
+							@Html.CheckBoxFor(x => x.Feedback)
+							@ForumHelper.GetString("ReportMessage.Confirm", null, "mvcForum.Web")
+						</label>
+					</div>
+				</div>
+				<div class="form-group">
+					@Html.LabelFor(t => t.Reason, new { @class = "col-lg-2 control-label" })
+					<div class="col-lg-10">
+						@Html.TextAreaFor(x => x.Reason, new { @class = "form-control" })
+					</div>
+				</div>
+				<div class="form-group">
+					<div class="col-lg-offset-2 col-lg-10">
+						<button type="submit" class="btn btn-primary">@ForumHelper.GetString("ReportMessage.Submit")</button>
+					</div>
+				</div>
+			}
+		</div>
+	</div>

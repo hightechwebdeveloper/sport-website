@@ -1,0 +1,42 @@
+﻿@model mvcForum.Web.ViewModels.ForumViewModel
+@using mvcForum.Web.Extensions;
+@using mvcForum.Web.Helpers;
+@{
+	var iconName = String.Empty;
+	if (Model.Unread) {
+		iconName += "forum_unread";
+	}
+	else {
+		iconName += "forum_read";
+	}
+	iconName += ".gif";
+
+	var subForumList = String.Empty;
+	if (Model.SubForums != null) {
+		foreach (var site in Model.SubForums.Select((item, index) => new {item, index})) {
+			if (site.index > 0) {
+				subForumList += ", ";
+			}
+			subForumList += Html.ForumLink(site.item.Id, site.item.Name, null);
+		}
+	}
+	}
+<!-- Views/Forum/ForumPartial.cshtml -->
+		<tr>
+			<td class="col-md-1"><img src="@(Url.ForumImage(iconName))" /></td>
+			<td>
+@if (Model.Accessible) {
+@Html.ForumLink(Model.Id, Model.Name, new { @class = "forumtitle" });
+}
+else {
+				<a class="forumtitle">@Model.Name @ForumHelper.GetString("NoAccess")</a>
+}
+				<br />@Model.Description
+@if (Model.SubForums != null && Model.SubForums.Count() > 0) {
+				<br /><text>Sub forums: </text>@Html.Raw(subForumList)
+}
+  			</td>
+			<td>@Model.Paging.Count</td>
+			<td>@Model.Posts</td>
+			<td>@Html.Partial("LastTopicPartial", Model)</td>
+		</tr>

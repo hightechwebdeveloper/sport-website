@@ -1,0 +1,14 @@
+﻿@model System.Web.Mvc.ModelStateDictionary
+@using mvcForum.Web.Helpers;
+@if (!Model.IsValid) {
+			<div class="alert alert-danger">
+				<strong>@ForumHelper.GetString("ValidationErrorHeading")</strong>
+				<ul>
+    @foreach (ModelState value in Model.Values.Where(v => v.Errors.Count > 0)) {
+		foreach (ModelError error in value.Errors) {
+	                <li>@error.ErrorMessage</li>
+		}
+	}
+				</ul>
+			</div>
+}
