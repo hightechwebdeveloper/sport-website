@@ -31,16 +31,37 @@
 
 @if (TempData["Feedback"] != null)
 {
-    <ul>
-        @foreach (var text in (IEnumerable<MvcHtmlString>) TempData["Feedback"])
+    @section alerts {
+        @foreach (var text in (IEnumerable<MvcHtmlString>)TempData["Feedback"])
         {
-            <li>@text</li>
+            <p>@text</p>
         }
-    </ul>
+    }
+}
+
+@if (Model.SubForums.Any())
+{
+    <table class="listing listing-forum forum-listing b-table b-table-a">
+        <thead class="b-table-header j-listing-table-header">
+        <tr>
+            <th class="b-table-heading col-status asc"></th>
+            <th class="b-table-heading col-forum asc">@ForumHelper.GetString("Labels.Forum")</th>
+            <th class="b-table-heading col-last-post asc">@ForumHelper.GetString("Labels.LastPost")</th>
+            <th class="b-table-heading col-count asc">@ForumHelper.GetString("Labels.Topics")</th>
+            <th class="b-table-heading col-count asc">@ForumHelper.GetString("Labels.Posts")</th>
+        </tr>
+        </thead>
+        <tbody>
+        @foreach (var forum in Model.SubForums)
+        {
+            @Html.Partial("ForumPartial", forum)
+        }
+        </tbody>
+    </table>
 }
 
 @Html.Partial("ForumPagingPartial", Model.Paging)
-<table class="listing listing-forum-thread forum-thread-listing b-table b-table-a" data-viewstate="" data-ajax-set-window-state="true" id="forum-threads" data-row-selector=">tbody>tr">
+<table class="listing listing-forum-thread forum-thread-listing b-table b-table-a">
     <thead class="b-table-header j-listing-table-header">
     <tr>
         <th class="b-table-heading col-status asc"></th>
@@ -58,30 +79,3 @@
     </tbody>
 </table>
 @Html.Partial("ForumPagingPartial", Model.Paging)
-
-@*
-    @if (Model.SubForums.Count() > 0) {
-        <div class="forabg">
-            <div class="block-header"><span><span></span></span></div>
-            <div class="block-content">
-                <div class="block-inner">
-                    <ul class="topiclist">
-                        <li class="header">
-                            <dl class="icon"><!--<a href="#" onclick="ca_expand_forum(this, 1); return false;" class="forum-expand" id="forumblock1"></a>-->
-                                <dt>@ForumHelper.GetString("Labels.Forum")</dt>
-                                <dd class="topics">@ForumHelper.GetString("Labels.Topics")</dd>
-                                <dd class="posts">@ForumHelper.GetString("Labels.Posts")</dd>
-                                <dd class="lastpost"><span>@ForumHelper.GetString("Labels.LastPost")</span></dd>
-                            </dl>
-                        </li>
-                    </ul>
-                    <ul class="topiclist forums">
-                       
-                    </ul>
-                    <div class="block-clear"></div>
-                </div>
-            </div>
-            <div class="block-footer"><span><span></span></span></div>
-        </div>
-     }     
-*@

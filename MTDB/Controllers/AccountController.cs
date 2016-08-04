@@ -123,9 +123,12 @@ namespace MTDB.Controllers
         //
         // POST: /Account/LogOff
         [Route("logoff")]
-        public ActionResult LogOff()
+        public ActionResult LogOff(string returnUrl)
         {
             AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
+
+            if (!string.IsNullOrEmpty(returnUrl))
+                return RedirectToLocal(returnUrl);
 
             return RedirectToAction("Index", "Player");
         }

@@ -1987,7 +1987,7 @@ input.narrow	{ width: 25%; }
 input.tiny		{ width: 125px; }
 
 textarea.inputbox, #ie8#fix {
-	width: 85%;
+	width: 99%;
 }
 
 .autowidth {

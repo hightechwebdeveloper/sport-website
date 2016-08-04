@@ -8,12 +8,11 @@ using mvcForum.Web.Interfaces;
 using mvcForum.Web.ViewModels;
 using MTDB.Areas.Forum.Models;
 
-namespace mvcForum.Web.Areas.Forum.Controllers
-//namespace MTDB.Areas.Forum.Controllers
+namespace MTDB.Areas.Forum.Controllers
 {
-    public class ExtraProfileController : ThemedForumBaseController
+    public class ProfileController : ThemedForumBaseController
     {
-        public ExtraProfileController(IWebUserProvider userProvider, IContext context)
+        public ProfileController(IWebUserProvider userProvider, IContext context)
             : base(userProvider, context)
         {
         }
@@ -28,7 +27,7 @@ namespace mvcForum.Web.Areas.Forum.Controllers
             model.Culture = user.Culture;
             model.Timezone = user.Timezone;
             model.Path = new Dictionary<string, string>();
-            return View(Url.GetThemeBaseUrl() + "Areas/Forum/Views/Profile/UpdatePreferences.cshtml", model);
+            return View("UpdatePreferences", model);
         }
 
         [Authorize]
@@ -51,7 +50,7 @@ namespace mvcForum.Web.Areas.Forum.Controllers
             }
             model.Path = new Dictionary<string, string>();
             model.User = new UserViewModel(user);
-            return View(Url.GetThemeBaseUrl() + "Areas/Forum/Views/Profile/UpdatePreferences.cshtml", model);
+            return View("UpdatePreferences", model);
         }
     }
 }

@@ -14,19 +14,18 @@
         <ul>
             <li>
                 @Html.RouteLink("Profile", "ForumProfilePreferences")
-                @*@Html.ActionLink("Profile", "Preferences", "ExtraProfile")*@
             </li>
             <li>
-                @Html.ActionLink("Change Password", "ChangePassword", "Account")
+                @Html.ActionLink("Change Password", "ChangePassword", "Account", new RouteValueDictionary() { { "area", null } }, null)
             </li>
             <li>
-                @Html.ActionLink("Sign Out", "LogOff", "Account")
+                @Html.ActionLink("Sign Out", "LogOff", "Account", new RouteValueDictionary() { { "area", null }, { "returnUrl", "/forum" } }, null)
             </li>
         </ul>
     </div>
 }
 else
 {
-    @Html.ActionLink("Register", "Register", "Account", new { @class = "netbar-signin netbar-right" })
-    @Html.ActionLink("Sign In", "Login", "Account", new { @class = "netbar-signin netbar-right" })
+    @Html.ActionLink("Register", "Register", "Account", new { area = (string)null }, new { @class = "netbar-signin netbar-right" })
+    @Html.ActionLink("Sign In", "Login", "Account", new { area = (string)null }, new { @class = "netbar-signin netbar-right" })
 }    

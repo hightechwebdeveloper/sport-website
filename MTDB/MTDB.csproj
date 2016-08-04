@@ -1138,7 +1138,7 @@
     <Content Include="themes\hearth\Areas\Forum\Views\Message\Edit.cshtml" />
     <Content Include="themes\hearth\Areas\Forum\Views\Message\Delete.cshtml" />
     <Content Include="themes\hearth\Areas\Forum\Views\Message\Report.cshtml" />
-    <Content Include="themes\hearth\Areas\Forum\Views\Message\Moderate.cshtml" />
+    <Content Include="themes\hearth\Areas\Forum\Views\Message\Moderate1.cshtml" />
     <Content Include="themes\hearth\Areas\Forum\Views\Search\Index.cshtml" />
     <Content Include="themes\hearth\Areas\Forum\Views\Search\Unanswered Topics.cshtml" />
     <Content Include="themes\hearth\Areas\Forum\Views\Topic\Create.cshtml" />
@@ -1149,6 +1149,18 @@
     <Content Include="themes\hearth\Areas\Forum\Views\Profile\Index.cshtml" />
     <Content Include="themes\hearth\Areas\Forum\Views\Profile\UpdatePreferences.cshtml" />
     <Content Include="themes\hearth\Areas\Forum\Views\Profile\_UserInfo.cshtml" />
+    <Content Include="themes\hearth\Areas\Forum\Views\NoAccess\Index.cshtml" />
+    <Content Include="themes\hearth\Areas\Forum\Views\Moderate\Delete.cshtml" />
+    <Content Include="themes\hearth\Areas\Forum\Views\Moderate\Index.cshtml" />
+    <Content Include="themes\hearth\Areas\Forum\Views\Moderate\Merge.cshtml" />
+    <Content Include="themes\hearth\Areas\Forum\Views\Moderate\Move.cshtml" />
+    <Content Include="themes\hearth\Areas\Forum\Views\Moderate\Report.cshtml" />
+    <Content Include="themes\hearth\Areas\Forum\Views\Moderate\ReportList.cshtml" />
+    <Content Include="themes\hearth\Areas\Forum\Views\Moderate\Split.cshtml" />
+    <Content Include="themes\hearth\Areas\Forum\Views\Moderate\Topic.cshtml" />
+    <Content Include="themes\hearth\Areas\Forum\Views\Shared\_ModerateLayout.cshtml" />
+    <Content Include="themes\hearth\Areas\Forum\Views\Moderate\Breadcrumb.cshtml" />
+    <Content Include="themes\hearth\Areas\Forum\Views\Message\Moderate.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

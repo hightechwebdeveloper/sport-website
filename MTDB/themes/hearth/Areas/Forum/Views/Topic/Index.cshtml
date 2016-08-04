@@ -44,11 +44,12 @@
 
 @if (TempData["Feedback"] != null)
 {
-    <ul class="list-unstyled">
+    @section alerts {
         @foreach (var text in (IEnumerable<MvcHtmlString>)TempData["Feedback"])
         {
-            <li>@text</li> }
-    </ul>
+            <p>@text</p> 
+        }
+    }
 }
 
 <div class="listing-container listing-container-ul">

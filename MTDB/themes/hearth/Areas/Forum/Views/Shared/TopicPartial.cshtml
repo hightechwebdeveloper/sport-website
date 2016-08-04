@@ -1,29 +1,48 @@
 ﻿@model mvcForum.Web.ViewModels.TopicViewModel
 @using mvcForum.Web.Extensions;
 @using mvcForum.Web.Helpers;
+@using MTDB.Core
 @{
-    var iconName = String.Empty;
+    var iconName = string.Empty;
     var iconTitles = new List<string>();
+    if (!Model.Deleted)
+    {
+        iconName = "forum-thread-row";
+        if (Model.Sticky)
+        {
+            iconName += " forum-thread-row-pinned";
+            iconTitles.Add("Pinned");
+        }
+        else if (Model.Announcement)
+        {
+            iconName += " forum-announcement";
+            iconTitles.Add("Announcement");
+        }
+        else
+        {
+            iconName += " forum-thread-row-typical";
+        }
+
+        if (Model.Locked)
+        {
+            if (!Model.Announcement)
+            {
+                iconName += " forum-thread-row-locked";
+            }
+            iconTitles.Add("Locked");
+        }
+    }
+    else
+    {
+        iconName = "forum-thread-row-deleted ";
+        iconTitles.Add("Deleted");
+    }
     //if (Model.Moved)
     //{
     //    iconName = "topic_moved ";
     //}
     //else
     //{
-    if (Model.Sticky)
-    {
-        iconName += "forum-thread-row-pinned ";
-        iconTitles.Add("Pinned");
-    }
-    else if (Model.Announcement)
-    {
-        iconName += "forum-announcement";
-        iconTitles.Add("Announcement");
-    }
-    else
-    {
-        iconName += "forum-thread-row-typical";
-    }
 
     if (Model.HasUnread)
     {
@@ -34,14 +53,7 @@
         iconName += " forum-thread-row-read";
     }
 
-    if (Model.Locked)
-    {
-        if (!Model.Announcement)
-        {
-            iconName += " forum-thread-row-locked";
-        }
-        iconTitles.Add("Locked");
-    }
+
     var iconTitle = string.Join(", ", iconTitles);
     @*}*@
 
@@ -52,18 +64,23 @@
     //}
 }
 
-<tr class="j-forum-thread-row forum-thread-row forum-thread-row-normal @(iconName)">
+<tr class="j-forum-thread-row forum-thread-row @(iconName)">
     <td class="j-thread-status col-status tip">
         <a href="@Url.RouteUrl("ShowTopic", new {id = Model.Moved && !Model.OriginalTopic.Deleted ? Model.OriginalTopic.Id : Model.Id, title = Model.Title.ToSlug()})" class="status-icon" title="@iconTitle">
             <span class="state"></span>
         </a>
     </td>
     <td class="col-thread ">
-        @if (Model.Deleted)
+        @*@if (Model.Deleted)
         {
             @ForumHelper.GetString("Topic.Deleted")
+        }*@
+
+        @if (!Model.Moved)
+        {
+            @ForumHelper.GetString("Topic.Moved")
         }
-        
+
         <span class="j-thread-title thread-title">
             <a href="@Url.RouteUrl("ShowTopic", new { id = Model.Moved && !Model.OriginalTopic.Deleted ? Model.OriginalTopic.Id : Model.Id, title = Model.Title.ToSlug(), additional = "sincelast" })#sincelast" class="title">@Model.Title</a>
         </span>
@@ -71,7 +88,7 @@
         <div class="thread-author">
             by <a href="@Url.RouteUrl("ShowProfile", new RouteValueDictionary { { "id", Model.AuthorId }, { "name", Model.Author.ToSlug() } })"><span class="user user-role-registered-user">@Model.Author</span></a>
             <span class="thread-post-date">
-                <time itemprop="datePublished"><abbr class="tip standard-date standard-datetime" data-epoch="1420653228" time-processed="true">Jan 7, 2015</abbr></time>
+                <time itemprop="datePublished"><abbr class="tip standard-date standard-datetime" title="@Model.Posted.ToLocalTime().ToString("G")">@Model.Posted.Relative()</abbr></time>
             </span>
         </div>
 
@@ -80,7 +97,9 @@
             <ul class="b-pagination b-pagination-b">
                 @for (var index = 1; index <= Model.Pages; index++)
                 {
-                    <li class="b-pagination-item"><a href="@Url.RouteUrl("ShowTopic", new RouteValueDictionary { { "id", Model.Id }, { "title", Model.Title.ToSlug() }, { "page", index } })">@index</a></li>
+                    <li class="b-pagination-item">
+                        <a href="@Url.RouteUrl("ShowTopic", new RouteValueDictionary {{"id", Model.Id}, {"title", Model.Title.ToSlug()}, {"page", index}})">@index</a>
+                    </li>
                 }
             </ul>
         }
@@ -94,17 +113,4 @@
     <td class="col-count">
         @Model.Views
     </td>
-
 </tr>
-
-@*<tr>
-    <td><img src="@(Url.ForumImage(iconName))" /></td>
-    <td>
-        
-        
-        @ForumHelper.GetHtmlString("Topic.LastPost", new object[] { Model.Author.Wrap("<a href=\"" + Url.RouteUrl("ShowProfile", new RouteValueDictionary { { "id", Model.AuthorId }, { "name", Model.Author.ToSlug() } }) + "\">{#}</a>"), Model.Posted.ToUniversalTime() })
-    </td>
-    <td>@Model.MessageCount</td>
-    <td>@Model.Views</td>
-    <td></td>
-</tr>*@

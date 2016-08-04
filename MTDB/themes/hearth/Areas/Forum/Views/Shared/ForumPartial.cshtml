@@ -1,57 +1,10 @@
 ﻿@model mvcForum.Web.ViewModels.ForumViewModel
-@using mvcForum.Web.Extensions;
 @using mvcForum.Web.Helpers;
 @{
-    var iconName = String.Empty;
-    if (Model.Unread)
-    {
-        iconName += "forum_unread";
-    }
-    else
-    {
-        iconName += "forum_read";
-    }
-    iconName += ".gif";
-
-    var subForumList = String.Empty;
-    if (Model.SubForums != null)
-    {
-        foreach (var site in Model.SubForums.Select((item, index) => new { item, index }))
-        {
-            if (site.index > 0)
-            {
-                subForumList += ", ";
-            }
-            subForumList += Html.ForumLink(site.item.Id, site.item.Name, null);
-        }
-    }
+    var status = Model.Unread ? "forum-row-not-seen-latest-thread" : "forum-row-seen-latest-thread";
 }
 
-@*<li class="row">
-    <dl class="icon" style="background-image: url(@Url.Content("~/content/img/forum/" + iconName)); background-repeat: no-repeat;">
-        <dt title="No unread posts">
-            @if (Model.Accessible)
-            {
-                @Html.ForumLink(Model.Id, Model.Name, new { @class = "forumtitle" });
-            }
-            else
-            {
-                <a class="forumtitle">@Model.Name @ForumHelper.GetString("NoAccess")</a>
-            }
-            <br />@Model.Description
-            @if (Model.SubForums != null && Model.SubForums.Count() > 0)
-            {
-                <br /><text>Sub forums: </text>@Html.Raw(subForumList)
-            }
-        </dt>
-        <dd class="topics">@Model.Paging.Count<dfn>@ForumHelper.GetString("TopicCount")</dfn></dd>
-        <dd class="posts">@Model.Posts <dfn>@ForumHelper.GetString("PostCount")</dfn></dd>
-        <dd class="lastpost">@Html.Partial("LastTopicPartial", Model)</dd>
-    </dl>
-</li>*@
-
-
-<tr class="forum-row forum-row-normal forum-row-not-seen-latest-thread">
+<tr class="forum-row forum-row-normal @(status)">
     <td class="col-status without-icon">
         <span class="j-mark-forum-read status-icon tip forum-general-discussion">
             <span class="state"></span>
@@ -69,6 +22,20 @@
             }
         </h4>
         <span class="description">@Model.Description</span>
+        
+        @if (Model.SubForums != null && Model.SubForums.Any())
+        {
+            <span class="moderators">Sub forums</span>
+            <div class="expandable forum-moderator-panel expanded-by-default">
+                @foreach (var forum in Model.SubForums.Select((item, index) => new {item, index}))
+                {
+                    if (forum.index > 0)
+                    {<text>, </text>
+                    }
+                    @Html.ForumLink(forum.item.Id, forum.item.Name, null);
+                }
+            </div>
+        }
 
         @*<span class="moderators">Moderators</span>
 
@@ -80,22 +47,6 @@
 
     <td class="col-last-post">
         @Html.Partial("LastTopicPartial", Model)
-        @*<div class="avatar avatar-32 user user-role-registered-user">
-            <a href="/members/ameateye">
-                <img style="max-width: 32px" src="http://media-Hearth.cursecdn.com/avatars/thumbnails/297/45/32/32/636022153558049301.png" alt="ameateye's avatar" onerror="if (this.src != 'http://www.gravatar.com/avatar/00000000000000000000000000000000?d=mm&amp;f=y') this.src = 'http://www.gravatar.com/avatar/00000000000000000000000000000000?d=mm&amp;f=y';">
-            </a>
-
-            <i class="u-icon u-icon-online"></i>
-
-        </div>
-
-        <div class="post-title forum-thread forum-thread-typical forum-thread-normal forum-thread-poll"><a href="/forums/hearthstone-general/general-discussion/166396-at-the-start-of-the-game-mechanic/unread" title="At the start of the game mechanic">At the start of the game ...</a></div>
-        <div class="post-author">by <a href="/members/ameateye"><span class="user user-role-registered-user">ameateye</span></a></div>
-        <div class="post-date date">
-            <abbr class="tip standard-date standard-datetime" title="01.08.2016 9:32 PM" data-epoch="1470076360" time-processed="true">2 hours ago</abbr>
-            <a class="tip go-latest" title="Go to last post" href="/forums/hearthstone-general/general-discussion/166396-at-the-start-of-the-game-mechanic?comment=22"><i class="u-icon u-icon-jump">Go to last post</i></a>
-        </div>*@
-
     </td>
     <td class="col-count" data-abbr-count="23K" data-count="23,011">@Model.Paging.Count</td>
     <td class="col-count" data-abbr-count="404K" data-count="404,125">@Model.Posts</td>

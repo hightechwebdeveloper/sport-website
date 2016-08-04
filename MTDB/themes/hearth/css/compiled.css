@@ -46634,3 +46634,16 @@ div#hearth-tooltip-container {
 .hearth-tooltip.tooltip_mtgsalvation img {
     margin: 0!important
 }
+
+.p-forum-a .b-table .forum-row .col-forum .moderators, .p-forum-a .announcements .forum-row .col-forum .moderators {
+    float: left;
+    font-size: 11px;
+    margin-right: 4px;
+    font-weight: bold;
+    margin-top: 2px;
+}
+
+.p-forum-a .b-table .forum-row .col-forum .expanded-by-default {
+    clear: none;
+    float: left;
+}
