@@ -1,0 +1,26 @@
+﻿@model Dictionary<string, string>
+@using mvcForum.Web.Helpers;
+
+
+        
+<nav class="b-breadcrumb b-breadcrumb-a">
+    <ul class="b-breadcrumb-wrapper">
+        <li class="b-breadcrumb-item" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+            <a href="/" rel="up" itemprop="url"><span itemprop="title">Home</span></a>
+        </li>
+
+        <li class="b-breadcrumb-item" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+            <a href="/forum" rel="up" itemprop="url"><span itemprop="title">@ForumHelper.GetString("Forum")</span></a>
+        </li>
+
+        @if (Model != null)
+        {
+            foreach (var pair in Model.Select((item, index) => new { item, index }))
+            {
+                <li class="b-breadcrumb-item" itemscope="" itemtype="http://data-vocabulary.org/Breadcrumb">
+                    <a href="@pair.item.Key" rel="up" itemprop="url"><span itemprop="title">@pair.item.Value</span></a>
+                </li>
+            }
+        }
+    </ul>
+</nav>

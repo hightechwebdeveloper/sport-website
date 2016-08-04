@@ -1,0 +1,44 @@
+﻿@model mvcForum.Web.ViewModels.ForumViewModel
+@using mvcForum.Web.Helpers;
+
+
+
+
+    @if (Model.Following)
+    {
+        <li class="b-list-item p-nav-item">
+            <a href="@Url.Action("unfollow", new { forumId = Model.Id })">
+                <span class="b-list-label">
+                    @ForumHelper.GetString("Forum.Unfollow")
+                </span>
+            </a>
+        </li>
+    }
+    else
+    {
+        <li class="b-list-item p-nav-item">
+            <a href="@Url.Action("follow", new { forumId = Model.Id })">
+                <span class="b-list-label">
+                    @ForumHelper.GetString("Forum.Follow")
+                </span>
+            </a>
+        </li>
+    }
+    @if (ForumHelper.Authenticated())
+    {
+        <ul class="linklist">
+            <li>
+                @Html.ActionLink(ForumHelper.GetString("LinkText.MarkAsRead"), "Mark As Read", "Forum", new { id = Model.Id }, null)
+            </li>
+        </ul>
+    }
+    @if (Model.IsModerator)
+    {
+        <li class="b-list-item p-nav-item">
+            <a href="@Url.Action("index", "moderate", new { id = Model.Id })">
+                <span class="b-list-label">
+                    @ForumHelper.GetLinkText("ModeratorCP")
+                </span>
+            </a>
+        </li>
+    }

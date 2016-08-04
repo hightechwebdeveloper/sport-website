@@ -1,0 +1,96 @@
+﻿@model mvcForum.Web.ViewModels.MessageViewModel
+@using mvcForum.Core;
+@using mvcForum.Web.Extensions;
+@using mvcForum.Web.Helpers;
+@{
+    bool deleted = (Model.Flag & PostFlag.Deleted) != 0;
+    bool quarantined = (Model.Flag & PostFlag.Quarantined) != 0;
+}
+<li itemscope="" itemtype="http://schema.org/Comment" class="p-comments p-comments-b">
+    <div class="j-comment p-comment-post forum-post comment comment-normal comment-user user-role-registered-user comment-depth-0 comment-allows-rating">
+        <div class="p-comment-header forum-post-header">
+            <span class="p-comment-index post-index">
+                <span>#@(Model.Position + 1)</span>
+            </span>
+            <span class="p-comment-postdate post-date">
+                <abbr class="tip standard-date standard-datetime" title="@Model.Posted.ToLocalDateTime().ToString("G")" time-processed="true">@Model.Posted.ToLocalDateTime().ToString("F")</abbr>
+            </span>
+        </div>
+
+        <div class="j-comment-content forum-post-content p-comment-container expandable" data-related-button=".deleted-comment-button" processed="true">
+            @Html.Partial("MessagePosterPartial", Model)
+            <div class="p-comment-wrapper ">
+                <div class="p-comment-content forum-post-body-container">
+                    <div class="j-comment-body-container p-comment-body forum-post-body-content">
+                        @if (deleted)
+                        {
+                            <h4>Deleted</h4>
+                            if (!string.IsNullOrEmpty(Model.DeleteReason))
+                            {
+                                <span>Reason:</span> @Model.DeleteReason
+                            }
+                        }
+                        else if (quarantined)
+                        {
+                            <h3>Quarantined</h3>
+                        }
+                        else
+                        {
+                            <div id="forum-post-body-2" class="j-comment-body forum-post-body u-typography-format text" itemprop="text">
+                                @ForumHelper.ParseContent(Model.Body)
+                            </div>
+                        
+                            if (Model.Attachments.Any())
+                            {
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <h6>@ForumHelper.GetString("ViewMessage.Attachments")</h6>
+                                        <ul class="list-unstyled">
+                                            @foreach (var att in Model.Attachments)
+                                            {
+                                                @Html.Partial("AttachmentPartial", att)
+                                            }
+                                        </ul>
+                                    </div>
+                                </div>
+                            }
+                        }
+                    </div>
+                </div>
+
+                <div class="p-comment-notes">
+                    @if (Model.LastEdited.HasValue)
+                    {
+                        <div class="p-comment-edited">
+                            Last edited by <span class="user user-role-registered-user">@(Model.ModeratorChanged ? ForumHelper.GetString("Moderator") : Model.PrettyName)</span> on <abbr class="tip standard-date standard-datetime" data-epoch="1420658247" time-processed="true">@Model.LastEdited.Value.ToString("MMM dd, yyyy")</abbr>
+                        </div>
+                    }
+                </div>
+                @Html.Partial("PostActions", Model)
+            </div>
+        </div>
+    </div>
+
+</li>
+@*@if (!quarantined)
+            {
+    <hr />
+                <div class="row">
+                    <div class="col-md-12">
+
+                    </div>
+                </div>
+                <hr />
+                        <div class="row">
+                            <div class="col-md-6 muted">
+                                @if (Model.LastEdited.HasValue)
+                                {
+                                    @ForumHelper.GetString("ViewMessage.Edited", new { Editor = (Model.ModeratorChanged ? ForumHelper.GetString("Moderator") : Model.PrettyName), Timestamp = Model.LastEdited.Value })
+                                }
+                            </div>
+                            <div class="col-md-6">
+                                
+                            </div>
+                        </div>
+
+}*@

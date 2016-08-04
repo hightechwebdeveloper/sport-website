@@ -1,0 +1,80 @@
+﻿@model mvcForum.Web.ViewModels.MessageViewModel
+
+<div class="p-comment-user-background"></div>
+<div class="p-comment-user forum-post-info" itemscope="" itemtype="http://schema.org/Person" itemprop="creator">
+    <div class="p-comment-micro-author">
+        <a itemprop="url" href="@Url.RouteUrl("ShowProfile", new RouteValueDictionary {{"id", Model.AuthorId}, {"name", Model.Author.ToSlug()}})"><span itemprop="name">@Model.Author</span></a>
+    </div>
+    <span class="u-dropDown p-comment-username j-comment-username" title="">
+        <a href="@Url.RouteUrl("ShowProfile", new RouteValueDictionary {{"id", Model.AuthorId}, {"name", Model.Author.ToSlug()}})">
+            <span class="user user-role-registered-user">@Model.Author</span>
+        </a>
+        <ul class="user-actions  user-actions-forum-post-author-menu u-dropDownMenu b-userAction b-userAction-a covert-list">
+            <li class="user-action b-userAction-item user-action-link-responsive">
+                <a href="@Url.RouteUrl("ShowProfile", new RouteValueDictionary {{"id", Model.AuthorId}, {"name", Model.Author.ToSlug()}})" class="" data-responsive-label="Profile" data-non-responive-label="View User Profile">
+                    <i class="u-icon u-icon-link-responsive"></i>
+                    <span class="label">
+                        View User Profile
+                    </span>
+                </a>
+            </li>
+            @*<li class="user-action b-userAction-item">
+                <a href="/members/KALOWGG/posts" class="">
+                    <i class="u-icon u-icon-"></i>
+                    <span class="label">
+                        View Posts
+                    </span>
+                </a>
+            </li>
+            <li class="user-action b-userAction-item user-action-link-responsive">
+                <a href="/private-messages/send?recipient=KALOWGG" class="" data-responsive-label="Message" data-non-responive-label="Send Message">
+                    <i class="u-icon u-icon-link-responsive"></i>
+                    <span class="label">
+                        Send Message
+                    </span>
+                </a>
+            </li>
+            <li class="user-action b-userAction-item user-action-link-responsive">
+                <a href="/my-notifications/3-321303/2/toggle-subscription" class="ajax-post no-refresh j-notification-sub" data-subscribe-text="Follow" data-unsubscribe-text="Unfollow">
+                    <i class="u-icon u-icon-link-responsive"></i>
+                    <span class="label">Follow User</span>
+                </a>
+            </li>
+            <li class="user-action b-userAction-item user-action-link-responsive">
+                <a href="/members/17118142/ignore" class="ajax-post j-user-ignore" data-responsive-label="Ignore" data-non-responive-label="Ignore User">
+                    <i class="u-icon u-icon-link-responsive"></i>
+                    <span class="label">
+                        Ignore User
+                    </span>
+                </a>
+            </li>*@
+        </ul>
+    </span>
+    <span class="p-comment-title username-role-registered-user">
+    </span>
+    <div class="p-comment-role-title">
+    </div>
+    <div class="p-comment-avatar">
+        <!-- Avatar -->
+        <div class="avatar avatar-100 user user-role-registered-user">
+            <a href="@Url.RouteUrl("ShowProfile", new RouteValueDictionary { { "id", Model.AuthorId }, { "name", Model.Author.ToSlug() } })">
+                <img style="max-width: 100px" src="/themes/hearth/images/avatar.png"/>
+            </a>
+        </div>
+    </div>
+    <ul class="p-comment-stats">
+        <li class="p-comment-statitem join-date">
+            Join Date:
+            <span class="postbit-item join-date">
+                @Model.Joined.ToString("dd/MM/yyyy")
+            </span>
+        </li>
+        @*<li class="p-comment-statitem posts">
+            Posts:
+            <span class="postbit-item posts">
+                52
+            </span>
+        </li>*@
+        <li></li>
+    </ul>
+</div>

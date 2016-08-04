@@ -37,7 +37,7 @@ namespace MTDB
             bundles.Add(new ScriptBundle("~/bundles/comments").Include(
                       "~/Scripts/mtdb-comments.js"));
 
-            bundles.Add(new StyleBundle("~/Content/css")
+            bundles.Add(new StyleBundle("~/Content/bundle")
                 .Include("~/Content/bootstrap.css", new CssRewriteUrlTransform())
                 .Include("~/Content/app.css", new CssRewriteUrlTransform())
                 .Include("~/Content/font.css", new CssRewriteUrlTransform())

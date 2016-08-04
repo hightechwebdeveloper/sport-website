@@ -1,0 +1,24 @@
+﻿@model mvcForum.Web.ViewModels.CategoryViewModel
+@using mvcForum.Web.Helpers;
+
+<div class="listing-container listing-container-table j-expandable expanded-by-default">
+    <div class="listing-body">
+        <table class="listing listing-forum forum-listing b-table b-table-a">
+            <thead class="b-table-header j-listing-table-header">
+                <tr>
+                    <th class="b-table-heading col-status asc"></th>
+                    <th class="b-table-heading col-forum asc">@ForumHelper.GetString("Labels.Forum")</th>
+                    <th class="b-table-heading col-last-post asc">@ForumHelper.GetString("Labels.LastPost")</th>
+                    <th class="b-table-heading col-count asc">@ForumHelper.GetString("Labels.Topics")</th>
+                    <th class="b-table-heading col-count asc">@ForumHelper.GetString("Labels.Posts")</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var forum in Model.Forums)
+                {
+                    @Html.Partial("ForumPartial", forum)
+                }                    
+            </tbody>
+        </table>
+    </div>
+</div>

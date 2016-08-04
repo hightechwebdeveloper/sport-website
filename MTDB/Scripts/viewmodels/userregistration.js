@@ -1,4 +1,4 @@
-﻿/// <reference path="~/scripts/common.js" />
+﻿/// <reference path="~/scripts/forum-common.js" />
 
 var UserRegistrationModel = function (useController, allowLocal, allowSignUp, emailValidation, allowOpen, subject, body, rulesAccept, rules, forgottenSubject, forgottenBody) {
 	var self = this;

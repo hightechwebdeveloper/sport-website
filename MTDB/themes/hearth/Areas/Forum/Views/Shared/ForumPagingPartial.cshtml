@@ -1,0 +1,27 @@
+﻿@model mvcForum.Web.ViewModels.PagingModel
+@using mvcForum.Web.Helpers
+
+@if (Model.Pages > 1)
+{
+    <div class="listing-header">
+        <div class="b-pagination b-pagination-a">
+            <ul class="b-pagination-list paging-list j-tablesorter-pager j-listing-pagination" data-viewstate="" style="">
+                @for (var index = 1; index <= Model.Pages; index++)
+                {
+                    @*if (Model.Page > 1)
+                    {
+                        <span class="page-sep">, </span>
+                    }*@
+                    if (Model.Page == index)
+                    {
+                        <li class="b-pagination-item"><span class="b-pagination-item s-active active">@index</span></li>
+                    }
+                    else
+                    {
+                        <li class="b-pagination-item"><a href="?page=@index" class="b-pagination-item">@index</a></li>
+                    }
+                }
+            </ul>
+        </div>
+    </div>
+}

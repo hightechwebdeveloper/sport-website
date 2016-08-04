@@ -1,0 +1,20 @@
+﻿@model mvcForum.Web.ViewModels.TopicViewModel
+
+@if (Model.Pages > 1)
+{
+    <div class="b-pagination b-pagination-a">
+        <ul class="b-pagination-list paging-list j-tablesorter-pager j-listing-pagination" data-viewstate="" style="">
+            @for (int index = 1; index <= Model.Pages; index++)
+            {
+                if (Model.Page == index)
+                {
+                    <li class="b-pagination-item"><span class="b-pagination-item s-active active">@index</span></li>
+                }
+                else
+                {
+                    <li class="b-pagination-item"><a href="@(Url.RouteUrl("ShowTopic", new {id = Model.Moved && !Model.OriginalTopic.Deleted ? Model.OriginalTopic.Id : Model.Id, title = Model.Title.ToSlug()}))?page=@index" class="b-pagination-item">@index</a></li>
+                }
+            }
+        </ul>
+    </div>
+}

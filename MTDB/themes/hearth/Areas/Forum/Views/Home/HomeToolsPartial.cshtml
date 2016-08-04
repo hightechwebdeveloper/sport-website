@@ -1,0 +1,19 @@
+﻿@using mvcForum.Web.Helpers;
+
+@if (ForumHelper.Authenticated())
+{
+    <li class="b-list-item p-nav-item">
+        <a href="@Url.Action("mark as read", "home", new { id = Model.Id })">
+            <span class="b-list-label">
+                @ForumHelper.GetString("LinkText.MarkAsRead")
+            </span>
+        </a>
+    </li>
+}
+<li class="b-list-item p-nav-item">
+    <a href="@Url.Action("unanswered topics", "search")">
+        <span class="b-list-label">
+            @ForumHelper.GetString("LinkText.UnansweredPosts")
+        </span>
+    </a>
+</li>

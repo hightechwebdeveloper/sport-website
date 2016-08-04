@@ -29,6 +29,8 @@
     <ApplicationInsightsResourceId>/subscriptions/13c1cda2-5b8c-41ee-8f43-ef07ef966669/resourcegroups/mtdb/providers/microsoft.insights/components/mtdb</ApplicationInsightsResourceId>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <TransformWebConfigEnabled>True</TransformWebConfigEnabled>
+    <AutoParameterizationWebConfigConnectionStrings>False</AutoParameterizationWebConfigConnectionStrings>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -38,6 +40,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <TransformWebConfigEnabled>True</TransformWebConfigEnabled>
+    <AutoParameterizationWebConfigConnectionStrings>False</AutoParameterizationWebConfigConnectionStrings>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\</OutputPath>
@@ -368,6 +372,11 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\SendGridMessageService.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
+    <Compile Include="Areas\Forum\Controllers\ExtraIdentityController.cs" />
+    <Compile Include="Areas\Forum\Controllers\ProfileController.cs" />
+    <Compile Include="Areas\Forum\Controllers\ExtraMessageController.cs" />
+    <Compile Include="Areas\Forum\ExtraForumAreaRegistration.cs" />
+    <Compile Include="Areas\Forum\Models\UserPreferencesModel.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\CollectionController.cs" />
     <Compile Include="Controllers\CommentsController.cs" />
@@ -388,13 +397,15 @@
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="MVCForumIdentity\AuthenticationService.cs" />
     <Compile Include="MVCForumIdentity\IdentityBuilder.cs" />
-    <Compile Include="MVCForumIdentity\IdentityDbContext.cs" />
     <Compile Include="MVCForumIdentity\IdentityUserProvider.cs" />
     <Compile Include="MVCForumIdentity\MembershipService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Data\texts\MVCForum.AddOns.xml" />
+    <Content Include="App_Data\texts\MVCForum.SearchProvider.Lucene.xml" />
+    <Content Include="App_Data\texts\MVCForum.Web.xml" />
     <Content Include="Content\animate.css" />
     <Content Include="Content\bootstrap-datepicker.css" />
     <Content Include="Content\bootstrap-datepicker.min.css" />
@@ -405,7 +416,62 @@
     <Content Include="Content\bootstrap-datepicker3.standalone.css" />
     <Content Include="Content\bootstrap-datepicker3.standalone.min.css" />
     <Content Include="Content\bootstrap.css" />
+    <Content Include="Content\css\bootstrap\additional.css" />
+    <Content Include="Content\css\bootstrap\bootstrap-responsive.css" />
+    <Content Include="Content\css\bootstrap\bootstrap-responsive.min.css" />
+    <Content Include="Content\css\bootstrap\bootstrap.css" />
+    <Content Include="Content\css\bootstrap\bootstrap.min.css" />
+    <Content Include="Content\css\forum\forum.css" />
+    <Content Include="Content\css\forum\print.css" />
+    <Content Include="Content\css\forum\tweaks_ie.css" />
+    <Content Include="Content\css\markitup\images\bg-container.png" />
+    <Content Include="Content\css\markitup\images\bg-editor-bbcode.png" />
+    <Content Include="Content\css\markitup\images\bg-editor-dotclear.png" />
+    <Content Include="Content\css\markitup\images\bg-editor-html.png" />
+    <Content Include="Content\css\markitup\images\bg-editor-json.png" />
+    <Content Include="Content\css\markitup\images\bg-editor-markdown.png" />
+    <Content Include="Content\css\markitup\images\bg-editor-textile.png" />
+    <Content Include="Content\css\markitup\images\bg-editor-wiki.png" />
+    <Content Include="Content\css\markitup\images\bg-editor-xml.png" />
+    <Content Include="Content\css\markitup\images\bg-editor.png" />
+    <Content Include="Content\css\markitup\images\handle.png" />
+    <Content Include="Content\css\markitup\images\menu.png" />
+    <Content Include="Content\css\markitup\images\submenu.png" />
+    <Content Include="Content\css\markitup\sets\bbcode\images\bold.png" />
+    <Content Include="Content\css\markitup\sets\bbcode\images\clean.png" />
+    <Content Include="Content\css\markitup\sets\bbcode\images\code.png" />
+    <Content Include="Content\css\markitup\sets\bbcode\images\fonts.png" />
+    <Content Include="Content\css\markitup\sets\bbcode\images\italic.png" />
+    <Content Include="Content\css\markitup\sets\bbcode\images\link.png" />
+    <Content Include="Content\css\markitup\sets\bbcode\images\list-bullet.png" />
+    <Content Include="Content\css\markitup\sets\bbcode\images\list-item.png" />
+    <Content Include="Content\css\markitup\sets\bbcode\images\list-numeric.png" />
+    <Content Include="Content\css\markitup\sets\bbcode\images\picture.png" />
+    <Content Include="Content\css\markitup\sets\bbcode\images\preview.png" />
+    <Content Include="Content\css\markitup\sets\bbcode\images\quotes.png" />
+    <Content Include="Content\css\markitup\sets\bbcode\images\stroke.png" />
+    <Content Include="Content\css\markitup\sets\bbcode\images\underline.png" />
+    <Content Include="Content\css\markitup\sets\bbcode\style.css" />
+    <Content Include="Content\css\markitup\sets\markdown\images\bold.png" />
+    <Content Include="Content\css\markitup\sets\markdown\images\code.png" />
+    <Content Include="Content\css\markitup\sets\markdown\images\h1.png" />
+    <Content Include="Content\css\markitup\sets\markdown\images\h2.png" />
+    <Content Include="Content\css\markitup\sets\markdown\images\h3.png" />
+    <Content Include="Content\css\markitup\sets\markdown\images\h4.png" />
+    <Content Include="Content\css\markitup\sets\markdown\images\h5.png" />
+    <Content Include="Content\css\markitup\sets\markdown\images\h6.png" />
+    <Content Include="Content\css\markitup\sets\markdown\images\italic.png" />
+    <Content Include="Content\css\markitup\sets\markdown\images\link.png" />
+    <Content Include="Content\css\markitup\sets\markdown\images\list-bullet.png" />
+    <Content Include="Content\css\markitup\sets\markdown\images\list-numeric.png" />
+    <Content Include="Content\css\markitup\sets\markdown\images\picture.png" />
+    <Content Include="Content\css\markitup\sets\markdown\images\preview.png" />
+    <Content Include="Content\css\markitup\sets\markdown\images\quotes.png" />
+    <Content Include="Content\css\markitup\sets\markdown\style.css" />
+    <Content Include="Content\css\markitup\style.css" />
+    <Content Include="Content\facebook.png" />
     <Content Include="Content\font.css" />
+    <Content Include="Content\google.png" />
     <Content Include="Content\Images\badges\athlete_bronze.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -532,6 +598,122 @@
     <Content Include="Content\Images\retina_wood.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Content\img\forum\arrow_down.gif" />
+    <Content Include="Content\img\forum\arrow_left.gif" />
+    <Content Include="Content\img\forum\arrow_right.gif" />
+    <Content Include="Content\img\forum\arrow_up.gif" />
+    <Content Include="Content\img\forum\bb_attach.gif" />
+    <Content Include="Content\img\forum\bb_bg.gif" />
+    <Content Include="Content\img\forum\bb_code.gif" />
+    <Content Include="Content\img\forum\bb_expand.gif" />
+    <Content Include="Content\img\forum\bb_quote.gif" />
+    <Content Include="Content\img\forum\bb_select.gif" />
+    <Content Include="Content\img\forum\bg_block.gif" />
+    <Content Include="Content\img\forum\bg_h3.gif" />
+    <Content Include="Content\img\forum\bg_navbar.gif" />
+    <Content Include="Content\img\forum\bg_poll.gif" />
+    <Content Include="Content\img\forum\bg_popup.gif" />
+    <Content Include="Content\img\forum\bg_post.gif" />
+    <Content Include="Content\img\forum\bg_row.gif" />
+    <Content Include="Content\img\forum\bg_row_hover.gif" />
+    <Content Include="Content\img\forum\bg_row_hover2.gif" />
+    <Content Include="Content\img\forum\bg_tabs1.gif" />
+    <Content Include="Content\img\forum\bg_tabs2.gif" />
+    <Content Include="Content\img\forum\bg_th.gif" />
+    <Content Include="Content\img\forum\en\button_pm_forward.gif" />
+    <Content Include="Content\img\forum\en\button_pm_new.gif" />
+    <Content Include="Content\img\forum\en\button_pm_reply.gif" />
+    <Content Include="Content\img\forum\en\button_quick_reply.gif" />
+    <Content Include="Content\img\forum\en\button_topic_locked.gif" />
+    <Content Include="Content\img\forum\en\button_topic_new.gif" />
+    <Content Include="Content\img\forum\en\button_topic_reply.gif" />
+    <Content Include="Content\img\forum\en\icon_contact_pm.gif" />
+    <Content Include="Content\img\forum\en\icon_post_edit.gif" />
+    <Content Include="Content\img\forum\en\icon_post_quote.gif" />
+    <Content Include="Content\img\forum\en\icon_user_online.gif" />
+    <Content Include="Content\img\forum\en\spacer.gif" />
+    <Content Include="Content\img\forum\feed.gif" />
+    <Content Include="Content\img\forum\forum_link.gif" />
+    <Content Include="Content\img\forum\forum_read.gif" />
+    <Content Include="Content\img\forum\forum_read_locked.gif" />
+    <Content Include="Content\img\forum\forum_read_subforum.gif" />
+    <Content Include="Content\img\forum\forum_unread.gif" />
+    <Content Include="Content\img\forum\forum_unread_locked.gif" />
+    <Content Include="Content\img\forum\forum_unread_subforum.gif" />
+    <Content Include="Content\img\forum\icon_back_top.gif" />
+    <Content Include="Content\img\forum\icon_contact_aim.gif" />
+    <Content Include="Content\img\forum\icon_contact_email.gif" />
+    <Content Include="Content\img\forum\icon_contact_icq.gif" />
+    <Content Include="Content\img\forum\icon_contact_jabber.gif" />
+    <Content Include="Content\img\forum\icon_contact_msnm.gif" />
+    <Content Include="Content\img\forum\icon_contact_www.gif" />
+    <Content Include="Content\img\forum\icon_contact_yahoo.gif" />
+    <Content Include="Content\img\forum\icon_fontsize.gif" />
+    <Content Include="Content\img\forum\icon_home.gif" />
+    <Content Include="Content\img\forum\icon_offline.gif" />
+    <Content Include="Content\img\forum\icon_online.gif" />
+    <Content Include="Content\img\forum\icon_pages.gif" />
+    <Content Include="Content\img\forum\icon_post_delete.gif" />
+    <Content Include="Content\img\forum\icon_post_info.gif" />
+    <Content Include="Content\img\forum\icon_post_report.gif" />
+    <Content Include="Content\img\forum\icon_post_target.gif" />
+    <Content Include="Content\img\forum\icon_post_target_unread.gif" />
+    <Content Include="Content\img\forum\icon_rate_bad.gif" />
+    <Content Include="Content\img\forum\icon_rate_good.gif" />
+    <Content Include="Content\img\forum\icon_textbox_search.gif" />
+    <Content Include="Content\img\forum\icon_textbox_search2.gif" />
+    <Content Include="Content\img\forum\icon_topic_attach.gif" />
+    <Content Include="Content\img\forum\icon_topic_reported.gif" />
+    <Content Include="Content\img\forum\icon_topic_unapproved.gif" />
+    <Content Include="Content\img\forum\icon_user_warn.gif" />
+    <Content Include="Content\img\forum\layout\bg_body.gif" />
+    <Content Include="Content\img\forum\layout\bg_content.gif" />
+    <Content Include="Content\img\forum\layout\bg_left.gif" />
+    <Content Include="Content\img\forum\layout\bg_right.gif" />
+    <Content Include="Content\img\forum\layout\bottom_bg.gif" />
+    <Content Include="Content\img\forum\layout\bottom_left.gif" />
+    <Content Include="Content\img\forum\layout\bottom_right.gif" />
+    <Content Include="Content\img\forum\layout\corner_left.gif" />
+    <Content Include="Content\img\forum\layout\corner_right.gif" />
+    <Content Include="Content\img\forum\layout\hdr_bg.gif" />
+    <Content Include="Content\img\forum\layout\hdr_left.gif" />
+    <Content Include="Content\img\forum\layout\hdr_right.gif" />
+    <Content Include="Content\img\forum\no_avatar.gif" />
+    <Content Include="Content\img\forum\post_hide.gif" />
+    <Content Include="Content\img\forum\post_show.gif" />
+    <Content Include="Content\img\forum\site_logo.gif" />
+    <Content Include="Content\img\forum\spacer.gif" />
+    <Content Include="Content\img\forum\sticky_read.gif" />
+    <Content Include="Content\img\forum\sticky_read_locked.gif" />
+    <Content Include="Content\img\forum\sticky_read_locked_mine.gif" />
+    <Content Include="Content\img\forum\sticky_read_mine.gif" />
+    <Content Include="Content\img\forum\sticky_unread.gif" />
+    <Content Include="Content\img\forum\sticky_unread_locked.gif" />
+    <Content Include="Content\img\forum\sticky_unread_locked_mine.gif" />
+    <Content Include="Content\img\forum\sticky_unread_mine.gif" />
+    <Content Include="Content\img\forum\subforum_link.gif" />
+    <Content Include="Content\img\forum\subforum_read.gif" />
+    <Content Include="Content\img\forum\subforum_unread.gif" />
+    <Content Include="Content\img\forum\topic_moved.gif" />
+    <Content Include="Content\img\forum\topic_moved_mine.gif" />
+    <Content Include="Content\img\forum\topic_read.gif" />
+    <Content Include="Content\img\forum\topic_read_hot.gif" />
+    <Content Include="Content\img\forum\topic_read_hot_mine.gif" />
+    <Content Include="Content\img\forum\topic_read_locked.gif" />
+    <Content Include="Content\img\forum\topic_read_locked_mine.gif" />
+    <Content Include="Content\img\forum\topic_read_mine.gif" />
+    <Content Include="Content\img\forum\topic_unread.gif" />
+    <Content Include="Content\img\forum\topic_unread_hot.gif" />
+    <Content Include="Content\img\forum\topic_unread_hot_mine.gif" />
+    <Content Include="Content\img\forum\topic_unread_locked.gif" />
+    <Content Include="Content\img\forum\topic_unread_locked_mine.gif" />
+    <Content Include="Content\img\forum\topic_unread_mine.gif" />
+    <Content Include="Content\img\forum\ucp_item.gif" />
+    <Content Include="Content\img\forum\ucp_section.gif" />
+    <Content Include="Content\img\glyphicons-halflings-white.png" />
+    <Content Include="Content\img\glyphicons-halflings.png" />
+    <Content Include="Content\PagedList.css" />
+    <Content Include="Content\twitter.png" />
     <Content Include="libs\assets\animate.css\animate.css" />
     <Content Include="libs\assets\font-awesome\css\font-awesome.css" />
     <Content Include="libs\assets\font-awesome\css\font-awesome.min.css" />
@@ -612,6 +794,7 @@
     <Content Include="Scripts\ai.0.22.9-build00167.min.js" />
     <Content Include="Scripts\app.min.js" />
     <Content Include="Scripts\app.src.js" />
+    <Content Include="Scripts\boostrap-collapse.js" />
     <Content Include="Scripts\bootstrap-datepicker.js" />
     <Content Include="Scripts\bootstrap-datepicker.min.js" />
     <Content Include="Scripts\bootstrap.js" />
@@ -623,11 +806,15 @@
     <Content Include="fonts\Material-Design-Icons.eot" />
     <Content Include="fonts\Material-Design-Icons.ttf" />
     <Content Include="fonts\Material-Design-Icons.woff" />
+    <Content Include="Scripts\forum-common.js" />
     <Content Include="Scripts\common.js" />
+    <Content Include="Scripts\jquery-1.7.2.min.js" />
     <Content Include="Scripts\jquery-ui.min.js">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Scripts\jquery.js" />
+    <Content Include="Scripts\knockout-2.1.0.js" />
+    <Content Include="Scripts\knockout.validation.js" />
     <Content Include="Scripts\locales\bootstrap-datepicker.ar.min.js" />
     <Content Include="Scripts\locales\bootstrap-datepicker.az.min.js" />
     <Content Include="Scripts\locales\bootstrap-datepicker.bg.min.js" />
@@ -694,6 +881,9 @@
     <Content Include="Scripts\locales\bootstrap-datepicker.vi.min.js" />
     <Content Include="Scripts\locales\bootstrap-datepicker.zh-CN.min.js" />
     <Content Include="Scripts\locales\bootstrap-datepicker.zh-TW.min.js" />
+    <Content Include="Scripts\markitup\jquery.markitup.js" />
+    <Content Include="Scripts\markitup\sets\bbcode\set.js" />
+    <Content Include="Scripts\markitup\sets\markdown\set.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Scripts\mtdb-comments.js" />
     <Content Include="Scripts\respond.js" />
@@ -704,9 +894,34 @@
     <Content Include="Scripts\ui-load.js" />
     <Content Include="Scripts\ui-nav.js" />
     <Content Include="Scripts\ui-toggle.js" />
+    <Content Include="Scripts\viewmodels\accessmaskupdate.js" />
+    <Content Include="Scripts\viewmodels\akismet.js" />
+    <Content Include="Scripts\viewmodels\basicinstall.js" />
+    <Content Include="Scripts\viewmodels\boardupdate.js" />
+    <Content Include="Scripts\viewmodels\categoryupdate.js" />
+    <Content Include="Scripts\viewmodels\forumupdate.js" />
+    <Content Include="Scripts\viewmodels\grouplist.js" />
+    <Content Include="Scripts\viewmodels\groupupdate.js" />
+    <Content Include="Scripts\viewmodels\multipost.js" />
+    <Content Include="Scripts\viewmodels\newusertrial.js" />
+    <Content Include="Scripts\viewmodels\statistics.js" />
+    <Content Include="Scripts\viewmodels\stopforumspam.js" />
+    <Content Include="Scripts\viewmodels\userlist.js" />
+    <Content Include="Scripts\viewmodels\userregistration.js" />
+    <Content Include="Scripts\viewmodels\userupdate.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="themes\bootstrap\css\additional.css" />
     <Content Include="themes\bootstrap\css\bootstrap.min.css" />
+    <Content Include="themes\bootstrap\gfx\forum_read.gif" />
+    <Content Include="themes\bootstrap\gfx\forum_unread.gif" />
+    <Content Include="themes\bootstrap\gfx\sticky_read.gif" />
+    <Content Include="themes\bootstrap\gfx\sticky_unread.gif" />
+    <Content Include="themes\bootstrap\gfx\topic_read.gif" />
+    <Content Include="themes\bootstrap\gfx\topic_unread.gif" />
+    <Content Include="themes\hearth\css\compiled.css" />
+    <Content Include="themes\hearth\images\avatar.png" />
+    <Content Include="themes\hearth\images\bg.jpg" />
+    <Content Include="themes\hearth\images\social-buttons.png" />
     <Content Include="Views\Pack\CreateDraft.cshtml" />
     <Content Include="Views\Pack\DraftResults.cshtml" />
     <Content Include="Views\Pack\DraftDetails.cshtml" />
@@ -882,7 +1097,6 @@
     <Content Include="themes\bootstrap\Areas\Forum\Views\Message\Edit.cshtml" />
     <Content Include="themes\bootstrap\Areas\Forum\Views\Message\Delete.cshtml" />
     <Content Include="themes\bootstrap\Areas\Forum\Views\Message\Create.cshtml" />
-    <Content Include="themes\bootstrap\Areas\Forum\Views\Home\Index.cshtml" />
     <Content Include="themes\bootstrap\Areas\Forum\Views\Forum\Index.cshtml" />
     <Content Include="themes\bootstrap\Areas\Forum\Views\File\Attach.cshtml" />
     <Content Include="themes\bootstrap\Areas\Forum\Views\Category\Index.cshtml" />
@@ -892,6 +1106,49 @@
     <Content Include="themes\bootstrap\Areas\Forum\Views\Account\LocalLogOn.cshtml" />
     <Content Include="themes\bootstrap\Areas\Forum\Views\Account\External.cshtml" />
     <Content Include="themes\bootstrap\Areas\Forum\Views\Account\Activate.cshtml" />
+    <Content Include="themes\bootstrap\Areas\Forum\Views\Home\Index.cshtml" />
+    <Content Include="themes\hearth\Areas\Forum\Views\Home\Index.cshtml" />
+    <Content Include="themes\hearth\Areas\Forum\Views\Shared\_Layout.cshtml" />
+    <Content Include="themes\hearth\Areas\Forum\Views\Shared\TopNavigation.cshtml" />
+    <Content Include="themes\hearth\Areas\Forum\Views\web.config" />
+    <Content Include="themes\hearth\Areas\Forum\Views\Shared\CategoryPartial.cshtml" />
+    <Content Include="themes\hearth\Areas\Forum\Views\Shared\ForumPartial.cshtml" />
+    <Content Include="themes\hearth\Areas\Forum\Views\Shared\Header.cshtml" />
+    <Content Include="themes\hearth\Areas\Forum\Views\Shared\LastTopicPartial.cshtml" />
+    <Content Include="themes\hearth\Areas\Forum\Views\Shared\_ForumLayout.cshtml" />
+    <Content Include="themes\hearth\Areas\Forum\Views\Forum\Index.cshtml" />
+    <Content Include="themes\hearth\Areas\Forum\Views\Shared\Breadcrumb.cshtml" />
+    <Content Include="themes\hearth\Areas\Forum\Views\Shared\ForumToolsPartial.cshtml" />
+    <Content Include="themes\hearth\Areas\Forum\Views\Shared\ForumPagingPartial.cshtml" />
+    <Content Include="themes\hearth\Areas\Forum\Views\Shared\TopicPartial.cshtml" />
+    <Content Include="themes\hearth\Areas\Forum\Views\Shared\LastMessagePartial.cshtml" />
+    <Content Include="themes\hearth\Areas\Forum\Views\Topic\Index.cshtml" />
+    <Content Include="themes\hearth\Areas\Forum\Views\Topic\MessagePartial.cshtml" />
+    <Content Include="themes\hearth\Areas\Forum\Views\Topic\MessagePosterPartial.cshtml" />
+    <Content Include="themes\hearth\Areas\Forum\Views\Topic\PostActions.cshtml" />
+    <Content Include="themes\hearth\Areas\Forum\Views\Topic\TopicToolsPartial.cshtml" />
+    <Content Include="themes\hearth\Areas\Forum\Views\Topic\TopicPagingPartial.cshtml" />
+    <Content Include="themes\hearth\Areas\Forum\Views\Home\HomeToolsPartial.cshtml" />
+    <Content Include="themes\hearth\Areas\Forum\Views\Shared\_ContentLayout.cshtml" />
+    <Content Include="themes\hearth\Areas\Forum\Views\Category\Index.cshtml" />
+    <Content Include="themes\hearth\Areas\Forum\Views\Category\CategoryToolsPartial.cshtml" />
+    <Content Include="themes\hearth\Areas\Forum\Views\Message\_Create.cshtml" />
+    <Content Include="themes\hearth\Areas\Forum\Views\Message\Create.cshtml" />
+    <Content Include="themes\hearth\fonts\cobalt-ui.woff" />
+    <Content Include="themes\hearth\Areas\Forum\Views\Message\Edit.cshtml" />
+    <Content Include="themes\hearth\Areas\Forum\Views\Message\Delete.cshtml" />
+    <Content Include="themes\hearth\Areas\Forum\Views\Message\Report.cshtml" />
+    <Content Include="themes\hearth\Areas\Forum\Views\Message\Moderate.cshtml" />
+    <Content Include="themes\hearth\Areas\Forum\Views\Search\Index.cshtml" />
+    <Content Include="themes\hearth\Areas\Forum\Views\Search\Unanswered Topics.cshtml" />
+    <Content Include="themes\hearth\Areas\Forum\Views\Topic\Create.cshtml" />
+    <Content Include="themes\hearth\Areas\Forum\Views\Topic\Edit.cshtml" />
+    <Content Include="themes\hearth\Areas\Forum\Views\Shared\_User.cshtml" />
+    <Content Include="Views\Profile\Index.cshtml" />
+    <Content Include="Views\Profile\Update.cshtml" />
+    <Content Include="themes\hearth\Areas\Forum\Views\Profile\Index.cshtml" />
+    <Content Include="themes\hearth\Areas\Forum\Views\Profile\UpdatePreferences.cshtml" />
+    <Content Include="themes\hearth\Areas\Forum\Views\Profile\_UserInfo.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -923,9 +1180,7 @@
     <Content Include="Views\Player\Index.cshtml" />
     <Content Include="Views\Lineup\Index.cshtml" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="App_Data\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />

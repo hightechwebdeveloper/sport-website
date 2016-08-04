@@ -18,8 +18,8 @@ namespace MTDB.MvcForumIdentity {
 		private readonly IRepository<ForumUser> userRepo;
         private readonly MVCForumContext _forumContext;
 
-        public IdentityUserProvider(IRepository<ForumUser> userRepo, MtdbRepository mtdbContext) {
-            this._forumContext = new MVCForumContext("mvcForum.DataProvider.MainDB");
+        public IdentityUserProvider(IRepository<ForumUser> userRepo, MtdbRepository mtdbContext, MVCForumContext forumContext) {
+            this._forumContext = forumContext;
             this.userRepo = userRepo;
 			this.userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(mtdbContext));
 		}
@@ -43,7 +43,8 @@ namespace MTDB.MvcForumIdentity {
                         ApplicationUser identityUser = this.userManager.FindByName(HttpContext.Current.User.Identity.Name);
 						this.authenticated = (identityUser != null);
 						if (this.authenticated) {
-							try {
+							try
+                            {
 								user = this.userRepo.ReadOne(new ForumUserSpecifications.SpecificProviderUserKey(identityUser.Id));
                                 if (user == null)
                                 {
@@ -68,7 +69,7 @@ namespace MTDB.MvcForumIdentity {
                                 }                                
 
                             }
-							catch { }
+							catch {}
 							this.authenticated = (user != null);
 						}
 					}

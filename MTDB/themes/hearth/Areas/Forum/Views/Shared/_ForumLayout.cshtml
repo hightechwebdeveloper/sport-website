@@ -1,0 +1,60 @@
+﻿@using mvcForum.Web.Extensions;
+@using mvcForum.Web.Helpers
+@{
+    Layout = Url.GetThemeBaseUrl() + "areas/forum/views/shared/_layout.cshtml";
+}
+@if (IsSectionDefined("complementary"))
+{
+    @section complementary {
+        @RenderSection("complementary", false)
+    }
+}
+@if (IsSectionDefined("bread"))
+{
+    @section bread {
+        @RenderSection("bread", false)
+    }
+}
+
+@if (IsSectionDefined("alerts"))
+{
+    <div class="alert u-typography-format">
+        @RenderSection("alerts", false)
+    </div>
+}
+
+
+<header class="h2 caption-threads with-sub with-nav">
+    <ul class="user-actions  user-actions-forums b-userAction b-userAction-a covert-list">
+        @if (IsSectionDefined("forumButtons"))
+        {
+            @RenderSection("forumButtons", false)
+        }
+
+        <li class="user-action b-userAction-item user-action-search">
+            <a href="@Url.Action("Index", "Search")" class="">
+                <i class="u-icon u-icon-search"></i>
+                <span class="label">
+                    Search
+                </span>
+            </a>
+        </li>
+
+        @if (IsSectionDefined("forumTools"))
+        {
+            <li class="user-action b-userAction-item user-action-tools u-dropDown">
+                <a href="" class="">
+                    <i class="u-icon u-icon-tools"></i>
+                    <span class="label">Tools</span>
+                </a>
+                <ul class="u-dropDownMenu">
+                    @RenderSection("forumTools", false)
+                </ul>
+            </li>
+        }
+    </ul>
+    @RenderSection("forumHeader", false)
+</header>
+
+@RenderBody()
+

@@ -1,4 +1,4 @@
-﻿/// <reference path="~/scripts/common.js" />
+﻿/// <reference path="~/scripts/forum-common.js" />
 
 var BasicInstallModel = function (canInstallAdmin, canInstallGroups, canInstallSimpleForum) {
 	var self = this;

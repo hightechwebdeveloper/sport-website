@@ -1,0 +1,32 @@
+﻿@using mvcForum.Web.Helpers
+@model mvcForum.Core.ForumUser
+@{
+    string ns = "mvcForum.Web";
+}
+@if (ForumHelper.Authenticated())
+{
+    <div class="netbar-user netbar-right">
+        <a href="#">
+
+            @*<img src="https://secure.gravatar.com/avatar/4d39a27c32b079a3faf4282882f0a568?d=mm&amp;s=32" alt="Avatar">*@
+            <span>@User.Identity.Name</span>
+        </a>
+        <ul>
+            <li>
+                @Html.RouteLink("Profile", "ForumProfilePreferences")
+                @*@Html.ActionLink("Profile", "Preferences", "ExtraProfile")*@
+            </li>
+            <li>
+                @Html.ActionLink("Change Password", "ChangePassword", "Account")
+            </li>
+            <li>
+                @Html.ActionLink("Sign Out", "LogOff", "Account")
+            </li>
+        </ul>
+    </div>
+}
+else
+{
+    @Html.ActionLink("Register", "Register", "Account", new { @class = "netbar-signin netbar-right" })
+    @Html.ActionLink("Sign In", "Login", "Account", new { @class = "netbar-signin netbar-right" })
+}    

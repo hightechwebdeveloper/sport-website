@@ -1,4 +1,4 @@
-﻿/// <reference path="~/scripts/common.js" />
+﻿/// <reference path="~/scripts/forum-common.js" />
 
 var MultiPostConfiguration = function (async, ena) {
 	var self = this;

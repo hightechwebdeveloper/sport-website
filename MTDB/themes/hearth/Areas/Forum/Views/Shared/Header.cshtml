@@ -1,0 +1,24 @@
+﻿@using mvcForum.Web.Helpers;
+@{
+    string ns = "mvcForum.Web";
+}
+<div class="netbar">
+    @Html.Action("CurrentUser", "ExtraIdentity")
+</div>
+
+<header class="main" role="banner">                
+
+    @using (Html.BeginForm("Index", "Search", new { area = "forum" }, FormMethod.Post, new { id = "search", role = "search", @class = "primary-search b-search b-search-a", novalidate = "novalidate" }))
+    {
+        <input type="search" name="Query" placeholder="@ForumHelper.GetString("InitialSearchValue", null, ns)" title="@ForumHelper.GetString("SearchTitle", null, ns)" class="b-search-input ac_input">        
+        <input type="submit" value="@ForumHelper.GetLinkText("SearchButton", null, ns)" />
+    }
+
+    <h1><a class="logo old-gods-static" href="/">MTDB</a></h1>
+
+    <ul class="b-social-networks">
+        @*<li><a class="b-social-youtube" href="" target="_blank">Subscribe On YouTube</a></li>*@
+        <li><a class="b-social-twitter" href="https://twitter.com/myteamdb" target="_blank">Follow Us On Twitter</a></li>
+        @*<li><a class="b-social-facebook" href="" target="_blank">Like Us On Facebook</a></li>*@
+    </ul>
+</header>

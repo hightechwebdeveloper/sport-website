@@ -1,0 +1,119 @@
+﻿@model mvcForum.Web.ViewModels.MessageViewModel
+@using mvcForum.Core;
+@using mvcForum.Web.Helpers;
+@{
+	Boolean quarantined = (Model.Flag & PostFlag.Quarantined) != 0;
+	Dictionary<String, String> texts = new Dictionary<String, String>();
+	texts.Add("Delete", ForumHelper.GetString("ViewMessage.Delete"));
+	texts.Add("Edit", ForumHelper.GetString("ViewMessage.Edit"));
+	texts.Add("Report", ForumHelper.GetString("ViewMessage.Report"));
+	texts.Add("Quote", ForumHelper.GetString("ViewMessage.Quote"));
+	texts.Add("Moderate", ForumHelper.GetString("ViewMessage.Moderate"));
+}
+<div class="p-comment-footer forum-post-footer">
+    @*<div class="forum-post-rating b-ratingForm-a">
+        <form class="rating-form" method="post" data-rating-average="1.02" data-rating-sum="48" data-rating-countpositive="48" data-rating-countnegative="0" data-rating-count="47" data-rating-form-type="like" data-entity-type-id="15" data-entity-id="432945" action="/apply-rating?entityTypeID=15&amp;entityID=432945&amp;returnUrl=%252fcomments%252f432945" novalidate="novalidate">
+            <div class="b-rating b-rating-a rating-form like group">
+
+                <a href="/comments/rating-modal/15-432945" class="j-like-modal" data-title="Likes"><span class="num-likes">47</span></a>
+                <input id="field-ratableEntity" name="fb7b344b920191f2cc2500b31b17c30ce" type="hidden" value="15:432945"><input id="field-security-token" name="security-token" type="hidden" value="1dc018d1ae2cd58cf76f4dc077f1d65e"><input id="field-authenticity-token" name="f1d217f14987117b1ef0258a0a2cdd42f" type="hidden" value="5wMImi2yGEf3xuF5iwO35ye+y93bVdzycx4RfCweHFHZXLRnrjIfINvcIWXd">
+
+                <div class="content-box-rating">
+
+                    <span class="like tip j-rating-tooltip" data-user-id="17118142" title="Click to like this">
+
+                        <!-- Field -->
+
+
+                        <input type="image" src="http://static-Hearth.cursecdn.com/1-0-6057-42986/skins/global/images/ui/blank.png" name="f832fdcd3984dc6ebbe00d51d2d0caaea" id="field-like" value="Submit" class="tip" title="Click to like this">
+
+                    </span>
+
+                </div>
+
+            </div>
+        </form>
+    </div>*@
+
+    <div class="p-comment-actions forum-post-actions j-comment-actions">
+        <nav class="p-comment-actionsUser">
+            <ul class="user-actions  user-actions-post b-userAction b-userAction-a covert-list">
+                <li class="user-action b-userAction-item user-action-report responsive-bottom-nav-3">
+                    <a href="#top" class="comment-right-side-user-action">
+                        <i class="u-icon u-icon-top"></i>
+                        <span class="label">Top</span>
+                    </a>
+                </li>
+                @if (quarantined)
+                {
+                    if (Model.CanDelete)
+                    {
+                        <li class="user-action b-userAction-item user-action-report responsive-bottom-nav-3">
+                            <a href="@Url.Action("delete", "message", new { id = Model.Id })" class="comment-right-side-user-action">
+                                <i class="u-icon u-icon-delete"></i>
+                                <span class="label">@texts["Delete"]</span>
+                            </a>
+                        </li>
+                    }
+                    if (Model.CanEdit)
+                    {
+                        <li class="user-action b-userAction-item user-action-report responsive-bottom-nav-3">
+                            <a href="@Url.Action("edit", "message", new { id = (Model.Position == 0 ? Model.TopicId : Model.Id) })" class="comment-right-side-user-action">
+                                <i class="u-icon u-icon-edit"></i>
+                                <span class="label">@texts["Edit"]</span>
+                            </a>
+                        </li>
+                    }
+                }
+                else
+                {
+                    if (Model.Authenticated)
+                    {
+                        <li class="user-action b-userAction-item user-action-report responsive-bottom-nav-3">
+                            <a href="@Url.Action("report", "message", new { id = Model.Id })" class="comment-right-side-user-action">
+                                <i class="u-icon u-icon-report"></i>
+                                <span class="label">@texts["Report"]</span>
+                            </a>
+                        </li>
+                    }
+                    if (Model.CanDelete && Model.Position != 0)
+                    {
+                        <li class="user-action b-userAction-item user-action-report responsive-bottom-nav-3">
+                            <a href="@Url.Action("delete", "message", new { id = Model.Id })" class="comment-right-side-user-action">
+                                <i class="u-icon u-icon-delete"></i>
+                                <span class="label">@texts["Delete"]</span>
+                            </a>
+                        </li>
+                    }
+                    if (Model.CanPost)
+                    {
+                        <li class="user-action b-userAction-item user-action-report responsive-bottom-nav-3">
+                            <a href="@Url.Action("create", "message", new { id = Model.TopicId, replytoid = Model.Id })" class="comment-right-side-user-action">
+                                <i class="u-icon u-icon-quote"></i>
+                                <span class="label">@texts["Quote"]</span>
+                            </a>
+                        </li>
+                    }
+                    if (Model.CanEdit)
+                    {
+                        <li class="user-action b-userAction-item user-action-report responsive-bottom-nav-3">
+                            <a href="@Url.Action("edit", (Model.Position == 0 ? "topic" : "message"), new { id = (Model.Position == 0 ? Model.TopicId : Model.Id) })" class="comment-right-side-user-action">
+                                <i class="u-icon u-icon-edit"></i>
+                                <span class="label">@texts["Edit"]</span>
+                            </a>
+                        </li>
+                    }
+                    if (Model.IsModerator)
+                    {
+                        <li class="user-action b-userAction-item user-action-report responsive-bottom-nav-3">
+                            <a href="@Url.Action("moderate", (Model.Position == 0 ? "topic" : "message"), new { id = (Model.Position == 0 ? Model.TopicId : Model.Id) })" class="comment-right-side-user-action">
+                                <i class="u-icon u-icon-report"></i>
+                                <span class="label">@texts["Moderate"]</span>
+                            </a>
+                        </li>
+                    }
+                }
+            </ul>
+        </nav>
+    </div>
+</div>

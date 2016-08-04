@@ -1,0 +1,87 @@
+﻿@model mvcForum.Web.ViewModels.ForumViewModel
+@using mvcForum.Web.Helpers;
+@{
+    ViewBag.Title = ForumHelper.GetString("Forum.Title", new { Name = Model.Name });
+    Layout = Url.GetThemeBaseUrl() + "areas/forum/views/shared/_ForumLayout.cshtml";
+}
+@section complementary{
+    @Html.Partial("Breadcrumb", Model.Path)
+}
+@section bread {
+    @Html.Partial("Breadcrumb", Model.Path)
+}
+@section forumButtons {
+    <li class="user-action b-userAction-item user-action-new">
+        <a href="@Url.Action("Create", "topic", new { id = Model.Id })">
+            <i class="u-icon u-icon-new"></i>
+            <span class="label">
+                @ForumHelper.GetString("Forum.PostTopic")
+            </span>
+        </a>
+    </li>
+}
+
+@section forumTools {
+    @Html.Partial("ForumToolsPartial", Model)
+}
+@section forumHeader {
+    <h2>@Model.Name</h2>
+    <span class="sub-header">@Model.Description</span>   
+}
+
+@if (TempData["Feedback"] != null)
+{
+    <ul>
+        @foreach (var text in (IEnumerable<MvcHtmlString>) TempData["Feedback"])
+        {
+            <li>@text</li>
+        }
+    </ul>
+}
+
+@Html.Partial("ForumPagingPartial", Model.Paging)
+<table class="listing listing-forum-thread forum-thread-listing b-table b-table-a" data-viewstate="" data-ajax-set-window-state="true" id="forum-threads" data-row-selector=">tbody>tr">
+    <thead class="b-table-header j-listing-table-header">
+    <tr>
+        <th class="b-table-heading col-status asc"></th>
+        <th class="b-table-heading col-thread asc">@ForumHelper.GetString("Labels.Topics")</th>
+        <th class="b-table-heading col-last-post asc">@ForumHelper.GetString("Labels.LastPost")</th>
+        <th class="b-table-heading col-count desc">@ForumHelper.GetString("Labels.Replies")</th>
+        <th class="b-table-heading col-count desc">@ForumHelper.GetString("Labels.Views")</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach (var topic in Model.Topics)
+    {
+        @Html.Partial("TopicPartial", topic)
+    }
+    </tbody>
+</table>
+@Html.Partial("ForumPagingPartial", Model.Paging)
+
+@*
+    @if (Model.SubForums.Count() > 0) {
+        <div class="forabg">
+            <div class="block-header"><span><span></span></span></div>
+            <div class="block-content">
+                <div class="block-inner">
+                    <ul class="topiclist">
+                        <li class="header">
+                            <dl class="icon"><!--<a href="#" onclick="ca_expand_forum(this, 1); return false;" class="forum-expand" id="forumblock1"></a>-->
+                                <dt>@ForumHelper.GetString("Labels.Forum")</dt>
+                                <dd class="topics">@ForumHelper.GetString("Labels.Topics")</dd>
+                                <dd class="posts">@ForumHelper.GetString("Labels.Posts")</dd>
+                                <dd class="lastpost"><span>@ForumHelper.GetString("Labels.LastPost")</span></dd>
+                            </dl>
+                        </li>
+                    </ul>
+                    <ul class="topiclist forums">
+                       
+                    </ul>
+                    <div class="block-clear"></div>
+                </div>
+            </div>
+            <div class="block-footer"><span><span></span></span></div>
+        </div>
+     }     
+*@

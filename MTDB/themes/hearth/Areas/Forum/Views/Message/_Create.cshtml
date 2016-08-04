@@ -1,0 +1,24 @@
+﻿@model mvcForum.Web.ViewModels.Create.CreateMessageViewModel
+@using mvcForum.Web.Helpers;
+
+<div class="j-comment-form-container p-attachmentable-form">
+    @using (Html.BeginForm("create", "message", FormMethod.Post, new { enctype = "multipart/form-data", @class = "j-comment-form p-comment-form comment-form" }))
+    {
+        @Html.HiddenFor(t => t.TopicId)
+        @Html.HiddenFor(t => t.ReplyTo)
+        @Html.HiddenFor(t => t.Subject)
+
+        @Html.Partial(ForumHelper.GetEditorString() + "Editor", String.IsNullOrEmpty(Model.Body) ? "" : Model.Body)
+
+        <div class="form-actions form-footer">
+            @*@if (Model.Topic.CanUpload)
+            {
+                @Html.LabelFor(t => t.AttachFile)
+                <input type="file" id="files" name="files" />
+            }*@
+            <div class="form-button-block">
+                <input type="submit" accesskey="s" tabindex="6" name="post" value="@ForumHelper.GetString("CreateMessage.Submit")" class="u-button u-button-primary button" />
+            </div>
+        </div>
+    }
+</div>

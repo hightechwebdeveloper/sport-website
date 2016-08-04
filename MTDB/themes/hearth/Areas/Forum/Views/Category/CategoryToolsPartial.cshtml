@@ -1,0 +1,10 @@
+﻿@using mvcForum.Web.Helpers
+@model mvcForum.Web.ViewModels.CategoryViewModel
+
+<li class="b-list-item p-nav-item">
+    <a href="@Url.Action("Mark As Read", "Category", new { id = Model.Id })">
+        <span class="b-list-label">
+            @ForumHelper.GetString("LinkText.MarkAsRead")
+        </span>
+    </a>
+</li>

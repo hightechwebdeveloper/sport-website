@@ -1,0 +1,742 @@
+﻿@using mvcForum.Web.Helpers;
+@{
+//string ns = "mvcForum.Web";
+//var items = Html.Navigation(Url, "TopNavigation");
+}
+
+@*<nav class="main p-nav p-nav-a j-sticky" role="navigation">
+        <ul class="b-list b-list-a">
+
+
+            <li id="nav-home" class=" b-list-item p-nav-item">
+
+                <a href="/" class="">
+                    <span class="b-list-label">
+                        Home
+                    </span>
+                </a>
+
+            </li>
+
+
+            <li id="nav-cards" class="section b-list-item p-nav-item">
+
+                <a href="/cards?display=3&amp;filter-premium=1" class="">
+                    <span class="b-list-label">
+                        Cards
+                    </span>
+                </a>
+
+                <ul class="">
+
+
+                    <li id="nav-ability" class=" b-list-item p-nav-item">
+
+                        <a href="/cards/ability?display=3&amp;filter-premium=1" class="">
+                            <span class="b-list-label">
+                                Ability
+                            </span>
+                        </a>
+
+                    </li>
+
+
+                    <li id="nav-minion" class=" b-list-item p-nav-item">
+
+                        <a href="/cards/minion?display=3&amp;filter-premium=1" class="">
+                            <span class="b-list-label">
+                                Minion
+                            </span>
+                        </a>
+
+                    </li>
+
+
+                    <li id="nav-weapon" class=" b-list-item p-nav-item">
+
+                        <a href="/cards/weapon?display=3&amp;filter-premium=1" class="">
+                            <span class="b-list-label">
+                                Weapon
+                            </span>
+                        </a>
+
+                    </li>
+
+
+                    <li id="nav-hero" class=" b-list-item p-nav-item">
+
+                        <a href="/cards/hero?display=3&amp;filter-premium=1" class="">
+                            <span class="b-list-label">
+                                Hero
+                            </span>
+                        </a>
+
+                    </li>
+
+
+                    <li id="nav-hero-power" class=" b-list-item p-nav-item">
+
+                        <a href="/cards/hero-power?display=3" class="">
+                            <span class="b-list-label">
+                                Hero Power
+                            </span>
+                        </a>
+
+                    </li>
+
+
+                    <li id="nav-classic" class=" b-list-item p-nav-item">
+
+                        <a href="http://www.hearthpwn.com/cards?filter-premium=1&amp;filter-set=3&amp;display=3" class="">
+                            <span class="b-list-label">
+                                Classic
+                            </span>
+                        </a>
+
+                    </li>
+
+
+                    <li id="nav-curse-of-naxxramas" class=" b-list-item p-nav-item">
+
+                        <a href="http://www.hearthpwn.com/cards?filter-unreleased=1&amp;filter-set=100&amp;filter-premium=1&amp;display=3" class="">
+                            <span class="b-list-label">
+                                Curse of Naxxramas
+                            </span>
+                        </a>
+
+                    </li>
+
+
+                    <li id="nav-goblins-vs-gnomes" class=" b-list-item p-nav-item">
+
+                        <a href="http://www.hearthpwn.com/cards?filter-unreleased=1&amp;filter-set=101&amp;filter-premium=1&amp;display=3" class="">
+                            <span class="b-list-label">
+                                Goblins vs Gnomes
+                            </span>
+                        </a>
+
+                    </li>
+
+
+                    <li id="nav-blackrock-mountain" class=" b-list-item p-nav-item">
+
+                        <a href="http://www.hearthpwn.com/cards?filter-unreleased=1&amp;filter-set=102&amp;filter-premium=1&amp;display=3" class="">
+                            <span class="b-list-label">
+                                Blackrock Mountain
+                            </span>
+                        </a>
+
+                    </li>
+
+
+                    <li id="nav-the-grand-tourney" class=" b-list-item p-nav-item">
+
+                        <a href="http://www.hearthpwn.com/cards?filter-unreleased=1&amp;filter-set=103&amp;filter-premium=1&amp;display=3" class="">
+                            <span class="b-list-label">
+                                The Grand Tourney
+                            </span>
+                        </a>
+
+                    </li>
+
+
+                    <li id="nav-the-league-of-explorers" class=" b-list-item p-nav-item">
+
+                        <a href="http://www.hearthpwn.com/cards?filter-unreleased=1&amp;filter-set=104&amp;filter-premium=1&amp;display=3" class="">
+                            <span class="b-list-label">
+                                The League of Explorers
+                            </span>
+                        </a>
+
+                    </li>
+
+
+                    <li id="nav-whispers-of-the-old-gods" class=" b-list-item p-nav-item">
+
+                        <a href="http://www.hearthpwn.com//cards?filter-premium=1&amp;filter-set=105&amp;filter-unreleased=1&amp;display=3" class="">
+                            <span class="b-list-label">
+                                Whispers of the Old Gods
+                            </span>
+                        </a>
+
+                    </li>
+
+
+                    <li id="nav-one-night-in-karazhan" class=" b-list-item p-nav-item">
+
+                        <a href="http://www.hearthpwn.com//cards?filter-premium=1&amp;filter-set=106&amp;filter-unreleased=1&amp;display=3" class="">
+                            <span class="b-list-label">
+                                One Night in Karazhan
+                            </span>
+                        </a>
+
+                    </li>
+
+
+                    <li id="nav-card-back-gallery" class=" b-list-item p-nav-item">
+
+                        <a href="http://www.hearthpwn.com/guides/592-the-card-backs-of-hearthstone" class="">
+                            <span class="b-list-label">
+                                Card Back Gallery
+                            </span>
+                        </a>
+
+                    </li>
+
+
+                    <li id="nav-card-tooltips" class=" b-list-item p-nav-item">
+
+                        <a href="http://www.hearthpwn.com/tooltips" class="">
+                            <span class="b-list-label">
+                                Card Tooltips
+                            </span>
+                        </a>
+
+                    </li>
+
+                </ul>
+
+            </li>
+
+
+            <li id="nav-decks" class="section b-list-item p-nav-item">
+
+                <a href="/decks" class="">
+                    <span class="b-list-label">
+                        Decks
+                    </span>
+                </a>
+
+                <ul class="">
+
+
+                    <li id="nav-druid" class=" b-list-item p-nav-item">
+
+                        <a href="http://www.hearthpwn.com/decks?filter-deck-tag=1&amp;&amp;filter-class=4" class="">
+                            <span class="b-list-label">
+                                Druid
+                            </span>
+                        </a>
+
+                    </li>
+
+
+                    <li id="nav-hunter" class=" b-list-item p-nav-item">
+
+                        <a href="http://www.hearthpwn.com/decks?filter-deck-tag=1&amp;&amp;filter-class=8" class="">
+                            <span class="b-list-label">
+                                Hunter
+                            </span>
+                        </a>
+
+                    </li>
+
+
+                    <li id="nav-mage" class=" b-list-item p-nav-item">
+
+                        <a href="http://www.hearthpwn.com/decks?filter-deck-tag=1&amp;&amp;filter-class=16" class="">
+                            <span class="b-list-label">
+                                Mage
+                            </span>
+                        </a>
+
+                    </li>
+
+
+                    <li id="nav-paladin" class=" b-list-item p-nav-item">
+
+                        <a href="http://www.hearthpwn.com/decks?filter-deck-tag=1&amp;&amp;filter-class=32" class="">
+                            <span class="b-list-label">
+                                Paladin
+                            </span>
+                        </a>
+
+                    </li>
+
+
+                    <li id="nav-priest" class=" b-list-item p-nav-item">
+
+                        <a href="http://www.hearthpwn.com/decks?filter-deck-tag=1&amp;&amp;filter-class=64" class="">
+                            <span class="b-list-label">
+                                Priest
+                            </span>
+                        </a>
+
+                    </li>
+
+
+                    <li id="nav-rogue" class=" b-list-item p-nav-item">
+
+                        <a href="http://www.hearthpwn.com/decks?filter-deck-tag=1&amp;&amp;filter-class=128" class="">
+                            <span class="b-list-label">
+                                Rogue
+                            </span>
+                        </a>
+
+                    </li>
+
+
+                    <li id="nav-shaman" class=" b-list-item p-nav-item">
+
+                        <a href="http://www.hearthpwn.com/decks?filter-deck-tag=1&amp;&amp;filter-class=256" class="">
+                            <span class="b-list-label">
+                                Shaman
+                            </span>
+                        </a>
+
+                    </li>
+
+
+                    <li id="nav-warlock" class=" b-list-item p-nav-item">
+
+                        <a href="http://www.hearthpwn.com/decks?filter-deck-tag=1&amp;&amp;filter-class=512" class="">
+                            <span class="b-list-label">
+                                Warlock
+                            </span>
+                        </a>
+
+                    </li>
+
+
+                    <li id="nav-warrior" class=" b-list-item p-nav-item">
+
+                        <a href="http://www.hearthpwn.com/decks?filter-deck-tag=1&amp;&amp;filter-class=1024" class="">
+                            <span class="b-list-label">
+                                Warrior
+                            </span>
+                        </a>
+
+                    </li>
+
+                </ul>
+
+            </li>
+
+
+            <li id="nav-forums" class="section b-list-item p-nav-item">
+
+                <a href="/forums" class="">
+                    <span class="b-list-label">
+                        Forums
+                    </span>
+                </a>
+
+                <ul class="">
+
+
+                    <li id="nav-home" class=" b-list-item p-nav-item">
+
+                        <a href="/forums" class="">
+                            <span class="b-list-label">
+                                Home
+                            </span>
+                        </a>
+
+                    </li>
+
+
+                    <li id="nav-latest-threads" class=" b-list-item p-nav-item">
+
+                        <a href="/new-content" class="">
+                            <span class="b-list-label">
+                                Latest Threads
+                            </span>
+                        </a>
+
+                    </li>
+
+
+                    <li id="nav-blue-tracker" class=" b-list-item p-nav-item">
+
+                        <a href="/blue-tracker" class="">
+                            <span class="b-list-label">
+                                Blue Tracker
+                            </span>
+                        </a>
+
+                    </li>
+
+
+                    <li id="nav-members" class=" b-list-item p-nav-item">
+
+                        <a href="/members" class="">
+                            <span class="b-list-label">
+                                Members
+                            </span>
+                        </a>
+
+                    </li>
+
+
+                    <li id="nav-site-achievements" class=" b-list-item p-nav-item">
+
+                        <a href="/site-achievements" class="">
+                            <span class="b-list-label">
+                                Site Achievements
+                            </span>
+                        </a>
+
+                    </li>
+
+
+                    <li id="nav-quests-and-dailies" class=" b-list-item p-nav-item">
+
+                        <a href="http://www.hearthpwn.com/forums/hearthstone-general/general-discussion/1088-list-of-achievements-and-daily-quests-in" class="">
+                            <span class="b-list-label">
+                                Quests and Dailies
+                            </span>
+                        </a>
+
+                    </li>
+
+
+                    <li id="nav-hero-level-up-rewards" class=" b-list-item p-nav-item">
+
+                        <a href="http://www.hearthpwn.com/forums/hearthstone-general/general-discussion/593-card-rewards-for-leveling-up-your-heroes" class="">
+                            <span class="b-list-label">
+                                Hero Level-up Rewards
+                            </span>
+                        </a>
+
+                    </li>
+
+                </ul>
+
+            </li>
+
+
+            <li id="nav-deckbuilder" class="section b-list-item p-nav-item">
+
+                <a href="/deckbuilder" class="">
+                    <span class="b-list-label">
+                        Deckbuilder
+                    </span>
+                </a>
+
+                <ul class="">
+
+
+                    <li id="nav-druid" class=" b-list-item p-nav-item">
+
+                        <a href="/deckbuilder/druid" class="">
+                            <span class="b-list-label">
+                                Druid
+                            </span>
+                        </a>
+
+                    </li>
+
+
+                    <li id="nav-hunter" class=" b-list-item p-nav-item">
+
+                        <a href="/deckbuilder/hunter" class="">
+                            <span class="b-list-label">
+                                Hunter
+                            </span>
+                        </a>
+
+                    </li>
+
+
+                    <li id="nav-mage" class=" b-list-item p-nav-item">
+
+                        <a href="/deckbuilder/mage" class="">
+                            <span class="b-list-label">
+                                Mage
+                            </span>
+                        </a>
+
+                    </li>
+
+
+                    <li id="nav-paladin" class=" b-list-item p-nav-item">
+
+                        <a href="/deckbuilder/paladin" class="">
+                            <span class="b-list-label">
+                                Paladin
+                            </span>
+                        </a>
+
+                    </li>
+
+
+                    <li id="nav-priest" class=" b-list-item p-nav-item">
+
+                        <a href="/deckbuilder/priest" class="">
+                            <span class="b-list-label">
+                                Priest
+                            </span>
+                        </a>
+
+                    </li>
+
+
+                    <li id="nav-rogue" class=" b-list-item p-nav-item">
+
+                        <a href="/deckbuilder/rogue" class="">
+                            <span class="b-list-label">
+                                Rogue
+                            </span>
+                        </a>
+
+                    </li>
+
+
+                    <li id="nav-shaman" class=" b-list-item p-nav-item">
+
+                        <a href="/deckbuilder/shaman" class="">
+                            <span class="b-list-label">
+                                Shaman
+                            </span>
+                        </a>
+
+                    </li>
+
+
+                    <li id="nav-warlock" class=" b-list-item p-nav-item">
+
+                        <a href="/deckbuilder/warlock" class="">
+                            <span class="b-list-label">
+                                Warlock
+                            </span>
+                        </a>
+
+                    </li>
+
+
+                    <li id="nav-warrior" class=" b-list-item p-nav-item">
+
+                        <a href="/deckbuilder/warrior" class="">
+                            <span class="b-list-label">
+                                Warrior
+                            </span>
+                        </a>
+
+                    </li>
+
+
+                    <li id="nav-arena-simulator" class=" b-list-item p-nav-item">
+
+                        <a href="/arena" class="">
+                            <span class="b-list-label">
+                                Arena Simulator
+                            </span>
+                        </a>
+
+                    </li>
+
+
+                    <li id="nav-secrets-calculator" class=" b-list-item p-nav-item">
+
+                        <a href="/guides/1053-hearthstone-secrets-calculator" class="">
+                            <span class="b-list-label">
+                                Secrets Calculator
+                            </span>
+                        </a>
+
+                    </li>
+
+                </ul>
+
+            </li>
+
+
+            <li id="nav-karazhan" class="section b-list-item p-nav-item">
+
+                <a href="http://www.hearthpwn.com/guides/1548-one-night-in-karazhan-a-hearthstone-adventure" class="">
+                    <span class="b-list-label">
+                        Karazhan
+                    </span>
+                </a>
+
+                <ul class="">
+
+
+                    <li id="nav-karazhan-guide" class=" b-list-item p-nav-item">
+
+                        <a href="http://www.hearthpwn.com/guides/1548-one-night-in-karazhan-a-hearthstone-adventure" class="">
+                            <span class="b-list-label">
+                                Karazhan Guide
+                            </span>
+                        </a>
+
+                    </li>
+
+
+                    <li id="nav-current-released-cards" class=" b-list-item p-nav-item">
+
+                        <a href="http://www.hearthpwn.com/cards?filter-premium=1&amp;filter-set=106&amp;filter-unreleased=1&amp;display=3" class="">
+                            <span class="b-list-label">
+                                Current Released Cards
+                            </span>
+                        </a>
+
+                    </li>
+
+
+                    <li id="nav-build-a-deck" class=" b-list-item p-nav-item">
+
+                        <a href="http://www.hearthpwn.com/deckbuilder" class="">
+                            <span class="b-list-label">
+                                Build a Deck
+                            </span>
+                        </a>
+
+                    </li>
+
+                </ul>
+
+            </li>
+
+
+            <li id="nav-expansions" class="section b-list-item p-nav-item">
+
+                <a href="/guides#expansions" class="">
+                    <span class="b-list-label">
+                        Expansions
+                    </span>
+                </a>
+
+                <ul class="">
+
+
+                    <li id="nav-goblins-vs-gnomes" class=" b-list-item p-nav-item">
+
+                        <a href="/guides/702-goblins-vs-gnomes" class="">
+                            <span class="b-list-label">
+                                Goblins vs Gnomes
+                            </span>
+                        </a>
+
+                    </li>
+
+
+                    <li id="nav-the-grand-tournament" class=" b-list-item p-nav-item">
+
+                        <a href="/guides/950-the-grand-tournament" class="">
+                            <span class="b-list-label">
+                                The Grand Tournament
+                            </span>
+                        </a>
+
+                    </li>
+
+
+                    <li id="nav-whispers-of-the-old-gods" class=" b-list-item p-nav-item">
+
+                        <a href="/guides/1205-whispers-of-the-old-gods" class="">
+                            <span class="b-list-label">
+                                Whispers of the Old Gods
+                            </span>
+                        </a>
+
+                    </li>
+
+                </ul>
+
+            </li>
+
+
+            <li id="nav-adventures" class="section b-list-item p-nav-item">
+
+                <a href="/guides#adventures" class="">
+                    <span class="b-list-label">
+                        Adventures
+                    </span>
+                </a>
+
+                <ul class="">
+
+
+                    <li id="nav-curse-of-naxxramas" class=" b-list-item p-nav-item">
+
+                        <a href="/guides/523-curse-of-naxxramas" class="">
+                            <span class="b-list-label">
+                                Curse of Naxxramas
+                            </span>
+                        </a>
+
+                    </li>
+
+
+                    <li id="nav-blackrock-mountain" class=" b-list-item p-nav-item">
+
+                        <a href="/guides/798-blackrock-mountain" class="">
+                            <span class="b-list-label">
+                                Blackrock Mountain
+                            </span>
+                        </a>
+
+                    </li>
+
+
+                    <li id="nav-league-of-explorers" class=" b-list-item p-nav-item">
+
+                        <a href="/guides/1079-the-league-of-explorers-a-hearthstone-adventure" class="">
+                            <span class="b-list-label">
+                                League of Explorers
+                            </span>
+                        </a>
+
+                    </li>
+
+
+                    <li id="nav-one-night-in-karazhan" class=" b-list-item p-nav-item">
+
+                        <a href="/guides/1548-one-night-in-karazhan-a-hearthstone-adventure" class="">
+                            <span class="b-list-label">
+                                One Night in Karazhan
+                            </span>
+                        </a>
+
+                    </li>
+
+                </ul>
+
+            </li>
+
+
+            <li id="nav-packs" class=" b-list-item p-nav-item">
+
+                <a href="/packs" class="">
+                    <span class="b-list-label">
+                        Packs
+                    </span>
+                </a>
+
+            </li>
+
+
+            <li id="nav-innkeeper" class="section b-list-item p-nav-item">
+
+                <a href="http://www.innkeeper.com" class="">
+                    <span class="b-list-label">
+                        Innkeeper
+                    </span>
+                </a>
+
+                <ul class="">
+
+
+                    <li id="nav-feedback-and-support" class=" b-list-item p-nav-item">
+
+                        <a href="/forums/off-topic/innkeeper-feedback-support" class="">
+                            <span class="b-list-label">
+                                Feedback and Support
+                            </span>
+                        </a>
+
+                    </li>
+
+                </ul>
+
+            </li>
+
+        </ul>
+        <a data-ga-click-event-tracking-category="Desktop View" id="responsive-topnav-button" class="rs-link rs-link-to-desktop">Desktop View</a>
+
+        <form class="responsive-sign-out" name="logoutForm" method="post" action="/logout" novalidate="novalidate">
+            <button>Sign Out</button>
+        </form>
+
+    </nav>*@

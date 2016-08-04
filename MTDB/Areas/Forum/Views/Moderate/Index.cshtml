@@ -22,7 +22,7 @@
         <input type="submit" value="@ForumHelper.GetString("Moderate.Button")" />
     }
 	<div class="topic-actions">
-		@Html.Partial("ForumPagingPartial", Model.SelectedForum)
+		@Html.Partial("ForumPagingPartial", Model.SelectedForum.Paging)
 		<div class="search-box"></div>
 	</div>
     @using (Html.BeginForm("execute", "moderate", new { area = "forum" })) {
@@ -63,7 +63,7 @@
         </div>
     </div>
 	<div class="topic-actions">
-		@Html.Partial("ForumPagingPartial", Model.SelectedForum)
+		@Html.Partial("ForumPagingPartial", Model.SelectedForum.Paging)
 		<div class="search-box">
 		</div>
 	</div>

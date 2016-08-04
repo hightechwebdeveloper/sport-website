@@ -8,6 +8,20 @@ namespace MTDB
     {
         public static void RegisterRoutes(RouteCollection routes)
         {
+            routes.MapRoute(
+                "ForumProfilePreferences",
+                "forum/profile/preferences",
+                new { area = "forum", controller = "ExtraProfile", action = "Preferences" },
+                namespaces: new[] { "mvcForum.Web.Areas.Forum.Controllers" }
+            );
+
+            //routes.MapRoute(
+            //    "ForumCurrentUser",
+            //    "forum/profile/current",
+            //    new { controller = "Profile", action = "Preferences" },
+            //    namespaces: new[] { "MTDB.Areas.Forum.Controllers" }
+            //);
+
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
             routes.IgnoreRoute("elmah.axd");
 
