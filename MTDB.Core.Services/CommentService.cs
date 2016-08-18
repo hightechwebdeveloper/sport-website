@@ -27,6 +27,7 @@ namespace MTDB.Core.Services
         public async Task<CommentsViewModel> GetComments(string pageUrl, CancellationToken token)
         {
             var result  = await _repository.Comments
+                                    .Include(c => c.User)
                                     .Where(x => x.PageUrl == pageUrl)
                                     .OrderBy(x => x.CreatedDate)
                                     .ToListAsync(token);

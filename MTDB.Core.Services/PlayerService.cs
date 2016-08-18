@@ -224,7 +224,15 @@ namespace MTDB.Core.Services
 
         private async Task<Player> GetPlayerByUri(string uri, CancellationToken token)
         {
-            return await _repository.Players.FirstOrDefaultAsync(p => p.UriName.Equals(uri, StringComparison.OrdinalIgnoreCase), token);
+            return await _repository.Players
+                .Include(p => p.Stats)
+                .Include(p => p.Badges.Select(pb => pb.Badge.BadgeGroup))
+                .Include(p => p.Tendencies.Select(pt => pt.Tendency))
+                .Include(p => p.Team)
+                .Include(p => p.Collection)
+                .Include(p => p.Theme)
+                .Include(p => p.Stats.Select(ps => ps.Stat.Category))
+                .FirstOrDefaultAsync(p => p.UriName.Equals(uri, StringComparison.OrdinalIgnoreCase), token);
         }
 
         public async Task<UpdatePlayerDto> GetPlayerForEdit(string uri, CancellationToken token)

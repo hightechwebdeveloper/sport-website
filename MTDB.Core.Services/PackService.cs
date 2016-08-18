@@ -43,6 +43,7 @@ namespace MTDB.Core.Services
         public async Task<DraftResultsDto> GetDraftPackById(int id, CancellationToken cancellationToken)
         {
             var pack = await _repository.CardPacks
+                .Include(cp => cp.Players.Select(cpp => cpp.Player.Tier))
                 .Where(p => p.CardPackType == "draft")
                 .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
 

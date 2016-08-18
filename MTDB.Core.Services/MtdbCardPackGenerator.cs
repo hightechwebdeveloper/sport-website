@@ -40,48 +40,63 @@ namespace MTDB.Core.Services
 
         public override async Task<FantasyDraftPackDto> GeneratePack(CancellationToken cancellationToken)
         {
-            var tiers = await Repository.Tiers.ToListAsync(cancellationToken);
-            var firstRoundsMap = BuildDefaultTierMap(tiers);
+            var totalRounds = 13;
+            var playersPerRound = 5;
 
-            var silver = firstRoundsMap.Where(x=>x.Value != null).First(x => x.Value.Name == "Silver");
-            var bronze = firstRoundsMap.Where(x => x.Value != null).First(x => x.Value.Name == "Bronze");
+            #region rogic with max performance
 
-            firstRoundsMap.Remove(silver.Key);
-            firstRoundsMap.Remove(bronze.Key);
-
-            firstRoundsMap.Add(silver.Key, bronze.Value);
-            firstRoundsMap.Add(bronze.Key, silver.Value);
-
-
-            var dto = new FantasyDraftPackDto();
-
-            var draftCardDtos = new List<DraftCardDto>();
-            var pickedPlayers = new List<Player>();
-
-            for (int i = 1; i <= 11; i++)
+            var random = new Random(Environment.TickCount);
+            var tiers = await Repository.Tiers
+                .OrderBy(t => t.DrawChance)
+                .ToListAsync(cancellationToken);
+            var chances = new List<double>();
+            for (var i = 0; i < playersPerRound * totalRounds; i++)
             {
-                var picked = await PickMultiplePlayersUsingMap(5, firstRoundsMap, pickedPlayers, cancellationToken);
-                pickedPlayers.AddRange(picked);
-                draftCardDtos.AddRange(ConvertToDraftCardDtos(picked, i));
+                chances.Add(tiers.First(t => t.DrawChance >= random.NextDouble()*100).Id);
+            }
+            var groupedTiers = chances.GroupBy(tierId => tierId);
+
+            var listQuries = new List<IQueryable<int>>();
+            foreach (var groupedTier in groupedTiers)
+            {
+                var count = groupedTier.Count();
+                listQuries.Add(Repository.Players
+                .Where(p => p.Tier.Id == groupedTier.Key)
+                .OrderBy(p => Guid.NewGuid())
+                .Take(count)
+                .Select(p => p.Id)
+                .AsQueryable());
             }
 
-            var rareMap = new Dictionary<Tuple<double, double>, Tier>();
-            rareMap.Add(Tuple.Create(0D, 85D), tiers.First(x => x.Name == "Gold"));
-            rareMap.Add(Tuple.Create(86D, 99.998D), tiers.First(x => x.Name == "Amethyst"));
-            rareMap.Add(Tuple.Create(0.002D, 100D), tiers.First(x => x.Name == "Diamond"));
+            var query = listQuries[0];
+            for (var i = 1; i < listQuries.Count; i++)
+            {
+                query = query.Concat(listQuries[i]);
+            }
+            var playersIds = await query.ToListAsync(cancellationToken);
 
-            var round12 = await PickMultiplePlayersUsingMap(5, rareMap, pickedPlayers, cancellationToken);
-            pickedPlayers.AddRange(round12);
+            #endregion
 
+            #region control data
 
-            var round13 = await PickMultiplePlayersUsingMap(5, rareMap, pickedPlayers, cancellationToken);
-            pickedPlayers.AddRange(round13);
+            if (playersIds.Count < playersPerRound * totalRounds)
+            {
+                playersIds.AddRange(Repository.Players.Take(playersPerRound * totalRounds - playersIds.Count).Where(p => !playersIds.Contains(p.Id)).OrderBy(x => Guid.NewGuid()).Select(p => p.Id));
+            }
 
-            draftCardDtos.AddRange(ConvertToDraftCardDtos(round12, 12));
-            draftCardDtos.AddRange(ConvertToDraftCardDtos(round13, 13));
+            #endregion
 
-            dto.Cards = draftCardDtos;
+            var players = await Repository.Players.Where(p => playersIds.Contains(p.Id))
+                .OrderBy(p => Guid.NewGuid())
+                .ToListAsync(cancellationToken);
 
+            var dto = new FantasyDraftPackDto();
+            dto.Cards = new List<DraftCardDto>();
+            for (var i = 0; i < totalRounds; i++)
+            {
+                var roundPack = ConvertToDraftCardDtos(players.Skip(i * playersPerRound).Take(playersPerRound), i+1);
+                dto.Cards.AddRange(roundPack);
+            }
             return dto;
         }
 
@@ -113,14 +128,7 @@ namespace MTDB.Core.Services
 
     public class FantasyDraftPackDto
     {
-        public IEnumerable<DraftCardDto> Cards { get; set; }
-    }
-
-    public class RoundDto
-    {
-        public int Number { get; set; }
-        public IEnumerable<CardDto> AvailableCards { get; set; }
-        public int? PickedId { get; set; }
+        public List<DraftCardDto> Cards { get; set; }
     }
 
     public abstract class BaseCardPackGenerator<T>
@@ -219,8 +227,6 @@ namespace MTDB.Core.Services
         }
 
         public abstract Task<T> GeneratePack(CancellationToken cancellationToken);
-
-
     }
 }
 
