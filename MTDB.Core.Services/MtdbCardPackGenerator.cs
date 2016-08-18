@@ -49,6 +49,18 @@ namespace MTDB.Core.Services
             var tiers = await Repository.Tiers
                 .OrderBy(t => t.DrawChance)
                 .ToListAsync(cancellationToken);
+
+            #region little control
+
+            var maxChance = tiers.Max(t => t.DrawChance);
+            if (maxChance < 100)
+            {
+                var maxTier = tiers.First(t => t.DrawChance == maxChance);
+                maxTier.DrawChance = 100;
+            }
+
+            #endregion
+
             var chances = new List<double>();
             for (var i = 0; i < playersPerRound * totalRounds; i++)
             {
