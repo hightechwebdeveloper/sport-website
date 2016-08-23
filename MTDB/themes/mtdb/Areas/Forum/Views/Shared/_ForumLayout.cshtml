@@ -1,4 +1,5 @@
-﻿@using mvcForum.Web.Extensions;
+﻿@using System.Configuration
+@using mvcForum.Web.Extensions;
 @using mvcForum.Web.Helpers
 @{
     Layout = Url.GetThemeBaseUrl() + "areas/forum/views/shared/_layout.cshtml";
@@ -56,5 +57,38 @@
     @RenderSection("forumHeader", false)
 </header>
 
+@if (Convert.ToBoolean(ConfigurationManager.AppSettings["EnableAds"]))
+{
+    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+    <div class="advert">
+        <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+        <!-- website300x250v1 -->
+        <ins class="adsbygoogle"
+             style="display: inline-block; width: 300px; height: 250px"
+             data-ad-client="ca-pub-5458113028612071"
+             data-ad-slot="7528018513"></ins>
+        <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+    </div>
+}
+
 @RenderBody()
+
+@if (Convert.ToBoolean(ConfigurationManager.AppSettings["EnableAds"]))
+{
+    <div class="advert">
+        <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+        <!-- website300x250v1 -->
+        <ins class="adsbygoogle"
+             style="display: inline-block; width: 300px; height: 250px"
+             data-ad-client="ca-pub-5458113028612071"
+             data-ad-slot="7528018513"></ins>
+        <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+    </div>
+}
+
 

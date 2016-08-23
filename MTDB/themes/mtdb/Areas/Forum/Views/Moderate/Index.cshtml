@@ -67,14 +67,21 @@
 		<div class="search-box">
 		</div>
 	</div>
-	<p class="right">
-		<select name="action">
-			<option>@ForumHelper.GetString("Moderate.ActionDelete")</option>
-			<option>@ForumHelper.GetString("Moderate.ActionMerge")</option>
-			<option>@ForumHelper.GetString("Moderate.ActionMove")</option>
-			<option>@ForumHelper.GetString("Moderate.ActionSplit")</option>
-		</select>
-		<input type="submit" value="@ForumHelper.GetString("Moderate.ExecuteAction")" />
-	</p>
+        <p class="right">
+            <select name="action">
+                <option>@ForumHelper.GetString("Moderate.ActionDelete")</option>
+                <option>@ForumHelper.GetString("Moderate.ActionMerge")</option>
+                <option>@ForumHelper.GetString("Moderate.ActionMove")</option>
+                <option>@ForumHelper.GetString("Moderate.ActionSplit")</option>
+            </select>
+            <input type="submit" value="@ForumHelper.GetString("Moderate.ExecuteAction")" onclick="checkAvailable(event);"/>
+        </p>
+
 	}
 </div>
+<script type="text/javascript">
+    function checkAvailable(event) {
+        if (document.querySelectorAll('.topiclist.topics [name=topics]:checked').length == 0)
+            event.preventDefault();
+    }
+</script>

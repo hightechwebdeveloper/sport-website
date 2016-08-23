@@ -18,7 +18,7 @@
             iconName += " forum-announcement";
             iconTitles.Add("Announcement");
         }
-        else
+        else if (!Model.Locked)
         {
             iconName += " forum-thread-row-typical";
         }
@@ -65,9 +65,9 @@
 }
 
 <tr class="j-forum-thread-row forum-thread-row @(iconName)">
-    <td class="j-thread-status col-status tip">
-        <a href="@Url.RouteUrl("ShowTopic", new {id = Model.Moved && !Model.OriginalTopic.Deleted ? Model.OriginalTopic.Id : Model.Id, title = Model.Title.ToSlug()})" class="status-icon" title="@iconTitle">
-            <span class="state"></span>
+    <td class="col-status">
+        <a href="@Url.RouteUrl("ShowTopic", new {id = Model.Moved && !Model.OriginalTopic.Deleted ? Model.OriginalTopic.Id : Model.Id, title = Model.Title.ToSlug()})"title="@iconTitle">
+            <span class="forum-thread-state"></span>
         </a>
     </td>
     <td class="col-thread ">
