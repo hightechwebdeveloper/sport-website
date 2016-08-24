@@ -1,4 +1,5 @@
-﻿@using mvcForum.Web.Helpers;
+﻿@using System.Configuration
+@using mvcForum.Web.Helpers;
 @{
     string ns = "mvcForum.Web";
     string editor = ForumHelper.GetEditorString().ToLower();
@@ -16,7 +17,7 @@
 
     <link href="/themes/mtdb/css/compiled.css" rel="stylesheet">
     <link href="/themes/mtdb/css/mtdb.css" rel="stylesheet">
-    <link href="/themes/mtdb/favicon.ico" rel="shortcut icon"/>
+    <link rel="icon" href="http://cdn.mtdb.com/favicon-32x32.png" sizes="32x32">
     <link href="/content/css/markitup/style.css" rel="stylesheet" type="text/css"/>
     @if (editor != "regular")
     {
@@ -33,6 +34,21 @@
             
             @Html.Partial("Header")
 
+            @if (Convert.ToBoolean(ConfigurationManager.AppSettings["EnableAds"]))
+            {
+                <div class="advert">
+                    <script async src="//pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+                    <!-- website300x250v1 -->
+                    <ins class="adsbygoogle adsbygoogle-responsive"
+                         style="display: inline-block;"
+                         data-ad-client="ca-pub-5458113028612071"
+                         data-ad-slot="7528018513"></ins>
+                    <script>
+                                            (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script>
+                </div>
+            }
+
             <section class="atf" role="complementary">
                 <div class="page-region gray-block-wrapper">
 
@@ -44,7 +60,7 @@
 
                 </div>
             </section>
-            
+
 
             <div class="container">
                 <div id="content" class="main content-container">
@@ -64,6 +80,20 @@
                     </section>
                 </div>
             </div>
+
+            @if (Convert.ToBoolean(ConfigurationManager.AppSettings["EnableAds"]))
+            {
+                <div class="advert">
+                    <!-- website300x250v2 -->
+                    <ins class="adsbygoogle adsbygoogle-responsive"
+                            style="display: inline-block;"
+                            data-ad-client="ca-pub-5458113028612071"
+                            data-ad-slot="9004751715"></ins>
+                    <script>
+                        (adsbygoogle = window.adsbygoogle || []).push({});
+                    </script>
+                </div>
+            }
 
         </div>
     </div>

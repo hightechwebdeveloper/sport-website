@@ -1,4 +1,15 @@
-﻿#content .primary-content {
+﻿.advert {
+    text-align: center;
+    padding: 10px 0 0;
+}
+.advert ins {
+    background: transparent;
+}
+.adsbygoogle-responsive { width: 320px; height: 100px; }
+@media(min-width: 500px) { .adsbygoogle-responsive { width: 468px; height: 60px; } }
+@media(min-width: 1000px) { .adsbygoogle-responsive { width: 1000px; height: 90px; } }
+
+#content .primary-content {
     background: #ffffff;
 }
 body:not(.body-privatemessage) .b-userAction-a:not(.u-dropDownMenu):not(.user-actions-post) .b-userAction-item>a {

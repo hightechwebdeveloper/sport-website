@@ -920,7 +920,6 @@
     <Content Include="themes\bootstrap\gfx\topic_unread.gif" />
     <Content Include="themes\mtdb\css\compiled.css" />
     <Content Include="themes\mtdb\css\mtdb.css" />
-    <Content Include="themes\mtdb\favicon.ico" />
     <Content Include="themes\mtdb\images\avatar.png" />
     <Content Include="themes\mtdb\images\bg.jpg" />
     <Content Include="themes\mtdb\images\header-texture.png" />
