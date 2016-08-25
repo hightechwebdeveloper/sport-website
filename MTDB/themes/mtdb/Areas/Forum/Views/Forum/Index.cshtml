@@ -10,7 +10,9 @@
 @section bread {
     @Html.Partial("Breadcrumb", Model.Path)
 }
-@section forumButtons {
+@if (ForumHelper.Authenticated())
+{
+    @section forumButtons {
     <li class="user-action b-userAction-item user-action-new">
         <a href="@Url.Action("Create", "topic", new { id = Model.Id })">
             <i class="u-icon u-icon-new"></i>
@@ -19,6 +21,7 @@
             </span>
         </a>
     </li>
+    }
 }
 
 @section forumTools {

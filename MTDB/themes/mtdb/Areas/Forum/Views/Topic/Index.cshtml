@@ -12,17 +12,19 @@
 @section bread {
     @Html.Partial("Breadcrumb", Model.Path)
 }
-@section forumButtons {
-    <li class="user-action b-userAction-item user-action-new">
-        <a href="#reply">
-            <i class="u-icon u-icon-new"></i>
-            <span class="label">
-                @ForumHelper.GetString("CreateMessage.PostNewMessage")
-            </span>
-        </a>
-    </li>
+@if (Model.CanPost)
+{
+    @section forumButtons {
+        <li class="user-action b-userAction-item user-action-new">
+            <a href="#reply">
+                <i class="u-icon u-icon-new"></i>
+                <span class="label">
+                    @ForumHelper.GetString("CreateMessage.PostNewMessage")
+                </span>
+            </a>
+        </li>
+    }
 }
-
 @if (ForumHelper.Authenticated())
 {
     @section forumTools {
