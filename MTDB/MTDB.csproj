@@ -1140,7 +1140,6 @@
     <Content Include="themes\mtdb\Areas\Forum\Views\Message\Edit.cshtml" />
     <Content Include="themes\mtdb\Areas\Forum\Views\Message\Delete.cshtml" />
     <Content Include="themes\mtdb\Areas\Forum\Views\Message\Report.cshtml" />
-    <Content Include="themes\mtdb\Areas\Forum\Views\Message\Moderate1.cshtml" />
     <Content Include="themes\mtdb\Areas\Forum\Views\Search\Index.cshtml" />
     <Content Include="themes\mtdb\Areas\Forum\Views\Search\Unanswered Topics.cshtml" />
     <Content Include="themes\mtdb\Areas\Forum\Views\Topic\Create.cshtml" />

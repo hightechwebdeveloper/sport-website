@@ -17600,7 +17600,8 @@ a#responsive-topnav-button {
 
 .netbar a.netbar-signin {
     font-weight: bold;
-    color: #fc3
+    color: #f7941e;
+    font-family: Source Sans Pro;
 }
 
 .netbar form {

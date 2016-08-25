@@ -19,7 +19,7 @@
                 @Html.ActionLink("Change Password", "ChangePassword", "Account", new RouteValueDictionary() { { "area", null } }, null)
             </li>
             <li>
-                @Html.ActionLink("Sign Out", "LogOff", "Account", new RouteValueDictionary() { { "area", null }, { "returnUrl", "/forum" } }, null)
+                @Html.ActionLink("Log Out", "LogOff", "Account", new RouteValueDictionary() { { "area", null }, { "returnUrl", "/forum" } }, null)
             </li>
         </ul>
     </div>
@@ -27,5 +27,5 @@
 else
 {
     @Html.ActionLink("Register", "Register", "Account", new { area = (string)null }, new { @class = "netbar-signin netbar-right" })
-    @Html.ActionLink("Sign In", "Login", "Account", new { area = (string)null }, new { @class = "netbar-signin netbar-right" })
+    @Html.ActionLink("Log In", "Login", "Account", new { area = (string)null }, new { @class = "netbar-signin netbar-right" })
 }    

@@ -1728,7 +1728,7 @@ The reason given for putting it in quarantine is: {Reason}
       <Translation Language="da-DK"><![CDATA[Vedhæft fil]]></Translation>
     </Text>
     <Text Key="CreateTopic.Submit">
-      <Translation Language="en-GB"><![CDATA[Create]]></Translation>
+      <Translation Language="en-GB"><![CDATA[Post]]></Translation>
       <Translation Language="da-DK"><![CDATA[Opret]]></Translation>
     </Text>
 
@@ -1758,7 +1758,7 @@ The reason given for putting it in quarantine is: {Reason}
       <Translation Language="da-DK"><![CDATA[Vedhæft fil]]></Translation>
     </Text>
     <Text Key="CreateMessage.Submit">
-      <Translation Language="en-GB"><![CDATA[Create]]></Translation>
+      <Translation Language="en-GB"><![CDATA[Post]]></Translation>
       <Translation Language="da-DK"><![CDATA[Opret]]></Translation>
     </Text>
     <Text Key="CreateMessage.OldPosted">
