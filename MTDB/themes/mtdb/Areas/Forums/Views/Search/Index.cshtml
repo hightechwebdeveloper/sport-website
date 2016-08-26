@@ -1,0 +1,87 @@
+﻿@model mvcForum.Web.ViewModels.SearchViewModel
+@using mvcForum.Web.Extensions;
+@using mvcForum.Web.Helpers;
+@{
+    ViewBag.Title = ForumHelper.GetString("Title", null, "mvcForum.Web.Search");
+    Layout = Url.GetThemeBaseUrl() + "areas/forums/views/shared/_ForumLayout.cshtml";
+}
+@section complementary{
+    @Html.Partial("Breadcrumb", new Dictionary<string, string>())
+}
+@section bread {
+    @Html.Partial("Breadcrumb", new Dictionary<string, string>())
+}
+
+@section forumHeader {
+    <h2>
+        @if (string.IsNullOrEmpty(Model.Query))
+        {
+            @ForumHelper.GetHtmlString("Search.Headline")
+        }
+        else
+        {
+            @:Search results for '@Model.Query'
+        }
+    </h2>
+}
+
+<div class="j-comment-form-container p-attachmentable-form">
+    @using (Html.BeginForm("Index", "Search", FormMethod.Post, new Dictionary<String, Object> { { "name", "MainSearchForum" } }))
+    {
+        <div class="form-field form-field-text-field ">
+            <label for="Query">
+                <span title="" class="">
+                    Search for keywords
+                </span>
+            </label>
+            @Html.TextBoxFor(x => x.Query)
+        </div>
+
+        <div class="form-field form-field-text-area-field ">
+            <label for="Forums">
+                <span title="" class="">
+                    Search in forums
+                </span>
+            </label>
+            @ForumHelper.GetForumMultiSelect("Forums", Model.Forums, new Dictionary<string, object> { { "size", 8 } })
+        </div>
+
+        <div class="form-actions form-footer">
+            <div class="form-button-block">
+                <input class="u-button u-button-primary button" type="reset" name="reset" value="@ForumHelper.GetString("ResetButton", null, "mvcForum.Web.Search")" />
+                <input class="u-button u-button-primary button" type="submit" value="@ForumHelper.GetString("SearchButton", null, "mvcForum.Web.Search")" name="submit" />
+            </div>
+        </div>
+    }
+</div>
+
+@if (Model.Results != null && Model.Results.Any())
+{
+    <table class="listing listing-forum-thread forum-thread-listing b-table b-table-a">
+        <thead class="b-table-header j-listing-table-header">
+            <tr>
+                <th class="b-table-heading col-status asc"></th>
+                <th class="b-table-heading col-thread asc">@ForumHelper.GetString("Labels.Topics")</th>
+                <th class="b-table-heading col-last-post asc">@ForumHelper.GetString("Labels.LastPost")</th>
+                <th class="b-table-heading col-count desc">@ForumHelper.GetString("Labels.Replies")</th>
+                <th class="b-table-heading col-count desc">@ForumHelper.GetString("Labels.Views")</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var topic in Model.Results)
+            {
+                @Html.Partial("TopicPartial", topic)
+            }
+        </tbody>
+    </table>
+
+    @*<p>@Html.ActionLink(ForumHelper.GetLinkText("BackToAdvanced", null, "mvcForum.Web.Search"), "Index", "Search", new { area = "forum" }, new { @class = "left", title = ForumHelper.GetString("Search.BackToAdvancedTitle") })</p>*@
+
+}
+else
+{
+    if (Model.Results != null)
+    {
+        @ForumHelper.GetHtmlString("NoResults", "mvcForum.Web.Search", new { Query = Model.Query });
+    }
+}

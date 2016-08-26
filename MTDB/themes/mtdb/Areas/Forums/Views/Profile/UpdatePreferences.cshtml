@@ -1,0 +1,73 @@
+﻿@model MTDB.Areas.Forum.Models.UserPreferencesModel
+@using System.Web.Mvc.Html
+@using MVCBootstrap.Web.Mvc.Helpers;
+@using mvcForum.Web.Helpers;
+@{
+    ViewBag.Title = ForumHelper.GetString("EditUser.Title", new { Name = Model.User.Name });
+    Layout = Url.GetThemeBaseUrl() + "areas/forums/views/shared/_layout.cshtml";
+}
+@section complementary{
+    @Html.Partial("Breadcrumb", Model.Path)
+}
+@section bread {
+    @Html.Partial("Breadcrumb", Model.Path)
+}
+
+<div class="p-user-a">
+    @Html.Partial(Url.GetThemeBaseUrl() + "Areas/Forums/Views/Profile/_UserInfo.cshtml", Model.User)
+
+    <div class="p-user-interaction">
+        <div class="profile-nav-container">
+            <a id="leftArrow"></a>
+            <a id="rightArrow"></a>
+            <nav>
+                <ul class="p-nav p-nav-b" style="width: 887px;">
+
+                    <li id="nav-preferences" class=" selected b-list-item p-nav-item">
+                        <a href="#" class="">
+                            <span class="b-list-label">
+                                Preferences
+                            </span>
+                        </a>
+                    </li>
+
+                </ul>
+            </nav>
+        </div>
+
+        <!-- CONTENT -->
+        <div class="p-user-content">
+
+            @using (Html.BeginForm())
+            {
+                @Html.HiddenFor(t => t.Id)
+                @*@Html.HiddenFor(t => t.Email)
+                    @Html.HiddenFor(t => t.FullName)*@
+                @Html.ValidationSummary()
+
+                <div class="form-field form-field-model-choice-field`1 ">
+                    <label for="Timezone">
+                        <span title="" class="">
+                            Timezone
+                        </span>
+                    </label>
+                    @Html.DropDownListFor(t => t.Timezone, TimeZoneHelper.GetTimeZones(Model.Timezone))
+                </div>
+
+                <div class="form-field form-field-model-choice-field`1 ">
+                    <label for="Culture">
+                        <span title="" class="">
+                            Language/Region
+                        </span>
+                    </label>
+                    @Html.DropDownListFor(t => t.Culture, CultureInfoHelper.GetCultures(Model.Culture))
+                </div>
+
+                <div class="form-actions form-footer">
+                    <input type="submit" accesskey="s" tabindex="6" name="post" value="Submit" class="u-button u-button-z" />
+                </div>
+            }
+        </div>
+
+    </div>
+</div>

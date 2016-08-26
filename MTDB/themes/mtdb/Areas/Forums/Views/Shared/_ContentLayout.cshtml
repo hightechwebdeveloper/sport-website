@@ -1,0 +1,49 @@
+﻿@using mvcForum.Web.Extensions;
+@{
+    Layout = Url.GetThemeBaseUrl() + "areas/forums/views/shared/_layout.cshtml";
+}
+@if (IsSectionDefined("complementary"))
+{
+    @section complementary {
+        @RenderSection("complementary", false)
+    }
+}
+@if (IsSectionDefined("bread"))
+{
+    @section bread {
+        @RenderSection("bread", false)
+    }
+}
+
+<ul class="user-actions  user-actions-forums b-userAction b-userAction-a covert-list">
+    @if (IsSectionDefined("buttons"))
+    {
+        @RenderSection("forumButtons", false)
+    }
+
+    <li class="user-action b-userAction-item user-action-search">
+        <a href="@Url.Action("Index", "Search")" class="">
+            <i class="u-icon u-icon-search"></i>
+            <span class="label">
+                Search
+            </span>
+        </a>
+    </li>
+
+    @if (IsSectionDefined("tools"))
+    {
+        <li class="user-action b-userAction-item user-action-tools u-dropDown">
+            <a href="" class="">
+                <i class="u-icon u-icon-tools"></i>
+                <span class="label">Tools</span>
+            </a>
+            <ul class="u-dropDownMenu">
+                @RenderSection("tools", false)
+            </ul>
+        </li>
+    }
+</ul>
+
+
+@RenderBody()
+

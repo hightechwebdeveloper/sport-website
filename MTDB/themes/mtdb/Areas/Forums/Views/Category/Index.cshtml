@@ -1,0 +1,25 @@
+﻿@model mvcForum.Web.ViewModels.CategoryViewModel
+@using mvcForum.Web.Helpers;
+@{
+    ViewBag.Title = ForumHelper.GetString("Category.Title", new { Name = Model.Name });
+    Layout = Url.GetThemeBaseUrl() + "areas/forums/views/shared/_ForumLayout.cshtml";
+}
+
+@section complementary{
+    @Html.Partial("Breadcrumb", Model.Path)
+}
+@section bread {
+    @Html.Partial("Breadcrumb", Model.Path)
+}
+@section forumHeader {
+    <h2>@Model.Name</h2>
+}
+@if (ForumHelper.Authenticated())
+{
+    @section forumTools {
+        @Html.Partial("CategoryToolsPartial")
+    }
+}
+<a name="start_here"></a>
+
+@Html.Partial("CategoryPartial", Model)

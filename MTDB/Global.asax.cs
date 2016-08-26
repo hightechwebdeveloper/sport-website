@@ -18,7 +18,7 @@ namespace MTDB
 
             RouteConfig.RegisterRoutes(RouteTable.Routes);
             RegisterArea<ExtraForumAreaRegistration>(RouteTable.Routes, null);
-            RegisterArea<ForumAreaRegistration>(RouteTable.Routes, null);
+            RegisterArea<ForumsAreaRegistration>(RouteTable.Routes, null);
             RegisterArea<ForumAdminAreaRegistration>(RouteTable.Routes, null);
             RegisterArea<ForumAPIAreaRegistration>(RouteTable.Routes, null);
 

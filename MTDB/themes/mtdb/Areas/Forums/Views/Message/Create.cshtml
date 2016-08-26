@@ -1,0 +1,20 @@
+﻿@model mvcForum.Web.ViewModels.Create.CreateMessageViewModel
+@using mvcForum.Web.Helpers;
+@{
+    ViewBag.Title = ForumHelper.GetString("CreateMessage.Title", new { Title = Model.Topic.Title });
+    Layout = Url.GetThemeBaseUrl() + "areas/forums/views/shared/_ForumLayout.cshtml";
+}
+@section complementary{
+    @Html.Partial("Breadcrumb", Model.Path)
+}
+@section bread {
+    @Html.Partial("Breadcrumb", Model.Path)
+}
+
+@section forumHeader {
+    <h2>@ForumHelper.GetString("CreateMessage.PostNewMessage") <span class="header-link"> - @Html.RouteLink(Model.Topic.Title, "ShowTopic", new RouteValueDictionary { { "id", Model.TopicId }, { "title", Model.Topic.Title.ToSlug() } })</span></h2>
+}
+
+@Html.Partial("_Create")
+
+@*@Html.Partial("OlderPosts", Model)*@

@@ -1,7 +1,0 @@
-﻿@model mvcForum.Web.ViewModels.MessageViewModel
-@using mvcForum.Web.Helpers;
-<!-- Views/Forum/MessagePosterPartial.cshtml -->
-		<strong>@Html.RouteLink(Model.PrettyName, "ShowProfile", new RouteValueDictionary { { "id", Model.AuthorId }, { "name", Model.Author.ToSlug() } }, new Dictionary<String, object> { { "class", "profile-link" }, { "id" , "link" + Model.Position.ToString() }})</strong>
-		<br />
-		@ForumHelper.GetHtmlString("ViewMessage.PosterJoined", new { Timestamp = Model.Joined })
-

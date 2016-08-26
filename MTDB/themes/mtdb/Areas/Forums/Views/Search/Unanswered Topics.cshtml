@@ -1,0 +1,34 @@
+﻿@model mvcForum.Web.ViewModels.UnansweredTopicsViewModel
+@using mvcForum.Web.Helpers;
+@{
+    ViewBag.Title = ForumHelper.GetString("SearchUnanswered.Title");
+    Layout = Url.GetThemeBaseUrl() + "areas/forums/views/shared/_ForumLayout.cshtml";
+}
+@section complementary{
+    @Html.Partial("Breadcrumb", new Dictionary<string, string>())
+}
+@section bread {
+    @Html.Partial("Breadcrumb", new Dictionary<string, string>())
+}
+
+@section forumHeader {
+    <h2>@ForumHelper.GetString("SearchUnanswered.Heading")</h2>
+}
+
+<table class="listing listing-forum-thread forum-thread-listing b-table b-table-a">
+    <thead class="b-table-header j-listing-table-header">
+        <tr>
+            <th class="b-table-heading col-status asc"></th>
+            <th class="b-table-heading col-thread asc">@ForumHelper.GetString("Labels.Topics")</th>
+            <th class="b-table-heading col-last-post asc">@ForumHelper.GetString("Labels.LastPost")</th>
+            <th class="b-table-heading col-count desc">@ForumHelper.GetString("Labels.Replies")</th>
+            <th class="b-table-heading col-count desc">@ForumHelper.GetString("Labels.Views")</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var topic in Model.Topics)
+            {
+            @Html.Partial("TopicPartial", topic)
+        }
+    </tbody>
+</table>
