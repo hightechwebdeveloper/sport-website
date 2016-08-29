@@ -27,6 +27,7 @@ namespace MTDB.Core.Services
         public async Task<MtdbCardPackDto> GetMtdbCardPackById(int id, CancellationToken cancellationToken)
         {
             var pack = await _repository.CardPacks
+                .Include(c => c.Players.Select(p => p.Player.Tier))
                 .Where(p => p.CardPackType == "mtdb")
                 .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
 

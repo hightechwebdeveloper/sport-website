@@ -155,6 +155,8 @@ namespace MTDB.Core.Services
         public async Task<LineupDto> GetLineup(int id, CancellationToken cancellationToken)
         {
             var lineup = await _repository.Lineups
+                .Include(l => l.User)
+                .Include(l => l.Players.Select(p => p.Player))
                 .FirstOrDefaultAsync(l => l.Id == id, cancellationToken);
 
             return lineup.ToDto();
@@ -184,6 +186,7 @@ namespace MTDB.Core.Services
             };
 
             var lineups = await _repository.Lineups
+                .Include(l => l.User)
                 .Sort(sortByColumn, sortOrder, "CreatedDate", skip, take, map)
                 .ToListAsync(cancellationToken);
 

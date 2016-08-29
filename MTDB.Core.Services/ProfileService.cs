@@ -25,12 +25,14 @@ namespace MTDB.Core.Services
         public async Task<ProfileDto> GetProfileByUserName(string username, CancellationToken cancellationToken)
         {
             var cardpacks = await _repository.CardPacks
+                                            .Include(cp => cp.Players.Select(p => p.Player))
                                             .Where(p => p.User.UserName.Equals(username, StringComparison.OrdinalIgnoreCase))
                                             .OrderByRecentlyAdded()
                                             .ToListAsync(cancellationToken);
 
-            var lineups = await _repository.Lineups.Where(
-                p => p.User.UserName.Equals(username, StringComparison.OrdinalIgnoreCase))
+            var lineups = await _repository.Lineups
+                .Include(l => l.User)
+                .Where(p => p.User.UserName.Equals(username, StringComparison.OrdinalIgnoreCase))
                 .OrderByRecentlyAdded()
                 .ToListAsync(cancellationToken);
 

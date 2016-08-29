@@ -20,7 +20,23 @@ namespace MTDB.Core.Services
 {
     public class PlayerService
     {
+        #region Contants
+
+        private const string CDN77USERNAME = "user_mgoh0250";
+        private const string CDN77HOST = "push-20.cdn77.com";
+        private const string CDN77PASS = "lF9SKUp2d0M332IbHdeF";
+        //private const int CDN77_CDNID = 62905;
+        //private const string CDN77_APIUSER = "chris@chrissmoove.com";
+        //private const string CDN77_APIPASSWORD = "FwTKGp9Cv1bPntcNHELWMhA2IQjR63Bg";
+        #endregion
+
+        #region Fields 
+
         private readonly MtdbRepository _repository;
+
+        #endregion
+
+        #region Ctor
 
         public PlayerService(MtdbRepository repository)
         {
@@ -30,21 +46,190 @@ namespace MTDB.Core.Services
         public PlayerService() : this(new MtdbRepository())
         { }
 
-        public async Task<IEnumerable<SearchPlayerResultDto>> GetInitialPlayers(CancellationToken token)
-        {
-            var players = await _repository.Players
-                .OrderByOverallScore()
-                .Take(20)
-                .ToListAsync(token);
+        #endregion
 
-            return players.Select(p => p.ToSearchDto());
+        #region Utilities
+
+        private async Task<Player> GetPlayerByUri(string uri, CancellationToken token)
+        {
+            return await _repository.Players
+                .Include(p => p.Badges.Select(pb => pb.Badge.BadgeGroup))
+                .Include(p => p.Tendencies.Select(pt => pt.Tendency))
+                .Include(p => p.Team)
+                .Include(p => p.Collection)
+                .Include(p => p.Theme)
+                .Include(p => p.Stats.Select(ps => ps.Stat.Category))
+                .FirstOrDefaultAsync(p => p.UriName.Equals(uri, StringComparison.OrdinalIgnoreCase), token);
         }
+
+        private int ToInt(int? value)
+        {
+            return value.GetValueOrDefault(0);
+        }
+        private void AddIfNotNull(List<PlayerUpdateChange> updates, PlayerUpdateChange update)
+        {
+            if (update != null)
+            {
+                updates.Add(update);
+            }
+        }
+
+        private async Task<Player> GetPlayerWithStatsById(int id, CancellationToken token)
+        {
+            return await _repository.Players
+                .FirstOrDefaultAsync(p => p.Id == id, token);
+        }
+
+        private string GetUri(int playerId, string name, bool isNew = true)
+        {
+            // Remove all characters that aren't alpha numeric
+            var rgx = new Regex("[^a-zA-Z0-9 -]");
+            name = rgx.Replace(name.ToLower(), "");
+            name = name.Replace(" ", "-");
+
+            bool existing = true;
+
+            var originalName = name;
+            int counter = 1;
+            while (existing)
+            {
+                if (counter >= 1)
+                {
+                    name = originalName + "-" + counter;
+                }
+                counter++;
+                if (isNew)
+                {
+                    existing = _repository.Players.Any(p => p.UriName == name);
+                }
+                else
+                {
+                    existing = _repository.Players.Any(p => p.UriName == name && p.Id != playerId);
+                }
+
+            }
+
+            return name;
+        }
+
+        private async Task SaveImage(string tempPath, string name, Stream stream)
+        {
+            if (!Directory.Exists(tempPath))
+                Directory.CreateDirectory(tempPath);
+
+            // Save temporarily to disk
+            var path = Path.Combine(tempPath, name);
+
+            var normalSize = path + ".png";
+            var smallSize = path + "-40x56.png";
+
+            using (var img = Image.FromStream(stream))
+            {
+                img.Save(normalSize);
+            }
+
+            using (var img = Image.FromFile(normalSize))
+            {
+                using (var bitmap = new Bitmap(img, 40, 56))
+                {
+                    bitmap.Save(smallSize);
+                }
+            }
+
+            await SaveToCDN77(normalSize, smallSize);
+        }
+
+        private async Task SaveToCDN77(params string[] files)
+        {
+            using (var client = new WebClient())
+            {
+                client.Credentials = new NetworkCredential(CDN77USERNAME, CDN77PASS);
+                foreach (var file in files)
+                {
+                    var uri = string.Format(@"ftp://{0}@{1}/www/{2}", CDN77USERNAME, CDN77HOST, Path.GetFileName(file));
+                    await client.UploadFileTaskAsync(uri, "STOR", file);
+                    //await Prefetch(file);
+                }
+            }
+
+            foreach (var file in files)
+            {
+                try
+                {
+                    File.Delete(file);
+                }
+                catch
+                {
+                    // Don't want to cause an exception here.  Just go about your business. 
+                }
+            }
+
+        }
+
+        //private async Task Prefetch(params string[] fileNames)
+        //{
+        //    using (var client = new HttpClient())
+        //    {
+        //        var data = string.Format(@"cdn_id={0}&login={1}&passwd={2}", CDN77_CDNID, CDN77_APIUSER, CDN77_APIPASSWORD);
+        //        foreach (var file in fileNames)
+        //        {
+        //            data += string.Format("&url[]={0}", file);
+        //        }
+        //        await client.PostAsync(@"https://api.cdn77.com/v2.0/data/prefetch", new StringContent(data));
+        //    }
+        //}
+
+        #region Rackspace
+        //private const string RACKSPACEAPIKEY = "01e7b9946f0c651ef2a990dc36a80cc6";
+        //private const string RACKSPACEUSERNAME = "chrissmoove";
+        //private const string COLLECTIONNAME = "playerimages";
+        //private static readonly CloudIdentity Identity = new CloudIdentity()
+        //{
+        //    APIKey = RACKSPACEAPIKEY,
+        //    Username = RACKSPACEUSERNAME
+        //};
+
+        //private static readonly CloudFilesProvider CloudFilesProvider = new CloudFilesProvider(Identity);
+
+        //static async Task SaveToRackspace(Stream stream, string name)
+        //{
+        //    await Task.Run(() => CloudFilesProvider.CreateObject(COLLECTIONNAME, stream, name));
+        //}
+
+        //static async Task SaveToRackspace(string path)
+        //{
+        //    await Task.Run(() =>
+        //    {
+        //        if (File.Exists(path))
+        //        {
+        //            CloudFilesProvider.CreateObjectFromFile(COLLECTIONNAME, path, Path.GetFileName(path));
+        //        }
+        //    });
+        //}
+        #endregion
+
+        private IEnumerable<CollectionViewModel> MapCollectionToViewModel(IEnumerable<Collection> collections, string groupName = null)
+        {
+            return collections.OrderBy(p => p.Name).Select((collection, index) => new CollectionViewModel
+            {
+                Name = collection.Name,
+                Group = groupName ?? collection.GroupName,
+                DisplayOrder = collection.DisplayOrder ?? index
+            });
+        }
+
+        #endregion
+
+        #region Methods
 
         public async Task<SearchPlayerViewModel> SearchPlayers(int skip, int take, string sortByColumn, SortOrder sortOrder, PlayerFilter filter, CancellationToken token, bool showHidden = false)
         {
             var result = new SearchPlayerViewModel();
 
-            var query = _repository.Players.AsQueryable();
+            var query = _repository.Players
+                .Include(p => p.Tier)
+                .Include(p => p.Collection)
+                .AsQueryable();
             if (filter != null)
             {
                 result = new SearchPlayerViewModel
@@ -194,7 +379,10 @@ namespace MTDB.Core.Services
                 .Where(p => terms.All(term => p.Name.Split(' ').Any(pName => pName.StartsWith(term, StringComparison.InvariantCultureIgnoreCase))))
                 .Select(x => x.Id);
 
-            var players = await _repository.Players.Where(p => filtered.Contains(p.Id))
+            var players = await _repository.Players
+                .Include(p => p.Tier)
+                .Include(p => p.Collection)
+                .Where(p => filtered.Contains(p.Id))
                 .ToListAsync(token);
 
             return players
@@ -208,31 +396,6 @@ namespace MTDB.Core.Services
             var player = await GetPlayerByUri(uri, token);
 
             return player.ToDto();
-        }
-
-        public async Task<IEnumerable<Player>> GetPlayersByNBAIds(CancellationToken token, params int[] playerIds)
-        {
-            return await _repository.Players.Where(p => p.NBA2K_ID.HasValue)
-                                .Where(p => playerIds.Contains(p.NBA2K_ID.Value))
-                                .ToListAsync(token);
-        }
-
-        public async Task<Player> GetPlayerByNBA2kId(int id, CancellationToken token)
-        {
-            return await _repository.Players.FirstOrDefaultAsync(p => p.NBA2K_ID == id, token);
-        }
-
-        private async Task<Player> GetPlayerByUri(string uri, CancellationToken token)
-        {
-            return await _repository.Players
-                .Include(p => p.Stats)
-                .Include(p => p.Badges.Select(pb => pb.Badge.BadgeGroup))
-                .Include(p => p.Tendencies.Select(pt => pt.Tendency))
-                .Include(p => p.Team)
-                .Include(p => p.Collection)
-                .Include(p => p.Theme)
-                .Include(p => p.Stats.Select(ps => ps.Stat.Category))
-                .FirstOrDefaultAsync(p => p.UriName.Equals(uri, StringComparison.OrdinalIgnoreCase), token);
         }
 
         public async Task<UpdatePlayerDto> GetPlayerForEdit(string uri, CancellationToken token)
@@ -277,73 +440,22 @@ namespace MTDB.Core.Services
             };
         }
 
-        public async Task<UpdatePlayerDto> GetPlayerForEditWith2KId(int nba2kId, CancellationToken token)
-        {
-            var player = await GetPlayerByNBA2kId(nba2kId, token);
-
-            if (player == null)
-                return null;
-
-            return new UpdatePlayerDto
-            {
-                Attributes = player.Stats.OrderBy(p => p.Stat.EditOrder).Select(p => p.ToDto()),
-                Age = player.Age,
-                Height = player.Height,
-                Id = player.Id,
-                Name = player.Name,
-                Image = null,
-                Overall = player.Overall,
-                PC = player.PC,
-                PrimaryPosition = player.PrimaryPosition,
-                SecondaryPosition = player.SecondaryPosition,
-                Team = ToInt(player.Team?.Id),
-                Theme = ToInt(player.Theme?.Id),
-                Tier = ToInt(player.Tier?.Id),
-                Xbox = player.Xbox,
-                Weight = player.Weight,
-                PS4 = player.PS4,
-                ImageUri = player.GetImageUri(ImageSize.Full),
-                NBA2K_ID = player.NBA2K_ID,
-                PublishDate = player.CreatedDate
-            };
-        }
-
-        private int ToInt(int? value)
-        {
-            return value.GetValueOrDefault(0);
-        }
-
-        public async Task<IEnumerable<PlayerDto>> GetPlayerDtosByUri(CancellationToken token, params string[] uris)
-        {
-            var players = await _repository.Players.Where(p => uris.Contains(p.UriName))
-                .ToListAsync(token);
-
-            return players.Select(p => p.ToDto());
-        }
-
         public async Task<IEnumerable<Player>> GetPlayersByUri(CancellationToken token, params string[] uris)
         {
             return await _repository.Players.Where(p => uris.Contains(p.UriName)).ToListAsync(token);
 
         }
 
-        public async Task<IEnumerable<ComparePlayerDto>> GetComparisonPlayers(CancellationToken token, bool showHidden = false)
-        {
-            var query = _repository.Players.AsQueryable();
-            if (!showHidden)
-                query = query.Where(p => !p.Private);
-
-            query = query.OrderBy(p => p.Name);
-
-            var players =  await query
-                                .Select(p => new ComparePlayerDto { Id = p.Id, Name = p.Name + " - OVR " + p.Overall, Uri = p.UriName })
-                                .ToListAsync(token);
-            return players;
-        }
-
         public async Task<PlayerDto> GetPlayer(int id, CancellationToken token)
         {
-            var player = await _repository.Players.FirstOrDefaultAsync(p => p.Id == id, token);
+            var player = await _repository.Players
+                .Include(p => p.Badges.Select(pb => pb.Badge.BadgeGroup))
+                .Include(p => p.Stats.Select(ps => ps.Stat.Category))
+                .Include(p => p.Team)
+                .Include(p => p.Collection)
+                .Include(p => p.Theme)
+                .Include(p => p.Tendencies.Select(pt => pt.Tendency))
+                .FirstOrDefaultAsync(p => p.Id == id, token);
             return player.ToDto();
         }
 
@@ -427,38 +539,6 @@ namespace MTDB.Core.Services
             await SaveImage(tempPath, player.UriName, create.Image.InputStream);
 
             return player.ToDto();
-        }
-
-        private string GetUri(int playerId, string name, bool isNew = true)
-        {
-            // Remove all characters that aren't alpha numeric
-            var rgx = new Regex("[^a-zA-Z0-9 -]");
-            name = rgx.Replace(name.ToLower(), "");
-            name = name.Replace(" ", "-");
-
-            bool existing = true;
-
-            var originalName = name;
-            int counter = 1;
-            while (existing)
-            {
-                if (counter >= 1)
-                {
-                    name = originalName + "-" + counter;
-                }
-                counter++;
-                if (isNew)
-                {
-                    existing = _repository.Players.Any(p => p.UriName == name);
-                }
-                else
-                {
-                    existing = _repository.Players.Any(p => p.UriName == name && p.Id != playerId);
-                }
-
-            }
-
-            return name;
         }
 
         public async Task<PlayerDto> UpdatePlayer(string tempPath, UpdatePlayerDto update, CancellationToken token, bool batch = false)
@@ -650,42 +730,7 @@ namespace MTDB.Core.Services
 
             await _repository.SaveChangesAsync(token);
         }
-
-
-        private PlayerUpdateChange CreateUpdateIfNecessary(Player player, object newValue, object oldValue, string fieldName, PlayerUpdateType updateType = PlayerUpdateType.Default, bool visible = true)
-        {
-            var newString = newValue?.ToString();
-            var oldString = oldValue?.ToString();
-
-            if (string.Equals(newString, oldString, StringComparison.OrdinalIgnoreCase))
-            {
-                return null;
-            }
-
-            return new PlayerUpdateChange
-            {
-                Player = player,
-                FieldName = fieldName,
-                NewValue = newString,
-                OldValue = oldString,
-                UpdateType = updateType,
-            };
-        }
-
-        private void AddIfNotNull(List<PlayerUpdateChange> updates, PlayerUpdateChange update)
-        {
-            if (update != null)
-            {
-                updates.Add(update);
-            }
-        }
-
-        private async Task<Player> GetPlayerWithStatsById(int id, CancellationToken token)
-        {
-            return await _repository.Players
-                .FirstOrDefaultAsync(p => p.Id == id, token);
-        }
-
+        
         public async Task<IEnumerable<ThemeDto>> GetThemes(CancellationToken token)
         {
             return await _repository.Themes.Select(t => new ThemeDto { Id = t.Id, Name = t.Name }).ToListAsync(token);
@@ -714,112 +759,6 @@ namespace MTDB.Core.Services
             return heights.OrderBy(p => p, new HeightComparer());
         }
 
-        private async Task SaveImage(string tempPath, string name, Stream stream)
-        {
-            if (!Directory.Exists(tempPath))
-                Directory.CreateDirectory(tempPath);
-
-            // Save temporarily to disk
-            var path = Path.Combine(tempPath, name);
-
-            var normalSize = path + ".png";
-            var smallSize = path + "-40x56.png";
-
-            using (var img = Image.FromStream(stream))
-            {
-                img.Save(normalSize);
-            }
-
-            using (var img = Image.FromFile(normalSize))
-            {
-                using (var bitmap = new Bitmap(img, 40, 56))
-                {
-                    bitmap.Save(smallSize);
-                }
-            }
-
-            await SaveToCDN77(normalSize, smallSize);
-        }
-
-        #region Rackspace
-        //private const string RACKSPACEAPIKEY = "01e7b9946f0c651ef2a990dc36a80cc6";
-        //private const string RACKSPACEUSERNAME = "chrissmoove";
-        //private const string COLLECTIONNAME = "playerimages";
-        //private static readonly CloudIdentity Identity = new CloudIdentity()
-        //{
-        //    APIKey = RACKSPACEAPIKEY,
-        //    Username = RACKSPACEUSERNAME
-        //};
-
-        //private static readonly CloudFilesProvider CloudFilesProvider = new CloudFilesProvider(Identity);
-
-        //static async Task SaveToRackspace(Stream stream, string name)
-        //{
-        //    await Task.Run(() => CloudFilesProvider.CreateObject(COLLECTIONNAME, stream, name));
-        //}
-
-        //static async Task SaveToRackspace(string path)
-        //{
-        //    await Task.Run(() =>
-        //    {
-        //        if (File.Exists(path))
-        //        {
-        //            CloudFilesProvider.CreateObjectFromFile(COLLECTIONNAME, path, Path.GetFileName(path));
-        //        }
-        //    });
-        //}
-        #endregion
-
-        #region CDN77 FTP
-
-        private const string CDN77USERNAME = "user_mgoh0250";
-        private const string CDN77HOST = "push-20.cdn77.com";
-        private const string CDN77PASS = "lF9SKUp2d0M332IbHdeF";
-
-        private async Task SaveToCDN77(params string[] files)
-        {
-            using (var client = new WebClient())
-            {
-                client.Credentials = new NetworkCredential(CDN77USERNAME, CDN77PASS);
-                foreach (var file in files)
-                {
-                    var uri = string.Format(@"ftp://{0}@{1}/www/{2}", CDN77USERNAME, CDN77HOST, Path.GetFileName(file));
-                    await client.UploadFileTaskAsync(uri, "STOR", file);
-                    //await Prefetch(file);
-                }
-            }
-
-            foreach (var file in files)
-            {
-                try
-                {
-                    File.Delete(file);
-                }
-                catch
-                {
-                    // Don't want to cause an exception here.  Just go about your business. 
-                }
-            }
-
-        }
-
-        private const int CDN77_CDNID = 62905;
-        private const string CDN77_APIUSER = "chris@chrissmoove.com";
-        private const string CDN77_APIPASSWORD = "FwTKGp9Cv1bPntcNHELWMhA2IQjR63Bg";
-        private async Task Prefetch(params string[] fileNames)
-        {
-            using (var client = new HttpClient())
-            {
-                var data = string.Format(@"cdn_id={0}&login={1}&passwd={2}", CDN77_CDNID, CDN77_APIUSER, CDN77_APIPASSWORD);
-                foreach (var file in fileNames)
-                {
-                    data += string.Format("&url[]={0}", file);
-                }
-                await client.PostAsync(@"https://api.cdn77.com/v2.0/data/prefetch", new StringContent(data));
-            }
-        }
-        #endregion
-
         public async Task<IEnumerable<CollectionDto>> GetCollectionsForDropDowns(CancellationToken token)
         {
             return await _repository.Collections.OrderBy(p => p.Name).Select(t => new CollectionDto { Id = t.Id, Name = t.Name }).ToListAsync(token);
@@ -828,8 +767,10 @@ namespace MTDB.Core.Services
         public async Task<CollectionsViewModel> GetCollections(CancellationToken token)
         {
             var teams = await _repository.Teams
+                .Include(t => t.Division)
                 .ToListAsync(token);
-            var collections = await _repository.Collections.ToListAsync(token);
+            var collections = await _repository.Collections
+                .ToListAsync(token);
 
             var current = teams
                 .Where(t => !t.Name.Contains("Free")).OrderBy(p => p.Division.Name).ThenBy(p => p.Name)
@@ -858,22 +799,7 @@ namespace MTDB.Core.Services
 
             return collectionsViewModel;
         }
-
-        private IEnumerable<CollectionViewModel> MapCollectionToViewModel(IEnumerable<Collection> collections, string groupName = null)
-        {
-            return collections.OrderBy(p => p.Name).Select((collection, index) => new CollectionViewModel
-            {
-                Name = collection.Name,
-                Group = groupName ?? collection.GroupName,
-                DisplayOrder = collection.DisplayOrder ?? index
-            });
-        }
-
-        private string CreateCollectionUri(string theme, string name)
-        {
-            return $"{theme.ToLower().Replace(" ", "-")}/{name.ToLower().Replace(" ", "-")}";
-        }
-
+        
         public async Task<CollectionDetails> GetPlayersForCollection(int skip, int take, string sortByColumn, SortOrder sortOrder, string groupName, string name, CancellationToken token, bool showHidden = false)
         {
             // So we will receive a groupName and name with dashes instead of spaces.  Remove dashes and place spaces in.  
@@ -882,7 +808,9 @@ namespace MTDB.Core.Services
             string collectionName;
 
 
-            IQueryable<Player> query;
+            IQueryable<Player> query = _repository.Players
+                .Include(p => p.Tier);
+
             // If groupName == Dynamic or Current then we just filter by theme and team
             if (groupName.EqualsAny("dynamic", "current") && !name.Contains("free"))
             {
@@ -891,7 +819,7 @@ namespace MTDB.Core.Services
                     return null;
 
                 collectionName = team.Name;
-                query = _repository.Players.Where(p => p.Theme.Name == groupName && p.Team.Name == name);
+                query = query.Where(p => p.Theme.Name == groupName && p.Team.Name == name);
             }
             else
             {
@@ -902,7 +830,7 @@ namespace MTDB.Core.Services
 
                 collectionName = collection.Name;
                 // Not a team so just search by collection
-                query = _repository.Players.Where(p => p.Collection.Id == collection.Id);
+                query = query.Where(p => p.Collection.Id == collection.Id);
             }
             if (!showHidden)
                 query = query.Where(p => !p.Private);
@@ -914,18 +842,20 @@ namespace MTDB.Core.Services
                 return new CollectionDetails { Name = collectionName, Results = new List<SearchPlayerResultDto>() };
             }
 
-            var averages = new
-            {
-                Overall = (int)await query.AverageAsync(s => s.Overall, token),
-                OutsideScoring = (int)await query.AverageAsync(s => s.OutsideScoring, token),
-                InsideScoring = (int)await query.AverageAsync(s => s.InsideScoring, token),
-                Playmaking = (int)await query.AverageAsync(s => s.Playmaking, token),
-                Athleticism = (int)await query.AverageAsync(s => s.Athleticism, token),
-                Defending = (int)await query.AverageAsync(s => s.Defending, token),
-                Rebounding = (int)await query.AverageAsync(s => s.Rebounding, token),
-            };
-
-
+            var averages =
+                await query.Select(
+                    p =>
+                        new
+                        {
+                            Overall = p.Overall,
+                            OutsideScoring = p.OutsideScoring,
+                            InsideScoring = p.InsideScoring,
+                            Playmaking = p.Playmaking,
+                            Athleticism = p.Athleticism,
+                            Defending = p.Defending,
+                            p.Rebounding
+                        })
+                        .ToListAsync(token);
 
             var sortMap = new Dictionary<string, string>
             {
@@ -942,13 +872,13 @@ namespace MTDB.Core.Services
             var viewModel = new CollectionDetails
             {
                 Name = collectionName,
-                Overall = averages.Overall,
-                OutsideScoring = averages.OutsideScoring,
-                InsideScoring = averages.InsideScoring,
-                Playmaking = averages.Playmaking,
-                Athleticism = averages.Athleticism,
-                Defending = averages.Defending,
-                Rebounding = averages.Rebounding,
+                Overall = (int)averages.Average(d => d.Overall),
+                OutsideScoring = (int)(averages.Average(s => s.OutsideScoring) ?? 0),
+                InsideScoring = (int)(averages.Average(s => s.InsideScoring) ?? 0),
+                Playmaking = (int)(averages.Average(s => s.Playmaking) ?? 0),
+                Athleticism = (int)(averages.Average(s => s.Athleticism) ?? 0),
+                Defending = (int)(averages.Average(s => s.Defending) ?? 0),
+                Rebounding = (int)(averages.Average(s => s.Rebounding) ?? 0),
                 Results = paged,
                 ResultCount = count,
             };
@@ -1113,8 +1043,7 @@ namespace MTDB.Core.Services
             }
             await _repository.SaveChangesAsync(token);
         }
-
-
+        
         public async Task<bool> DeleteTheme(int id, CancellationToken token)
         {
             var entity = await _repository.Themes.SingleOrDefaultAsync(t => t.Id == id, token);
@@ -1146,6 +1075,8 @@ namespace MTDB.Core.Services
             await _repository.SaveChangesAsync(token);
             return true;
         }
+
+        #endregion
     }
 
     public class CollectionDetails
@@ -1161,13 +1092,6 @@ namespace MTDB.Core.Services
         public int Rebounding { get; set; }
         public int ResultCount { get; set; }
         public IEnumerable<SearchPlayerResultDto> Results { get; set; }
-    }
-
-    public class ComparePlayerDto
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public string Uri { get; set; }
     }
 
     public class SearchPlayerViewModel : PlayerFilter
