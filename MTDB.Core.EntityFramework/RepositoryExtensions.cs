@@ -173,7 +173,7 @@ namespace MTDB.Core.EntityFramework
             public string Name { get; set; }
             public string User { get; set; }
             public DateTimeOffset DateTime { get; set; }
-            public string Pack { get; set; }
+            public CardPackType Pack { get; set; }
             public int Score { get; set; }
             public int Id { get; set; }
         }

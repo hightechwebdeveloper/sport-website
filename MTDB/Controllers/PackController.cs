@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using MTDB.Core.EntityFramework.Entities;
 using MTDB.Core.Services;
 using MTDB.Core.ViewModels;
 using MTDB.Helpers;
@@ -333,7 +334,18 @@ namespace MTDB.Controllers
             if (pack.ToLower().Contains("all"))
                 pack = null;
 
-            var leaderboard = await Service.GetLeaderboardSorted((page - 1) * pageSize, pageSize, pack, enumRange, sortedBy, sortOrder, cancellationToken);
+            CardPackType? cardType = null;
+            switch (pack)
+            {
+                case "mtdb":
+                    cardType = CardPackType.Mtdb;
+                    break;
+                case "draft":
+                    cardType = CardPackType.Draft;
+                    break;
+            }
+
+            var leaderboard = await Service.GetLeaderboardSorted((page - 1) * pageSize, pageSize, cardType, enumRange, sortedBy, sortOrder, cancellationToken);
 
             string uri = pack;
             if (pack == null)

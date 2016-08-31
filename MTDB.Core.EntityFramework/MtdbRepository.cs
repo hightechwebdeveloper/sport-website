@@ -68,6 +68,9 @@ namespace MTDB.Core.EntityFramework
                       .WithMany()
                       .HasForeignKey(x => x.TendencyId);
 
+            modelBuilder.Entity<CardPack>()
+                .Ignore(cp => cp.CardPackType);
+
             base.OnModelCreating(modelBuilder);
         }
 

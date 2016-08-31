@@ -109,7 +109,10 @@ namespace MTDB.Core.Services.Extensions
                 SilverBadges = player.Badges.Count(s => s.BadgeLevel == BadgeLevel.Silver && s.Badge.BadgeGroupId.HasValue),
                 GoldBadges = player.Badges.Count(s => s.BadgeLevel == BadgeLevel.Gold && s.Badge.BadgeGroupId.HasValue),
                 //Tier = player.Tier.ToDto(),
-                Attributes = player.Stats.ToDtos(),
+                Attributes = player.Stats
+                    .OrderBy(x => x.Stat.Category.SortOrder)
+                    .ThenBy(x => x.Stat.SortOrder)
+                    .Select(a => a.ToDto()),
                 Overall = player.Overall,
                 Private = player.Private,
                 GroupAverages = player.Stats.OrderBy(s => s.Stat.Category.SortOrder).GroupBy(
@@ -154,13 +157,6 @@ namespace MTDB.Core.Services.Extensions
             return playerDto;
         }
 
-        public static IEnumerable<StatDto> ToDtos(this IEnumerable<PlayerStat> stats)
-        {
-            return stats.OrderBy(x => x.Stat.Category.SortOrder)
-                .ThenBy(x => x.Stat.SortOrder)
-                .Select(a => a.ToDto());
-        }
-
         public static TierDto ToDto(this Tier tier)
         {
             if (tier == null)
@@ -201,7 +197,7 @@ namespace MTDB.Core.Services.Extensions
                 Id = lineup.Id,
                 Name = lineup.Name,
                 AuthorId = lineup.User?.Id,
-                Author = lineup.User.GetNameOrGuest(),
+                Author = lineup.User != null ? lineup.User.UserName : "Guest",
                 Overall = overall,
                 OutsideScoring = outsideScoring,
                 InsideScoring = insideScoring,
@@ -295,123 +291,7 @@ namespace MTDB.Core.Services.Extensions
                 LineupPosition = position
             };
         }
-
-        public static MtdbCardPackDto ToDto(this CardPack cardPack)
-        {
-            if (cardPack == null)
-                return null;
-
-            return new MtdbCardPackDto
-            {
-                Id = cardPack.Id,
-                Name = cardPack.Name,
-                Cards = cardPack.Players.Select(p => p.ToCardDto()),
-                Points = cardPack.Players.Sum(p => p.Player.Points.GetValueOrDefault(0))
-            };
-        }
-
-        public static CardDto ToCardDto(this CardPackPlayer cardPackPlayer)
-        {
-            if (cardPackPlayer == null)
-                return null;
-
-            return new CardDto
-            {
-                Id = cardPackPlayer.Id,
-                PlayerName = cardPackPlayer.Player.Name,
-                PlayerUri = cardPackPlayer.Player.UriName,
-                PlayerImageUri = cardPackPlayer.Player.GetImageUri(ImageSize.Full),
-                Tier = cardPackPlayer.Player.Tier.ToDto(),
-                Points = cardPackPlayer.Player.Points.GetValueOrDefault(0),
-            };
-
-        }
-
-        public static CardPackLeaderboardDto ToLeaderboardDto(this CardPack cardPack)
-        {
-            if (cardPack == null)
-                return null;
-
-            return new CardPackLeaderboardDto
-            {
-                Id = cardPack.Id,
-                Name = cardPack.Name,
-                CreatedDate = cardPack.CreatedDate,
-                User = cardPack.User == null ? "Guest" : cardPack.User.UserName,
-                Pack = "mtdb",
-                Score = 0
-            };
-        }
-
-        public static async Task<IEnumerable<CardPackLeaderboardDto>> ToLeaderboardDtos(this IQueryable<CardPack> cardPacks, CancellationToken cancellationToken)
-        {
-            return await cardPacks.Select(cardPack => new CardPackLeaderboardDto
-            {
-                Id = cardPack.Id,
-                Name = cardPack.Name.Length > 50 ? cardPack.Name.Substring(0, 50) + "..." : cardPack.Name,
-                CreatedDate = cardPack.CreatedDate,
-                User = cardPack.User == null ? "Guest" : cardPack.User.UserName,
-                Pack = cardPack.CardPackType,
-                Score = cardPack.Points,
-
-            }).ToListAsync(cancellationToken);
-        }
-
-        private static int Score(IEnumerable<Player> players)
-        {
-            var map = new Dictionary<Tuple<int, int>, int>();
-            map.Add(Tuple.Create(96, 100), 1000000);
-            map.Add(Tuple.Create(90, 95), 500000);
-            map.Add(Tuple.Create(87, 89), 100000);
-            map.Add(Tuple.Create(80, 86), 20000);
-            map.Add(Tuple.Create(70, 79), 5000);
-            map.Add(Tuple.Create(0, 69), 1000);
-
-            return players.Sum(player => map.First(x => player.Overall.IsBetween(x.Key.Item1, x.Key.Item2)).Value + player.Overall);
-        }
-
-        public static DraftCardDto ToDraftCardDto(this Player player)
-        {
-            return new DraftCardDto
-            {
-                Athleticism = player.Athleticism.Value,
-                Defending = player.Defending.Value,
-                Id = player.Id,
-                InsideScoring = player.InsideScoring.Value,
-                OutsideScoring = player.OutsideScoring.Value,
-                Overall = player.Overall,
-                PlayerImageUri = player.GetImageUri(ImageSize.Full),
-                PlayerName = player.Name,
-                PlayerUri = player.UriName,
-                Playmaking = player.Playmaking.Value,
-                Points = player.Points.Value,
-                Position = player.PrimaryPosition,
-                Rebounding = player.Rebounding.Value,
-                Round = 0,
-                Tier = player.Tier.ToDto()
-            };
-        }
-
-        public static string GetNameOrGuest(this ApplicationUser user)
-        {
-            if (user == null)
-                return "Guest";
-
-            return user.UserName;
-        }
-
-        public static ThemeDto ToDto(this Theme theme)
-        {
-            if (theme == null)
-                return null;
-
-            return new ThemeDto
-            {
-                Id = theme.Id,
-                Name = theme.Name
-            };
-        }
-
+        
         public static CommentDto ToDto(this Comment comment)
         {
             return Mapper.Map<CommentDto>(comment);

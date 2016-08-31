@@ -14,7 +14,13 @@ namespace MTDB.Core.Services
 {
     public class PackService
     {
-        private MtdbRepository _repository;
+        #region Fields
+
+        private readonly MtdbRepository _repository;
+
+        #endregion
+
+        #region Ctor
 
         public PackService(MtdbRepository repository)
         {
@@ -24,14 +30,111 @@ namespace MTDB.Core.Services
         public PackService() : this(new MtdbRepository())
         { }
 
+        #endregion
+
+        #region Utilities
+
+        private DateTimeOffset? GetStartDateForRange(LeaderboardRange? range)
+        {
+            var today = DateTimeOffset.Now;
+            switch (range)
+            {
+                case LeaderboardRange.Daily:
+                    return today.Date;
+                case LeaderboardRange.Weekly:
+                    var delta = DayOfWeek.Monday - today.DayOfWeek;
+                    var startDate = today.AddDays(delta);
+                    return new DateTimeOffset(startDate.Year, startDate.Month, startDate.Day, 0, 0, 0, today.Offset);
+                case LeaderboardRange.Monthly:
+                    return new DateTimeOffset(today.Year, today.Month, 1, 0, 0, 0, today.Offset);
+                default:
+                    return null;
+            }
+        }
+
+        #endregion
+
+        #region Methods
+
         public async Task<MtdbCardPackDto> GetMtdbCardPackById(int id, CancellationToken cancellationToken)
         {
-            var pack = await _repository.CardPacks
-                .Include(c => c.Players.Select(p => p.Player.Tier))
-                .Where(p => p.CardPackType == "mtdb")
-                .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
+            var mtdbPackType = (int)CardPackType.Mtdb;
 
-            return pack.ToDto();
+            var cardPack = await _repository.CardPacks
+                .Include(c => c.Players.Select(p => p.Player.Tier))
+                .FirstOrDefaultAsync(p => p.Id == id && p.CardPackTypeId == mtdbPackType, cancellationToken);
+
+            if (cardPack == null)
+                return null;
+
+            return new MtdbCardPackDto
+            {
+                Id = cardPack.Id,
+                Name = cardPack.Name,
+                Cards = cardPack.Players.Select(cardPackPlayer =>
+                {
+                    if (cardPackPlayer == null)
+                        return null;
+
+                    return new CardDto
+                    {
+                        Id = cardPackPlayer.Id,
+                        PlayerName = cardPackPlayer.Player.Name,
+                        PlayerUri = cardPackPlayer.Player.UriName,
+                        PlayerImageUri = cardPackPlayer.Player.GetImageUri(ImageSize.Full),
+                        Tier = cardPackPlayer.Player.Tier.ToDto(),
+                        Points = cardPackPlayer.Player.Points.GetValueOrDefault(0),
+                    };
+                }),
+                Points = cardPack.Players.Sum(p => p.Player.Points.GetValueOrDefault(0))
+            };
+        }
+
+        public async Task<DraftResultsDto> GetDraftPackById(int id, CancellationToken cancellationToken)
+        {
+            var draftPackType = (int)CardPackType.Draft;
+
+            var cardPack = await _repository.CardPacks
+                .Include(cp => cp.Players.Select(cpp => cpp.Player.Tier))
+                .FirstOrDefaultAsync(p => p.Id == id && p.CardPackTypeId == draftPackType, cancellationToken);
+
+            if (cardPack == null)
+                return null;
+
+            return new DraftResultsDto
+            {
+                Name = cardPack.Name,
+                PGCount = cardPack.Players.Count(p => p.Player.PrimaryPosition == "PG"),
+                SGCount = cardPack.Players.Count(p => p.Player.PrimaryPosition == "SG"),
+                SFCount = cardPack.Players.Count(p => p.Player.PrimaryPosition == "SF"),
+                PFCount = cardPack.Players.Count(p => p.Player.PrimaryPosition == "PF"),
+                CCount = cardPack.Players.Count(p => p.Player.PrimaryPosition == "C"),
+                Points = cardPack.Points,
+                Picked = cardPack.Players.Select(cardPackPlayer =>
+                {
+                    if (cardPackPlayer == null)
+                        return null;
+
+                    return new DraftCardDto
+                    {
+                        Athleticism = cardPackPlayer.Player.Athleticism.Value,
+                        Defending = cardPackPlayer.Player.Defending.Value,
+                        Id = cardPackPlayer.Player.Id,
+                        InsideScoring = cardPackPlayer.Player.InsideScoring.Value,
+                        OutsideScoring = cardPackPlayer.Player.OutsideScoring.Value,
+                        Overall = cardPackPlayer.Player.Overall,
+                        PlayerImageUri = cardPackPlayer.Player.GetImageUri(ImageSize.Full),
+                        PlayerName = cardPackPlayer.Player.Name,
+                        PlayerUri = cardPackPlayer.Player.UriName,
+                        Playmaking = cardPackPlayer.Player.Playmaking.Value,
+                        Points = cardPackPlayer.Player.Points.Value,
+                        Position = cardPackPlayer.Player.PrimaryPosition,
+                        Rebounding = cardPackPlayer.Player.Rebounding.Value,
+                        Round = 0,
+                        Tier = cardPackPlayer.Player.Tier.ToDto()
+                    };
+                })
+            };
         }
 
         public async Task<MtdbCardPackDto> CreateMtdbCardPack(CancellationToken cancellationToken)
@@ -39,38 +142,14 @@ namespace MTDB.Core.Services
             var generator = new MtdbCardPackGenerator(_repository);
             return await generator.GeneratePack(cancellationToken);
         }
-
-
-        public async Task<DraftResultsDto> GetDraftPackById(int id, CancellationToken cancellationToken)
-        {
-            var pack = await _repository.CardPacks
-                .Include(cp => cp.Players.Select(cpp => cpp.Player.Tier))
-                .Where(p => p.CardPackType == "draft")
-                .FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
-
-            var results = new DraftResultsDto
-            {
-                Name = pack.Name,
-                PGCount = pack.Players.Count(p => p.Player.PrimaryPosition == "PG"),
-                SGCount = pack.Players.Count(p => p.Player.PrimaryPosition == "SG"),
-                SFCount = pack.Players.Count(p => p.Player.PrimaryPosition == "SF"),
-                PFCount = pack.Players.Count(p => p.Player.PrimaryPosition == "PF"),
-                CCount = pack.Players.Count(p => p.Player.PrimaryPosition == "C"),
-                Points = pack.Points,
-                Picked = pack.Players.Select(p => p.Player.ToDraftCardDto())
-            };
-            return results;
-        }
-
-
+        
         public async Task<FantasyDraftPackDto> CreateFantasyDraftPack(CancellationToken cancellationToken)
         {
             var generator = new FantasyDraftPackGenerator(_repository);
 
             return await generator.GeneratePack(cancellationToken);
         }
-
-
+        
         public async Task<bool> SaveMtdbPack(ApplicationUser user, MtdbCardPackDto pack, CancellationToken cancellationToken)
         {
             if (pack == null)
@@ -80,7 +159,7 @@ namespace MTDB.Core.Services
             {
                 Name = pack.Name.ReplaceBlockedWordsWithMTDB(),
                 User = user,
-                CardPackType = "mtdb",
+                CardPackType = CardPackType.Mtdb,
                 Points = pack.Cards.Sum(p => p.Points)
             };
 
@@ -105,7 +184,7 @@ namespace MTDB.Core.Services
             {
                 Name = pack.Name.ReplaceBlockedWordsWithMTDB(),
                 User = user,
-                CardPackType = "draft",
+                CardPackType = CardPackType.Draft,
                 Points = pack.Points,
             };
 
@@ -120,55 +199,61 @@ namespace MTDB.Core.Services
 
             return rowsChanged > 0;
         }
-
-        public async Task<LeaderboardDto> GetLeaderBoard(int skip, int take, string packType, LeaderboardRange? range, CancellationToken cancellationToken)
-        {
-            var startDate = GetStartDateForRange(range);
-
-            var query = _repository.CardPacks
-                .Where(p => p.CardPackType == packType || packType == null)
-                .Where(p => p.CreatedDate >= startDate || startDate == null)
-                .Distinct()
-                .OrderByDescending(p => p.Points);
-
-            var cardPacks = await query
-                    .Skip(skip)
-                    .Take(take)
-                    .ToLeaderboardDtos(cancellationToken);
-
-            var count = await query.CountAsync(cancellationToken);
-
-            return new LeaderboardDto
-            {
-                CardPacks = cardPacks,
-                Pack = packType,
-                Range = range.GetValueOrDefault(LeaderboardRange.Daily),
-                RecordCount = count,
-            };
-        }
-
-        public async Task<LeaderboardDto> GetLeaderboardSorted(int skip, int take, string packType,
+        
+        public async Task<LeaderboardDto> GetLeaderboardSorted(int skip, int take, CardPackType? packType,
             LeaderboardRange? range, string sortByColumn, SortOrder sortOrder, CancellationToken cancellationToken)
         {
             var startDate = GetStartDateForRange(range);
 
             var query = _repository.CardPacks
-                .Where(p => p.CardPackType == packType || packType == null)
-                .Where(p => p.CreatedDate >= startDate || startDate == null)
-                .Distinct();
+                .AsQueryable();
+
+            if (startDate != null)
+            {
+                query = query
+                    .Where(p => p.CreatedDate >= startDate.Value);
+            }
+
+            if (packType != null)
+            {
+                var packTypeId = (int)packType;
+                query = query
+                    .Where(p => p.CardPackTypeId == packTypeId);
+            }
 
             var map = new Dictionary<string, string>
             {
-                {"Score", "Points"},
-                { "Title", "Name"},
-                { "User", "User.UserName"},
-                {"Date", "CreatedDate" },
-                {"Pack", "CardPackType" }
+                { "Score", "Points" },
+                { "Title", "Name" },
+                { "User", "User.UserName" },
+                { "Date", "CreatedDate" },
+                { "Pack", "CardPackType" }
             };
 
-            var cardPacks = await query.Sort(sortByColumn, sortOrder, "Points", skip, take, map)
-                    .ToLeaderboardDtos(cancellationToken);
+            var packs = await query
+                .Sort(sortByColumn, sortOrder, "Points", skip, take, map)
+                .Select(cardPack => new
+                {
+                    Id = cardPack.Id,
+                    Name = cardPack.Name,
+                    CreatedDate = cardPack.CreatedDate,
+                    User = cardPack.User != null ? cardPack.User.UserName : null,
+                    PackId = cardPack.CardPackTypeId,
+                    Points = cardPack.Points
+                })
+                .ToListAsync(cancellationToken);
 
+            var cardPacks = packs
+                .Select(pack => new CardPackLeaderboardDto
+                {
+                    Id = pack.Id,
+                    Name = pack.Name.Length > 50 ? pack.Name.Substring(0, 50) + "..." : pack.Name,
+                    CreatedDate = pack.CreatedDate,
+                    User = pack.User ?? "Guest",
+                    Pack = (CardPackType)pack.PackId,
+                    Score = pack.Points,
+
+                }).ToList();
             var count = await query.CountAsync(cancellationToken);
 
             return new LeaderboardDto
@@ -179,51 +264,8 @@ namespace MTDB.Core.Services
                 RecordCount = count,
             };
         }
-
-        public async Task<IEnumerable<CardPackLeaderboardDto>> GetLeaderboardFromTable(int take, string packType, LeaderboardRange? range, CancellationToken cancellationToken)
-        {
-            return await Task.Run(() =>
-            {
-
-                var leaderRecords = _repository.GetMTDBLeaderboard(take, packType, GetStartDateForRange(range));
-
-                var dtos = new List<CardPackLeaderboardDto>();
-                foreach (var leaderboard in leaderRecords)
-                {
-                    var dto = new CardPackLeaderboardDto
-                    {
-                        Id = leaderboard.Id,
-                        Name = leaderboard.Name,
-                        CreatedDate = leaderboard.DateTime,
-                        Pack = leaderboard.Pack,
-                        Score = leaderboard.Score,
-                        User = leaderboard.User
-                    };
-
-                    dtos.Add(dto);
-                }
-
-                return dtos;
-            }, cancellationToken);
-        }
-
-        private DateTimeOffset? GetStartDateForRange(LeaderboardRange? range)
-        {
-            var today = DateTimeOffset.Now;
-            switch (range)
-            {
-                case LeaderboardRange.Daily:
-                    return today.Date;
-                case LeaderboardRange.Weekly:
-                    var delta = DayOfWeek.Monday - today.DayOfWeek;
-                    var startDate = today.AddDays(delta);
-                    return new DateTimeOffset(startDate.Year, startDate.Month, startDate.Day, 0, 0, 0, today.Offset);
-                case LeaderboardRange.Monthly:
-                    return new DateTimeOffset(today.Year, today.Month, 1, 0, 0, 0, today.Offset);
-                default:
-                    return null;
-            }
-        }
+        
+        #endregion
     }
 
     public class CardPackLeaderboardDto
@@ -234,7 +276,7 @@ namespace MTDB.Core.Services
 
         public string CreatedDateString => CreatedDate.ToString("G");
 
-        public string Pack { get; set; }
+        public CardPackType? Pack { get; set; }
         public int Score { get; set; }
         public int Id { get; set; }
     }
@@ -243,7 +285,7 @@ namespace MTDB.Core.Services
     {
         public int RecordCount { get; set; }
         public IEnumerable<CardPackLeaderboardDto> CardPacks { get; set; }
-        public string Pack { get; set; }
+        public CardPackType? Pack { get; set; }
         public LeaderboardRange Range { get; set; }
         public string Uri { get; set; }
     }
@@ -255,6 +297,4 @@ namespace MTDB.Core.Services
         Monthly,
         AllTime
     }
-
-
 }

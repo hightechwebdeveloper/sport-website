@@ -1,4 +1,5 @@
-﻿@using MTDB.Core.Services
+﻿@using MTDB.Core.EntityFramework.Entities
+@using MTDB.Core.Services
 @using MTDB.Helpers
 @model MTDB.Controllers.LeaderboardViewModel
 
@@ -74,7 +75,7 @@
                             <tr>
                                 <td>
                                     <h5>
-                                        @if (pack.Pack == "mtdb")
+                                        @if (pack.Pack == CardPackType.Mtdb)
                                         {
                                             <a href="@Url.Action("MtdbDetails", "Pack", new {id = pack.Id})">@pack.Name</a>
                                         }

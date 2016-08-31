@@ -7,7 +7,7 @@ namespace MTDB.Core.EntityFramework.Entities
         private ICollection<CardPackPlayer> _players;
 
         public string Name { get; set; }
-        public string CardPackType { get; set; }
+        public int CardPackTypeId { get; set; }
         public int Points { get; set; }
 
         public virtual ApplicationUser User { get; set; }
@@ -17,5 +17,17 @@ namespace MTDB.Core.EntityFramework.Entities
             get { return _players ?? (_players = new List<CardPackPlayer>()); }
             protected set { _players = value; }
         }
+
+        public CardPackType CardPackType
+        {
+            get { return (CardPackType) CardPackTypeId; }
+            set { CardPackTypeId = (int)value; }
+        }
+    }
+
+    public enum CardPackType
+    {
+        Mtdb = 1,
+        Draft = 2
     }
 }

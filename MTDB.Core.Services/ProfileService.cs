@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using MTDB.Core.EntityFramework;
+using MTDB.Core.EntityFramework.Entities;
 using MTDB.Core.Services.Extensions;
 using MTDB.Core.ViewModels;
 
@@ -40,7 +41,7 @@ namespace MTDB.Core.Services
             {
                 Id = p.Id,
                 Name = p.Name,
-                PackType = p.CardPackType,
+                PackType = (CardPackType)p.CardPackTypeId,
                 Players = p.Players.OrderByDescending(x => x.Player.Points).Take(5).Select(x => x.Player.Name),
                 Points = p.Points
             });
@@ -65,7 +66,7 @@ namespace MTDB.Core.Services
     {
         public int Id { get; set; }
         public string Name { get; set; }
-        public string PackType { get; set; }
+        public CardPackType PackType { get; set; }
         public IEnumerable<string> Players { get; set; }
         public int Points { get; set; }
     }
