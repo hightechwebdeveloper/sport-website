@@ -19,20 +19,19 @@ namespace MTDB.Core.Services
     {
         #region Fields
 
-        private readonly MtdbRepository _dbContext;
+        private readonly MtdbContext _dbContext;
+        private readonly TierService _tierService;
 
         #endregion
 
         #region Ctor
 
-        public PlayerUpdateService(MtdbRepository dbContext)
+        public PlayerUpdateService(MtdbContext dbContext)
         {
             _dbContext = dbContext;
+            _tierService = new TierService(_dbContext);
         }
-
-        public PlayerUpdateService() : this(new MtdbRepository())
-        { }
-
+        
         #endregion
 
         #region Utilities
@@ -118,9 +117,9 @@ namespace MTDB.Core.Services
                 var removeChanges = new List<PlayerUpdateChange>();
 
                 var player = await _dbContext.Players
-                    .Include(p => p.Stats.Select(ps => ps.Stat))
-                    .Include(p => p.Badges)
-                    .Include(p => p.Tendencies)
+                    .Include(p => p.PlayerStats.Select(ps => ps.Stat))
+                    .Include(p => p.PlayerBadges)
+                    .Include(p => p.PlayerTendencies)
                     .FirstAsync(p => p.NBA2K_ID == filePlayer.Key, token);
 
                 bool shouldDelete;
@@ -154,7 +153,7 @@ namespace MTDB.Core.Services
                         removeChanges.Add(weightChange);
                 }
 
-                foreach (var oldValue in player.Stats)
+                foreach (var oldValue in player.PlayerStats)
                 {
                     if (!filePlayer.Value.ContainsKey(oldValue.Stat.HeaderIndex))
                         continue;
@@ -178,7 +177,7 @@ namespace MTDB.Core.Services
                     if (!filePlayer.Value.ContainsKey(badge.HeaderIndex))
                         continue;
 
-                    var oldBadge = player.Badges.FirstOrDefault(pb => pb.BadgeId == badge.Id);
+                    var oldBadge = player.PlayerBadges.FirstOrDefault(pb => pb.BadgeId == badge.Id);
                     var oldLevel = oldBadge != null ? (int)oldBadge.BadgeLevel : 0;
 
                     int newLevel;
@@ -200,7 +199,7 @@ namespace MTDB.Core.Services
                     if (!filePlayer.Value.ContainsKey(tendency.HeaderIndex))
                         continue;
 
-                    var oldTendency = player.Tendencies.FirstOrDefault(pb => pb.TendencyId == tendency.Id);
+                    var oldTendency = player.PlayerTendencies.FirstOrDefault(pb => pb.TendencyId == tendency.Id);
                     var oldValue = oldTendency?.Value ?? 0;
 
                     int newValue;
@@ -313,6 +312,49 @@ namespace MTDB.Core.Services
                     }
                 }
             }
+        }
+
+        private PlayerUpdateChange DetermineChange(IEnumerable<PlayerUpdateChange> changes, Player player, string fieldName, object oldValue, object compareValue, PlayerUpdateType updateType, out bool shouldDelete)
+        {
+            shouldDelete = false;
+            var newString = compareValue?.ToString();
+            var oldString = oldValue?.ToString();
+
+            // If they are the same go no further
+            if (string.Equals(newString, oldString, StringComparison.OrdinalIgnoreCase))
+            {
+                return null;
+            }
+
+            // Do we have a change for this player with that fieldname?
+            var existing = changes?.FirstOrDefault(p => p.Player.Id == player.Id && p.FieldName == fieldName);
+
+
+            if (existing != null)
+            {
+                if (string.Equals(newString, existing.OldValue))
+                {
+                    shouldDelete = true;
+                    return existing;
+                }
+
+
+                // Update change
+                existing.NewValue = newString;
+            }
+            else
+            {
+                return new PlayerUpdateChange
+                {
+                    FieldName = fieldName,
+                    NewValue = newString,
+                    OldValue = oldString,
+                    UpdateType = updateType,
+                    Player = player
+                };
+            }
+
+            return null;
         }
 
         #endregion
@@ -527,8 +569,7 @@ namespace MTDB.Core.Services
                 update.Name = title;
             }
 
-            var playerService = new PlayerService(_dbContext);
-            var tiers = await _dbContext.Tiers.ToListAsync(token);
+            
             var badges = await _dbContext.Badges.ToListAsync(token);
             var tendencies = await _dbContext.Tendencies.ToListAsync(token);
 
@@ -549,11 +590,11 @@ namespace MTDB.Core.Services
                 //performance optimization! Be carefully
                 var query = _dbContext.Players.AsQueryable();
                 if (playerChanges.Any(pc => pc.UpdateType == PlayerUpdateType.Badge))
-                    query = query.Include(p => p.Badges.Select(pb => pb.Badge.BadgeGroup));
+                    query = query.Include(p => p.PlayerBadges.Select(pb => pb.Badge.BadgeGroup));
                 if (playerChanges.Any(pc => pc.UpdateType == PlayerUpdateType.Tendency))
-                    query = query.Include(p => p.Tendencies.Select(pt => pt.Tendency));
+                    query = query.Include(p => p.PlayerTendencies.Select(pt => pt.Tendency));
                 if (playerChanges.Any(pc => pc.UpdateType == PlayerUpdateType.Stat))
-                    query = query.Include(p => p.Stats);
+                    query = query.Include(p => p.PlayerStats);
                 var player = await query
                     .FirstAsync(p => p.Id == playerId, token);
 
@@ -566,7 +607,7 @@ namespace MTDB.Core.Services
                             {
                                 case "Overall":
                                     player.Overall = Convert.ToInt32(change.NewValue);
-                                    player.Tier = playerService.GetTierFromOverall(tiers, player.Overall);
+                                    player.Tier = await _tierService.GetTierFromOverall(player.Overall, token);
                                     break;
                                 case "Height":
                                     player.Height = change.NewValue;
@@ -577,7 +618,7 @@ namespace MTDB.Core.Services
                             }
                             break;
                         case PlayerUpdateType.Stat:
-                            var existingStat = player.Stats.FirstOrDefault(p => p.Stat.Name == change.FieldName);
+                            var existingStat = player.PlayerStats.FirstOrDefault(p => p.Stat.Name == change.FieldName);
                             if (existingStat == null)
                                 continue;
 
@@ -585,7 +626,7 @@ namespace MTDB.Core.Services
                             break;
                         case PlayerUpdateType.Badge:
                         {
-                            var playerBadge = player.Badges.FirstOrDefault(p => p.Badge.Name == change.FieldName);
+                            var playerBadge = player.PlayerBadges.FirstOrDefault(p => p.Badge.Name == change.FieldName);
 
                             var isNew = false;
                             if (playerBadge == null)
@@ -604,19 +645,19 @@ namespace MTDB.Core.Services
                             var level = Convert.ToInt32(change.NewValue);
                             if (level == 0)
                             {
-                                player.Badges.Remove(playerBadge);
+                                player.PlayerBadges.Remove(playerBadge);
                             }
                             else
                             {
                                 playerBadge.BadgeLevel = (BadgeLevel)level;
                                 if (isNew)
-                                    player.Badges.Add(playerBadge);
+                                    player.PlayerBadges.Add(playerBadge);
                             }
                         }
                             break;
                         case PlayerUpdateType.Tendency:
                         {
-                            var playerTendency = player.Tendencies.FirstOrDefault(p => p.Tendency.Abbreviation == change.FieldName);
+                            var playerTendency = player.PlayerTendencies.FirstOrDefault(p => p.Tendency.Abbreviation == change.FieldName);
 
                             var isNew = false;
                             if (playerTendency == null)
@@ -635,13 +676,13 @@ namespace MTDB.Core.Services
                             var value = Convert.ToInt32(change.NewValue);
                             if (value == 0)
                             {
-                                player.Tendencies.Remove(playerTendency);
+                                player.PlayerTendencies.Remove(playerTendency);
                             }
                             else
                             {
                                 playerTendency.Value = value;
                                 if (isNew)
-                                    player.Tendencies.Add(playerTendency);
+                                    player.PlayerTendencies.Add(playerTendency);
                             }
                         }
                             break;
@@ -701,47 +742,75 @@ namespace MTDB.Core.Services
             return true;
         }
 
-        public PlayerUpdateChange DetermineChange(IEnumerable<PlayerUpdateChange> changes, Player player, string fieldName, object oldValue, object compareValue, PlayerUpdateType updateType, out bool shouldDelete)
+        public async Task DetermineChanges(Player oldPlayer, Player player, CancellationToken token)
         {
-            shouldDelete = false;
-            var newString = compareValue?.ToString();
-            var oldString = oldValue?.ToString();
+            var changes = new List<PlayerUpdateChange>();
+            // Get existing update
+            var existingUpdates = await _dbContext.PlayerUpdates
+                .FilterByCreatedDate(DateTime.Today)
+                .Select(p => new { PlayerUpdate = p, Changes = p.Changes.Where(c => c.Player.Id == player.Id) })
+                .FirstOrDefaultAsync(token);
 
-            // If they are the same go no further
-            if (string.Equals(newString, oldString, StringComparison.OrdinalIgnoreCase))
+            var performUpdate = true;
+            if (existingUpdates != null)
             {
-                return null;
+                performUpdate = existingUpdates.PlayerUpdate.Visible;
             }
 
-            // Do we have a change for this player with that fieldname?
-            var existing = changes?.FirstOrDefault(p => p.Player.Id == player.Id && p.FieldName == fieldName);
-
-
-            if (existing != null)
+            bool shouldDelete;
+            var overallChange = DetermineChange(existingUpdates?.Changes, oldPlayer, nameof(oldPlayer.Overall), oldPlayer.Overall, player.Overall, PlayerUpdateType.Stat, out shouldDelete);
+            if (overallChange != null && shouldDelete)
             {
-                if (string.Equals(newString, existing.OldValue))
+                _dbContext.PlayerUpdateChanges.Remove(overallChange);
+            }
+            else if (overallChange != null)
+            {
+                changes.Add(overallChange);
+            }
+
+            foreach (var stat in player.PlayerStats)
+            {
+                var compareStat = oldPlayer.PlayerStats.First(ps => ps.Stat.Id == stat.Id);
+                var change = DetermineChange(existingUpdates?.Changes, oldPlayer, compareStat.Stat.Name, stat.Value.ToString(), compareStat.Value.ToString(), PlayerUpdateType.Stat, out shouldDelete);
+
+                if (compareStat.Value != stat.Value && performUpdate)
                 {
-                    shouldDelete = true;
-                    return existing;
+                    compareStat.Value = stat.Value;
                 }
 
+                if (change == null) continue;
 
-                // Update change
-                existing.NewValue = newString;
+                if (shouldDelete)
+                    _dbContext.PlayerUpdateChanges.Remove(change);
+                else
+                    changes.Add(change);
             }
-            else
+
+            if (changes.Any())
             {
-                return new PlayerUpdateChange
+                if (existingUpdates == null)
                 {
-                    FieldName = fieldName,
-                    NewValue = newString,
-                    OldValue = oldString,
-                    UpdateType = updateType,
-                    Player = player
-                };
+                    var dbUpdate = new PlayerUpdate
+                    {
+                        Visible = true,
+                    };
+                    foreach (var playerUpdateChange in changes)
+                    {
+                        dbUpdate.Changes.Add(playerUpdateChange);
+                    }
+
+                    _dbContext.PlayerUpdates.Add(dbUpdate);
+                }
+                else
+                {
+                    foreach (var change in changes)
+                    {
+                        existingUpdates.PlayerUpdate.Changes.Add(change);
+                    }
+                }
             }
 
-            return null;
+            await _dbContext.SaveChangesAsync(token);
         }
 
         #endregion

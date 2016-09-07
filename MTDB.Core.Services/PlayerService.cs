@@ -5,11 +5,13 @@ using System.Data.SqlClient;
 using System.Drawing;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net;
 using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using MTDB.Core.Caching;
 using MTDB.Core.EntityFramework;
 using MTDB.Core.EntityFramework.Entities;
 using MTDB.Core.Services.Extensions;
@@ -28,58 +30,33 @@ namespace MTDB.Core.Services
         //private const int CDN77_CDNID = 62905;
         //private const string CDN77_APIUSER = "chris@chrissmoove.com";
         //private const string CDN77_APIPASSWORD = "FwTKGp9Cv1bPntcNHELWMhA2IQjR63Bg";
+        /// <summary>
+        /// Key for caching
+        /// </summary>
+        private const string PLAYER_HEIGHTS = "MTDB.player.heights";
         #endregion
 
         #region Fields 
 
-        private readonly MtdbRepository _repository;
+        private readonly MtdbContext _repository;
+        private readonly ICacheManager _memoryCacheManager;
+        private readonly PlayerUpdateService _playerUpdateService;
 
         #endregion
 
         #region Ctor
 
-        public PlayerService(MtdbRepository repository)
+        public PlayerService(MtdbContext repository)
         {
             _repository = repository;
+            _memoryCacheManager = new MemoryCacheManager();
+            _playerUpdateService = new PlayerUpdateService(_repository);
         }
-
-        public PlayerService() : this(new MtdbRepository())
-        { }
-
+        
         #endregion
 
         #region Utilities
-
-        private async Task<Player> GetPlayerByUri(string uri, CancellationToken token)
-        {
-            return await _repository.Players
-                .Include(p => p.Badges.Select(pb => pb.Badge.BadgeGroup))
-                .Include(p => p.Tendencies.Select(pt => pt.Tendency))
-                .Include(p => p.Team)
-                .Include(p => p.Collection)
-                .Include(p => p.Theme)
-                .Include(p => p.Stats.Select(ps => ps.Stat.Category))
-                .FirstOrDefaultAsync(p => p.UriName.Equals(uri, StringComparison.OrdinalIgnoreCase), token);
-        }
-
-        private int ToInt(int? value)
-        {
-            return value.GetValueOrDefault(0);
-        }
-        private void AddIfNotNull(List<PlayerUpdateChange> updates, PlayerUpdateChange update)
-        {
-            if (update != null)
-            {
-                updates.Add(update);
-            }
-        }
-
-        private async Task<Player> GetPlayerWithStatsById(int id, CancellationToken token)
-        {
-            return await _repository.Players
-                .FirstOrDefaultAsync(p => p.Id == id, token);
-        }
-
+        
         private string GetUri(int playerId, string name, bool isNew = true)
         {
             // Remove all characters that aren't alpha numeric
@@ -112,7 +89,7 @@ namespace MTDB.Core.Services
             return name;
         }
 
-        private async Task SaveImage(string tempPath, string name, Stream stream)
+        public async Task SaveImage(string tempPath, string name, Stream stream)
         {
             if (!Directory.Exists(tempPath))
                 Directory.CreateDirectory(tempPath);
@@ -208,507 +185,158 @@ namespace MTDB.Core.Services
         //}
         #endregion
 
-        private IEnumerable<CollectionViewModel> MapCollectionToViewModel(IEnumerable<Collection> collections, string groupName = null)
-        {
-            return collections.OrderBy(p => p.Name).Select((collection, index) => new CollectionViewModel
-            {
-                Name = collection.Name,
-                Group = groupName ?? collection.GroupName,
-                DisplayOrder = collection.DisplayOrder ?? index
-            });
-        }
-
         #endregion
 
         #region Methods
 
-        public async Task<SearchPlayerViewModel> SearchPlayers(int skip, int take, string sortByColumn, SortOrder sortOrder, PlayerFilter filter, CancellationToken token, bool showHidden = false)
+        #region Players
+        
+        public async Task<IPagedList<Player>> SearchPlayers(int pageIndex, int pageSize,
+            //Expression<Func<Player, object>> orderBy,
+            string sortByColumn = "overall",
+            SortOrder sortOrder = SortOrder.Unspecified,
+            string[] terms = null, 
+            string position = null,
+            string height = null,
+            string platform = null,
+            int? priceMin = null,
+            int? priceMax = null,
+            int? teamId = null,
+            int? collectionId = null,
+            int? themeId = null,
+            int? tierId = null,
+            IEnumerable<StatFilter> stats = null,
+            CancellationToken token = default (CancellationToken),
+            bool showHidden = false)
         {
-            var result = new SearchPlayerViewModel();
+            terms = terms
+                .Where(t => !string.IsNullOrWhiteSpace(t))
+                .ToArray();
 
             var query = _repository.Players
                 .Include(p => p.Tier)
                 .Include(p => p.Collection)
                 .AsQueryable();
-            if (filter != null)
+
+            if (terms.HasItems())
             {
-                result = new SearchPlayerViewModel
+                query = query
+                    .Where(p => terms.All(term => p.Name.Contains(term)));
+            }
+                
+            if (position.HasValue() && position != "Any")
+                query = query.Where(p => p.PrimaryPosition == position || p.SecondaryPosition == position);
+            if (height.HasValue() && height != "Any")
+                query = query.Where(p => p.Height == height);
+            if (themeId != null && themeId > 0)
+                query = query.Where(p => p.Theme.Id == themeId);
+            if (tierId != null && tierId > 0)
+                query = query.Where(p => p.Tier.Id == tierId);
+            if (teamId != null && teamId > 0)
+                query = query.Where(p => p.Team.Id == teamId);
+            if (collectionId != null && collectionId > 0)
+                query = query.Where(p => p.Collection.Id == collectionId);
+
+            if (platform.HasValue() && (priceMin.HasValue || priceMax.HasValue))
+            {
+                switch (platform)
                 {
-                    Name = filter.Name,
-                    Height = filter.Height,
-                    Platform = filter.Platform,
-                    Position = filter.Position,
-                    PriceMax = filter.PriceMax,
-                    PriceMin = filter.PriceMin,
-                    Stats = filter.Stats,
-                    Theme = filter.Theme,
-                    Tier = filter.Tier
-                };
-
-                if (filter.Name.HasValue())
-                {
-                    query = query.FilterByName(filter.Name);
-                }
-
-                if (filter.Position.HasValue() && filter.Position != "Any")
-                {
-                    query =
-                        query.Where(
-                            p => p.PrimaryPosition == filter.Position || p.SecondaryPosition == filter.Position);
-                }
-
-                if (filter.Height.HasValue() && filter.Height != "Any")
-                {
-                    query = query.Where(p => p.Height == filter.Height);
-                }
-
-                if (filter.Theme.HasValue())
-                {
-                    query = query.Where(p => p.Theme.Name == filter.Theme);
-                }
-
-                if (filter.Tier.HasValue())
-                {
-                    query = query.Where(p => p.Tier.Name == filter.Tier);
-                }
-
-                if (filter.Platform.HasValue() && (filter.PriceMin.HasValue || filter.PriceMax.HasValue))
-                {
-                    if (filter.Platform == "PS4")
-                    {
-                        if (filter.PriceMin.HasValue)
-                        {
-                            query = query.Where(p => p.PS4 >= filter.PriceMin);
-                        }
-                        if (filter.PriceMax.HasValue)
-                        {
-                            query = query.Where(p => p.PS4 <= filter.PriceMax);
-                        }
-                    }
-
-                    else if (filter.Platform == "XBOX")
-                    {
-                        if (filter.PriceMin.HasValue)
-                        {
-                            query = query.Where(p => p.Xbox >= filter.PriceMin);
-                        }
-                        if (filter.PriceMax.HasValue)
-                        {
-                            query = query.Where(p => p.Xbox <= filter.PriceMax);
-                        }
-                    }
-
-                    else if (filter.Platform == "PC")
-                    {
-                        if (filter.PriceMin.HasValue)
-                        {
-                            query = query.Where(p => p.PC >= filter.PriceMin);
-                        }
-                        if (filter.PriceMax.HasValue)
-                        {
-                            query = query.Where(p => p.PC <= filter.PriceMax);
-                        }
-                    }
-                }
-
-                if (filter.Stats.HasItems())
-                {
-                    query = query.FilterByStats(filter.Stats);
+                    case "PS4":
+                        if (priceMin.HasValue)
+                            query = query.Where(p => p.PS4 >= priceMin);
+                        if (priceMax.HasValue)
+                            query = query.Where(p => p.PS4 <= priceMax);
+                        break;
+                    case "XBOX":
+                        if (priceMin.HasValue)
+                            query = query.Where(p => p.Xbox >= priceMin);
+                        if (priceMax.HasValue)
+                            query = query.Where(p => p.Xbox <= priceMax);
+                        break;
+                    case "PC":
+                        if (priceMin.HasValue)
+                            query = query.Where(p => p.PC >= priceMin);
+                        if (priceMax.HasValue)
+                            query = query.Where(p => p.PC <= priceMax);
+                        break;
                 }
             }
 
+            if (stats.HasItems())
+                query = query.FilterByStats(stats);
+
             if (!showHidden)
-                query = query.Where(p => p.Private == false);
+                query = query.Where(p => !p.Private);
 
             var sortMap = new Dictionary<string, string>();
             sortMap.Add("CreatedDateString", "CreatedDate");
             sortMap.Add("Position", "PrimaryPosition");
 
-            var players = await query
-                .Sort(sortByColumn, sortOrder, "Overall", skip, take, sortMap)
-                .ToListAsync(token);
-
-            result.ResultCount = await query.CountAsync(token);
-            result.Results = players.Select(p => p.ToSearchDto());
-
-            return result;
-        }
-
-        public Tier GetTierFromOverall(IEnumerable<Tier> tiers, int overall)
-        {
-            if (overall >= 95)
-                return tiers.FirstOrDefault(p => p.Name == "Diamond");
-
-            if (overall >= 90)
-                return tiers.FirstOrDefault(p => p.Name == "Amethyst");
-
-            if (overall >= 80)
-                return tiers.FirstOrDefault(p => p.Name == "Gold");
-
-            if (overall >= 70)
-                return tiers.FirstOrDefault(p => p.Name == "Silver");
-
-            return tiers.FirstOrDefault(p => p.Name == "Bronze");
-        }
-
-        public async Task<List<SearchPlayerResultDto>> AutoCompleteSearch(string termString, CancellationToken token, bool showHidden = false)
-        {
-            if (string.IsNullOrWhiteSpace(termString))
-                return new List<SearchPlayerResultDto>();
-            
-            termString = new Regex("[ ]{2,}", RegexOptions.None)
-                .Replace(termString.Trim(), " ");
-
-            var terms = termString.Split(' ');
-
-            var query = _repository.Players
-                .AsQueryable();
-            
             query = query
-                .Where(p => terms.All(term => p.Name.Contains(term)));
+                .Sort(sortByColumn, sortOrder, "Overall", sortMap);
 
-            if (!showHidden)
-                query = query.Where(x => !x.Private);
-
-            //performance optimization
-            var preFiltered = await query
-                .Select(x => new { x.Id, x.Name})
-                .ToListAsync(token);
-            
-            var filtered = preFiltered
-                .Where(p => terms.All(term => p.Name.Split(' ').Any(pName => pName.StartsWith(term, StringComparison.InvariantCultureIgnoreCase))))
-                .Select(x => x.Id);
-
-            var players = await _repository.Players
-                .Include(p => p.Tier)
-                .Include(p => p.Collection)
-                .Where(p => filtered.Contains(p.Id))
-                .ToListAsync(token);
-
-            return players
-                .Select(x => x.ToSearchDto())
-                .OrderByDescending(x => x.Overall)
-                .ToList();
+            //paging
+            return await PagedList<Player>.ExecuteAsync(query, pageIndex, pageSize, token);
         }
 
-        public async Task<PlayerDto> GetPlayer(string uri, CancellationToken token)
+        public async Task<Player> GetPlayer(int id, CancellationToken token)
         {
-            var player = await GetPlayerByUri(uri, token);
-
-            return player.ToDto();
+            var player = await _repository.Players
+                //.Include(p => p.Badges.Select(pb => pb.Badge.BadgeGroup))
+                //.Include(p => p.Stats.Select(ps => ps.Stat.Category))
+                //.Include(p => p.Team)
+                //.Include(p => p.Collection)
+                //.Include(p => p.Theme)
+                //.Include(p => p.Tendencies.Select(pt => pt.Tendency))
+                .FirstOrDefaultAsync(p => p.Id == id, token);
+            return player;
         }
 
-        public async Task<UpdatePlayerDto> GetPlayerForEdit(string uri, CancellationToken token)
+        public async Task<Player> GetPlayerByUri(string uri, CancellationToken token)
         {
-            var player = await GetPlayerByUri(uri, token);
-
-            if (player == null)
+            if (string.IsNullOrWhiteSpace(uri))
                 return null;
 
-            var themes = await GetThemes(token);
-            var teams = await GetTeams(token);
-            var tiers = await GetTiers(token);
-            var collections = await GetCollectionsForDropDowns(token);
-
-            return new UpdatePlayerDto
-            {
-                Attributes = player.Stats.OrderBy(p => p.Stat.EditOrder).Select(p => p.ToDto()),
-                Age = player.Age,
-                Height = player.Height,
-                Id = player.Id,
-                Name = player.Name,
-                Image = null,
-                Overall = player.Overall,
-                PC = player.PC,
-                PrimaryPosition = player.PrimaryPosition,
-                SecondaryPosition = player.SecondaryPosition,
-                Team = ToInt(player.Team?.Id),
-                Teams = teams,
-                Theme = ToInt(player.Theme?.Id),
-                Themes = themes,
-                Collections = collections,
-                Collection = ToInt(player.Collection?.Id),
-                Tier = ToInt(player.Tier?.Id),
-                Tiers = tiers,
-                Xbox = player.Xbox,
-                Weight = player.Weight,
-                PS4 = player.PS4,
-                ImageUri = player.GetImageUri(ImageSize.Full),
-                NBA2K_ID = player.NBA2K_ID,
-                PublishDate = player.CreatedDate,
-                Private = player.Private
-            };
+            return await _repository.Players
+                .FirstOrDefaultAsync(p => p.UriName.Equals(uri, StringComparison.OrdinalIgnoreCase), token);
         }
-
+        
         public async Task<IEnumerable<Player>> GetPlayersByUri(CancellationToken token, params string[] uris)
         {
             return await _repository.Players.Where(p => uris.Contains(p.UriName)).ToListAsync(token);
 
         }
-
-        public async Task<PlayerDto> GetPlayer(int id, CancellationToken token)
+        
+        public async Task CreatePlayer(Player player, CancellationToken token)
         {
-            var player = await _repository.Players
-                .Include(p => p.Badges.Select(pb => pb.Badge.BadgeGroup))
-                .Include(p => p.Stats.Select(ps => ps.Stat.Category))
-                .Include(p => p.Team)
-                .Include(p => p.Collection)
-                .Include(p => p.Theme)
-                .Include(p => p.Tendencies.Select(pt => pt.Tendency))
-                .FirstOrDefaultAsync(p => p.Id == id, token);
-            return player.ToDto();
-        }
-
-        public async Task<CreatePlayerDto> GeneratePlayer(CancellationToken token)
-        {
-            var stats = await _repository.Stats
-                .OrderBy(p => p.EditOrder)
-                .Select(p => new StatDto { CategoryId = p.Category.Id, Id = p.Id, Name = p.Name, Value = 99 })
-                .ToListAsync(token);
-
-            var playerDto = new CreatePlayerDto
-            {
-                Attributes = stats,
-                Age = 19,
-                Themes = await GetThemes(token),
-                Teams = await GetTeams(token),
-                Tiers = await GetTiers(token),
-                Collections = await GetCollectionsForDropDowns(token)
-            };
-
-            return playerDto;
-        }
-
-        public async Task<IEnumerable<TierDto>> GetTiers(CancellationToken token)
-        {
-            return
-                await
-                    _repository.Tiers.OrderBy(p => p.SortOrder)
-                        .Select(t => new TierDto { Id = t.Id, Name = t.Name })
-                        .ToListAsync(token);
-        }
-
-        public async Task<PlayerDto> CreatePlayer(string tempPath, CreatePlayerDto create, CancellationToken token)
-        {
-            if (create == null)
-                return null;
-
-            var stats = await create.Attributes.ToStats(_repository, token);
-
-            var player = new Player
-            {
-                Name = create.Name,
-                UriName = GetUri(0, create.Name),
-                Height = create.Height,
-                Weight = create.Weight,
-                Age = create.Age,
-                Overall = create.Overall,
-                PC = create.PC,
-                Xbox = create.Xbox,
-                PS4 = create.PS4,
-                PrimaryPosition = create.PrimaryPosition,
-                SecondaryPosition = create.SecondaryPosition,
-                Tier = await _repository.Tiers.FindAsync(token, create.Tier),
-                Theme = await _repository.Themes.FindAsync(token, create.Theme),
-                Team = await _repository.Teams.FindAsync(token, create.Team),
-                NBA2K_ID = create.NBA2K_Id,
-                Collection = await _repository.Collections.FindAsync(token, create.Collection),
-                CreatedDate = create.PublishDate,
-                Private = create.Private
-            };
-
-            foreach (var stat in stats.Select(s => new PlayerStat { Player = player, Stat = s }))
-            {
-                var value = create.Attributes.First(s => s.Id == stat.Stat.Id).Value;
-                stat.Value = value;
-                player.Stats.Add(stat);
-            }
-
-            var aggregated = player.AggregateStats();
-            player.OutsideScoring = aggregated.OutsideScoring;
-            player.InsideScoring = aggregated.InsideScoring;
-            player.Playmaking = aggregated.Playmaking;
-            player.Athleticism = aggregated.Athleticism;
-            player.Defending = aggregated.Defending;
-            player.Rebounding = aggregated.Rebounding;
-            player.Points = player.Score();
-
-            _repository.Players.Add(player);
-
-            await _repository.SaveChangesAsync(token);
-            await SaveImage(tempPath, player.UriName, create.Image.InputStream);
-
-            return player.ToDto();
-        }
-
-        public async Task<PlayerDto> UpdatePlayer(string tempPath, UpdatePlayerDto update, CancellationToken token, bool batch = false)
-        {
-            if (update == null)
-                return null;
-
-
-            var oldPlayer = await GetPlayerWithStatsById(update.Id, token);
-
-            if (oldPlayer == null)
-                return null;
-
-            bool renameImage = false;
-            if (!oldPlayer.Name.Equals(update.Name))
-            {
-                oldPlayer.Name = update.Name;
-                oldPlayer.UriName = GetUri(update.Id, update.Name, false);
-                renameImage = true;
-            }
-
-            var changes = new List<PlayerUpdateChange>();
-            // Get existing update
-            var existingUpdates = await _repository.PlayerUpdates
-                .FilterByCreatedDate(DateTime.Today)
-                .Select(p => new { Update = p, Changes = p.Changes.Where(c => c.Player.Id == oldPlayer.Id) })
-                .FirstOrDefaultAsync(token);
-
-            //.SelectMany(p => new {p.Changes.Where(c => c.Player.Id == oldPlayer.Id))
-            //.ToListAsync(token);
-
-            var playerUpdateService = new PlayerUpdateService(_repository);
-            var performUpdate = true;
-
-            if (existingUpdates != null)
-            {
-                performUpdate = existingUpdates.Update.Visible;
-            }
-
-            bool shouldDelete = false;
-            var overallChange = playerUpdateService.DetermineChange(existingUpdates?.Changes, oldPlayer, nameof(oldPlayer.Overall), oldPlayer.Overall, update.Overall, PlayerUpdateType.Stat, out shouldDelete);
-
-            if (overallChange != null && shouldDelete)
-            {
-                _repository.PlayerUpdateChanges.Remove(overallChange);
-            }
-            else
-            {
-                AddIfNotNull(changes, overallChange);
-            }
-
-            //AddIfNotNull(updates, CreateUpdateIfNecessary(oldPlayer, update.Height, oldPlayer.Height, nameof(oldPlayer.Height)));
-            //AddIfNotNull(updates, CreateUpdateIfNecessary(oldPlayer, update.Weight, oldPlayer.Weight.ToString(), nameof(oldPlayer.Weight)));
-            //AddIfNotNull(updates, CreateUpdateIfNecessary(oldPlayer, update.Age, oldPlayer.Age.ToString(), nameof(oldPlayer.Age)));
-            //AddIfNotNull(changes, CreateUpdateIfNecessary(oldPlayer, update.Overall, oldPlayer.Overall, nameof(oldPlayer.Overall), true));
-            //AddIfNotNull(updates, CreateUpdateIfNecessary(oldPlayer, update.PC, oldPlayer.PC, nameof(oldPlayer.PC)));
-            //AddIfNotNull(updates, CreateUpdateIfNecessary(oldPlayer, update.Xbox, oldPlayer.Xbox, nameof(oldPlayer.Xbox)));
-            //AddIfNotNull(updates, CreateUpdateIfNecessary(oldPlayer, update.PS4, oldPlayer.PS4, nameof(oldPlayer.PS4)));
-            //AddIfNotNull(updates, CreateUpdateIfNecessary(oldPlayer, update.BronzeBadges, oldPlayer.BronzeBadges, nameof(oldPlayer.BronzeBadges)));
-            //AddIfNotNull(updates, CreateUpdateIfNecessary(oldPlayer, update.SilverBadges, oldPlayer.SilverBadges, nameof(oldPlayer.SilverBadges)));
-            //AddIfNotNull(updates, CreateUpdateIfNecessary(oldPlayer, update.GoldBadges, oldPlayer.GoldBadges, nameof(oldPlayer.GoldBadges)));
-            //AddIfNotNull(updates, CreateUpdateIfNecessary(oldPlayer, update.PrimaryPosition, oldPlayer.PrimaryPosition, nameof(oldPlayer.PrimaryPosition)));
-            //AddIfNotNull(updates, CreateUpdateIfNecessary(oldPlayer, update.SecondaryPosition, oldPlayer.SecondaryPosition, nameof(oldPlayer.SecondaryPosition)));
-
-            oldPlayer.Height = update.Height;
-            oldPlayer.Weight = update.Weight;
-            oldPlayer.Age = update.Age;
-            oldPlayer.Overall = update.Overall;
-            oldPlayer.PC = update.PC;
-            oldPlayer.Xbox = update.Xbox;
-            oldPlayer.PS4 = update.PS4;
-            oldPlayer.PrimaryPosition = update.PrimaryPosition;
-            oldPlayer.SecondaryPosition = update.SecondaryPosition;
-            oldPlayer.Tier = await _repository.Tiers.FindAsync(token, update.Tier);
-            oldPlayer.Theme = await _repository.Themes.FindAsync(token, update.Theme);
-            oldPlayer.Team = await _repository.Teams.FindAsync(token, update.Team);
-            oldPlayer.NBA2K_ID = update.NBA2K_ID;
-            oldPlayer.Collection = await _repository.Collections.FindAsync(token, update.Collection);
-
-            if (oldPlayer.CreatedDate != update.PublishDate)
-            {
-                oldPlayer.CreatedDate = update.PublishDate;
-            }
-
-            // Hack to set the value to null
-            if (oldPlayer.Collection == null)
-            {
-                _repository.Entry(oldPlayer).Reference(c => c.Collection).CurrentValue = null;
-            }
-
-            foreach (var stat in update.Attributes)
-            {
-                var compareStat = oldPlayer.Stats.First(ps => ps.Stat.Id == stat.Id);
-                var change = playerUpdateService.DetermineChange(existingUpdates?.Changes, oldPlayer, compareStat.Stat.Name, stat.Value.ToString(), compareStat.Value.ToString(), PlayerUpdateType.Stat, out shouldDelete);
-
-                if (compareStat.Value != stat.Value && performUpdate)
-                {
-                    compareStat.Value = stat.Value;
-                }
-
-                if (change != null)
-                {
-                    if (shouldDelete)
-                    {
-                        _repository.PlayerUpdateChanges.Remove(change);
-                    }
-                    else
-                    {
-                        changes.Add(change);
-                    }
-                }
-            }
-
-            var aggregated = oldPlayer.AggregateStats();
-            oldPlayer.OutsideScoring = aggregated.OutsideScoring;
-            oldPlayer.InsideScoring = aggregated.InsideScoring;
-            oldPlayer.Playmaking = aggregated.Playmaking;
-            oldPlayer.Athleticism = aggregated.Athleticism;
-            oldPlayer.Defending = aggregated.Defending;
-            oldPlayer.Rebounding = aggregated.Rebounding;
-            oldPlayer.Points = oldPlayer.Score();
-            oldPlayer.Private = update.Private;
-
-            if (changes.Any())
-            {
-
-                if (existingUpdates == null)
-                {
-                    var dbUpdate = new PlayerUpdate
-                    {
-                        Visible = true,
-                    };
-                    foreach (var playerUpdateChange in changes)
-                    {
-                        dbUpdate.Changes.Add(playerUpdateChange);
-                    }
-
-                    _repository.PlayerUpdates.Add(dbUpdate);
-                }
-                else
-                {
-                    foreach (var change in changes)
-                    {
-                        existingUpdates.Update.Changes.Add(change);
-                    }
-                }
-            }
-
+            player.UriName = GetUri(0, player.Name);
             await _repository.SaveChangesAsync(token);
 
-            if (renameImage)
-            {
-                // Update image name
-            }
-            if (update.Image != null && update.Image.ContentLength > 0)
-            {
-                await SaveImage(tempPath, oldPlayer.UriName, update.Image.InputStream);
-            }
-
-            return oldPlayer.ToDto();
+            //clear caches
+            _memoryCacheManager.RemoveByPattern(PLAYER_HEIGHTS);
         }
 
-        public async Task DeletePlayer(string uri, CancellationToken token)
+        public async Task UpdatePlayer(Player player, CancellationToken token)
         {
-            var player = await _repository.Players
-                .FirstOrDefaultAsync(p => p.UriName.Equals(uri, StringComparison.OrdinalIgnoreCase), token);
+            var oldPlayer = _repository.Players.AsNoTracking().First(p => p.Id == player.Id);
 
+            if (!oldPlayer.Name.Equals(player.Name))
+            {
+                player.UriName = GetUri(player.Id, player.Name, false);
+            }
+            await _repository.SaveChangesAsync(token);
+            
+            //clear caches
+            _memoryCacheManager.RemoveByPattern(PLAYER_HEIGHTS);
+
+            await _playerUpdateService.DetermineChanges(oldPlayer, player, token);
+        }
+
+        public async Task DeletePlayer(Player player, CancellationToken token)
+        {
             if (player == null)
                 return;
-            
+
             var changes = await _repository.PlayerUpdateChanges
                 .Where(c => c.Player.Id == player.Id)
                 .ToListAsync(token);
@@ -724,383 +352,83 @@ namespace MTDB.Core.Services
                 .ToListAsync(token);
             _repository.LineupPlayers.RemoveRange(lineupPlayers);
 
-            _repository.PlayerStats.RemoveRange(player.Stats);
+            _repository.PlayerStats.RemoveRange(player.PlayerStats);
 
             _repository.Players.Remove(player);
 
+            //clear caches
+            _memoryCacheManager.RemoveByPattern(PLAYER_HEIGHTS);
+
             await _repository.SaveChangesAsync(token);
-        }
-        
-        public async Task<IEnumerable<ThemeDto>> GetThemes(CancellationToken token)
-        {
-            return await _repository.Themes.Select(t => new ThemeDto { Id = t.Id, Name = t.Name }).ToListAsync(token);
-        }
-
-        public async Task<IEnumerable<TeamDto>> GetTeams(CancellationToken token)
-        {
-            return await _repository.Teams.OrderBy(t => t.Name).Select(t => new TeamDto { Id = t.Id, Name = t.Name }).ToListAsync(token);
-        }
-
-        public async Task<IEnumerable<string>> GetPositions(CancellationToken token)
-        {
-            return await Task.Run(() => new[]
-            {
-                "PG",
-                "SG",
-                "SF",
-                "PF",
-                "C",
-            }, token);
         }
 
         public async Task<IEnumerable<string>> GetHeights(CancellationToken token)
         {
-            var heights = await _repository.Players.Select(p => p.Height).Distinct().ToListAsync(token);
+            var heights = await
+                _memoryCacheManager.GetAsync(PLAYER_HEIGHTS, async () =>
+                    await _repository.Players.Select(p => p.Height).Distinct().ToListAsync(token));
             return heights.OrderBy(p => p, new HeightComparer());
         }
 
-        public async Task<IEnumerable<CollectionDto>> GetCollectionsForDropDowns(CancellationToken token)
-        {
-            return await _repository.Collections.OrderBy(p => p.Name).Select(t => new CollectionDto { Id = t.Id, Name = t.Name }).ToListAsync(token);
-        }
+        #endregion
 
-        public async Task<CollectionsViewModel> GetCollections(CancellationToken token)
-        {
-            var teams = await _repository.Teams
-                .Include(t => t.Division)
-                .ToListAsync(token);
-            var collections = await _repository.Collections
-                .ToListAsync(token);
+        //public async Task<List<SearchPlayerResultDto>> AutoCompleteSearch(string termString, CancellationToken token, bool showHidden = false)
+        //{
+        //    if (string.IsNullOrWhiteSpace(termString))
+        //        return new List<SearchPlayerResultDto>();
 
-            var current = teams
-                .Where(t => !t.Name.Contains("Free")).OrderBy(p => p.Division.Name).ThenBy(p => p.Name)
-                .Select((team, id) => new CollectionViewModel { Name = team.Name, Group = team.Division.Name, DisplayOrder = id })
-                .ToList();
+        //    termString = new Regex("[ ]{2,}", RegexOptions.None)
+        //        .Replace(termString.Trim(), " ");
 
-            var dynamic = teams
-                .Where(t => !t.Name.Contains("Free")).OrderBy(p => p.Division.Name).ThenBy(p => p.Name)
-                .Select((team, id) => new CollectionViewModel { Name = team.Name, Group = team.Division.Name, DisplayOrder = id })
-                .ToList();
+        //    var terms = termString.Split(' ');
 
-            var other = new List<CollectionViewModel>();
+        //    var query = _repository.Players
+        //        .AsQueryable();
 
-            other.AddRange(MapCollectionToViewModel(collections.Where(p => p.ThemeName == "Gems of The Game"), "Gems of The Game"));
-            other.AddRange(MapCollectionToViewModel(collections.Where(p => p.ThemeName == "Rewards"), "Rewards"));
+        //    query = query
+        //        .Where(p => terms.All(term => p.Name.Contains(term)));
 
-            var collectionsViewModel = new CollectionsViewModel
-            {
-                Current = current,
-                CurrentFreeAgents = MapCollectionToViewModel(collections.Where(p => p.ThemeName == "Current")),
-                Dynamic = dynamic,
-                DynamicFreeAgents = MapCollectionToViewModel(collections.Where(p => p.ThemeName == "Dynamic")),
-                Historic = MapCollectionToViewModel(collections.Where(p => p.ThemeName == "Historic")),
-                Other = other
-            };
+        //    if (!showHidden)
+        //        query = query.Where(x => !x.Private);
 
-            return collectionsViewModel;
-        }
-        
-        public async Task<CollectionDetails> GetPlayersForCollection(int skip, int take, string sortByColumn, SortOrder sortOrder, string groupName, string name, CancellationToken token, bool showHidden = false)
-        {
-            // So we will receive a groupName and name with dashes instead of spaces.  Remove dashes and place spaces in.  
-            groupName = groupName.Replace("-", " ");
-            name = name.Replace("-", " ");
-            string collectionName;
+        //    //performance optimization
+        //    var preFiltered = await query
+        //        .Select(x => new { x.Id, x.Name})
+        //        .ToListAsync(token);
 
+        //    var filtered = preFiltered
+        //        .Where(p => terms.All(term => p.Name.Split(' ').Any(pName => pName.StartsWith(term, StringComparison.InvariantCultureIgnoreCase))))
+        //        .Select(x => x.Id);
 
-            IQueryable<Player> query = _repository.Players
-                .Include(p => p.Tier);
+        //    var players = await _repository.Players
+        //        .Include(p => p.Tier)
+        //        .Include(p => p.Collection)
+        //        .Where(p => filtered.Contains(p.Id))
+        //        .ToListAsync(token);
 
-            // If groupName == Dynamic or Current then we just filter by theme and team
-            if (groupName.EqualsAny("dynamic", "current") && !name.Contains("free"))
-            {
-                var team = await _repository.Teams.FirstOrDefaultAsync(p => p.Name == name, token);
-                if (team == null)
-                    return null;
+        //    return players
+        //        .Select(x => x.ToSearchDto())
+        //        .OrderByDescending(x => x.Overall)
+        //        .ToList();
+        //}
 
-                collectionName = team.Name;
-                query = query.Where(p => p.Theme.Name == groupName && p.Team.Name == name);
-            }
-            else
-            {
-                var collection = await _repository.Collections.FirstOrDefaultAsync(p => (p.GroupName == groupName || p.ThemeName == groupName) && p.Name == name, token);
+        //public async Task<ManageDto> GenerateManage(CancellationToken token)
+        //{
+        //    var manageDto = new ManageDto
+        //    {
+        //        Themes = await GetThemes(token),
+        //        Teams = await GetTeams(token),
+        //        Tiers = await GetTiers(token),
+        //        Collections = await GetCollectionsForDropDowns(token)
+        //    };
 
-                if (collection == null)
-                    return null;
-
-                collectionName = collection.Name;
-                // Not a team so just search by collection
-                query = query.Where(p => p.Collection.Id == collection.Id);
-            }
-            if (!showHidden)
-                query = query.Where(p => !p.Private);
-
-            var count = await query.CountAsync(token);
-
-            if (count == 0)
-            {
-                return new CollectionDetails { Name = collectionName, Results = new List<SearchPlayerResultDto>() };
-            }
-
-            var averages =
-                await query.Select(
-                    p =>
-                        new
-                        {
-                            Overall = p.Overall,
-                            OutsideScoring = p.OutsideScoring,
-                            InsideScoring = p.InsideScoring,
-                            Playmaking = p.Playmaking,
-                            Athleticism = p.Athleticism,
-                            Defending = p.Defending,
-                            p.Rebounding
-                        })
-                        .ToListAsync(token);
-
-            var sortMap = new Dictionary<string, string>
-            {
-                {"CreatedDateString", "CreatedDate"},
-                {"Position", "PrimaryPosition"}
-            };
-
-            var players = await query
-                .Sort(sortByColumn, sortOrder, "Overall", skip, take, sortMap)
-                .ToListAsync(token);
-
-            var paged = players.Select(p => p.ToSearchDto());
-
-            var viewModel = new CollectionDetails
-            {
-                Name = collectionName,
-                Overall = (int)averages.Average(d => d.Overall),
-                OutsideScoring = (int)(averages.Average(s => s.OutsideScoring) ?? 0),
-                InsideScoring = (int)(averages.Average(s => s.InsideScoring) ?? 0),
-                Playmaking = (int)(averages.Average(s => s.Playmaking) ?? 0),
-                Athleticism = (int)(averages.Average(s => s.Athleticism) ?? 0),
-                Defending = (int)(averages.Average(s => s.Defending) ?? 0),
-                Rebounding = (int)(averages.Average(s => s.Rebounding) ?? 0),
-                Results = paged,
-                ResultCount = count,
-            };
-
-            return viewModel;
-        }
-
-        public async Task<ManageDto> GenerateManage(CancellationToken token)
-        {
-            var manageDto = new ManageDto
-            {
-                Themes = await GetThemes(token),
-                Teams = await GetTeams(token),
-                Tiers = await GetTiers(token),
-                Collections = await GetCollectionsForDropDowns(token)
-            };
-
-            return manageDto;
-        }
-
-        public async Task PrepareManageEditModel(ManageEditDto model, int? id, CancellationToken token, bool excludeProperties = false)
-        {
-            if (model == null)
-                throw new ArgumentNullException("model");
-
-            model.AvailableDivisions = await _repository.Divisions
-                .Select(d => new ManageEditDto.DivisionDto
-                {
-                    Id = d.Id,
-                    Name = d.Name,
-                    Conference = d.Conference.Name
-                })
-                .ToListAsync(token);
-
-            model.AvailableThemeGroups = (await _repository.Collections
-                .Select(gr => new
-                {
-                    ThemeName = gr.ThemeName,
-                    GroupName = gr.GroupName
-                })
-                .Distinct()
-                .ToListAsync(token))
-                .Select(gr => new Tuple<string, string>(gr.ThemeName, gr.GroupName))
-                .ToList();
-
-            if (!excludeProperties && id.HasValue)
-            {
-                switch (model.Type)
-                {
-                    case ManageTypeDto.Theme:
-                    {
-                        var entity = await _repository.Themes.SingleOrDefaultAsync(e => e.Id == id, token);
-                        model.Name = entity.Name;
-                    }
-                        break;
-                    case ManageTypeDto.Team:
-                    {
-                        var entity = await _repository.Teams
-                                .SingleOrDefaultAsync(e => e.Id == id, token);
-                        model.Name = entity.Name;
-                        model.DivisionId = entity.Division.Id;
-                    }
-                        break;
-                    case ManageTypeDto.Tier:
-                    {
-                        var entity = await _repository.Tiers.SingleOrDefaultAsync(e => e.Id == id, token);
-                        model.Name = entity.Name;
-                        model.DrawChance = entity.DrawChance;
-                        model.SortOrder = entity.SortOrder;
-                    }
-                        break;
-                    case ManageTypeDto.Collection:
-                    {
-                        var entity = await _repository.Collections.SingleOrDefaultAsync(e => e.Id == id, token);
-                        model.Name = entity.Name;
-                        model.GroupName = entity.GroupName;
-                        model.ThemeName = entity.ThemeName;
-                        model.DisplayOrder = entity.DisplayOrder;
-                    }
-                        break;
-                }
-            }
-        }
-
-        public async Task CreateManage(ManageEditDto model, CancellationToken token)
-        {
-            switch (model.Type)
-            {
-                case ManageTypeDto.Theme:
-                    var theme = new Theme {Name = model.Name};
-                    _repository.Themes.Add(theme);
-                    break;
-                case ManageTypeDto.Team:
-                {
-                    var division = await _repository.Divisions.SingleOrDefaultAsync(d => d.Id == model.DivisionId, token);
-
-                    var entity = new Team();
-                    entity.Name = model.Name;
-                    entity.Division = division;
-                    _repository.Teams.Add(entity);
-                }
-                    break;
-                case ManageTypeDto.Tier:
-                {
-                    var entity = new Tier();
-                    entity.Name = model.Name;
-                    entity.DrawChance = model.DrawChance;
-                    entity.SortOrder = model.SortOrder;
-                    _repository.Tiers.Add(entity);
-                }
-                    break;
-                case ManageTypeDto.Collection:
-                {
-                    var entity = new Collection();
-                    entity.Name = model.Name;
-                    entity.GroupName = model.GroupName;
-                    entity.ThemeName = model.ThemeName;
-                    entity.DisplayOrder = model.DisplayOrder;
-                    _repository.Collections.Add(entity);
-                }
-                    break;
-            }
-            await _repository.SaveChangesAsync(token);
-        }
-
-        public async Task UpdateManage(ManageEditDto model, int id, CancellationToken token)
-        {
-            switch (model.Type)
-            {
-                case ManageTypeDto.Theme:
-                {
-                    var entity = await _repository.Themes.SingleOrDefaultAsync(t => t.Id == id, token);
-                    entity.Name = model.Name;
-                }
-                    break;
-                case ManageTypeDto.Team:
-                {
-                    var division = await _repository.Divisions.SingleOrDefaultAsync(d => d.Id == model.DivisionId, token);
-
-                    var entity = await _repository.Teams.SingleOrDefaultAsync(t => t.Id == id, token);
-                    entity.Name = model.Name;
-                    entity.Division = division;
-                }
-                    break;
-                case ManageTypeDto.Tier:
-                {
-                    var entity = await _repository.Tiers.SingleOrDefaultAsync(t => t.Id == id, token);
-                    entity.Name = model.Name;
-                    entity.DrawChance = model.DrawChance;
-                    entity.SortOrder = model.SortOrder;
-                }
-                    break;
-                case ManageTypeDto.Collection:
-                {
-                    var entity = await _repository.Collections.SingleOrDefaultAsync(t => t.Id == id, token);
-                    entity.Name = model.Name;
-                    entity.GroupName = model.GroupName;
-                    entity.ThemeName = model.ThemeName;
-                    entity.DisplayOrder = model.DisplayOrder;
-                }
-                    break;
-            }
-            await _repository.SaveChangesAsync(token);
-        }
-        
-        public async Task<bool> DeleteTheme(int id, CancellationToken token)
-        {
-            var entity = await _repository.Themes.SingleOrDefaultAsync(t => t.Id == id, token);
-            _repository.Themes.Remove(entity);
-            await _repository.SaveChangesAsync(token);
-            return true;
-        }
-
-        public async Task<bool> DeleteTeam(int id, CancellationToken token)
-        {
-            var entity = await _repository.Teams.SingleOrDefaultAsync(t => t.Id == id, token);
-            _repository.Teams.Remove(entity);
-            await _repository.SaveChangesAsync(token);
-            return true;
-        }
-
-        public async Task<bool> DeleteTier(int id, CancellationToken token)
-        {
-            var entity = await _repository.Tiers.SingleOrDefaultAsync(t => t.Id == id, token);
-            _repository.Tiers.Remove(entity);
-            await _repository.SaveChangesAsync(token);
-            return true;
-        }
-
-        public async Task<bool> DeleteCollection(int id, CancellationToken token)
-        {
-            var entity = await _repository.Collections.SingleOrDefaultAsync(t => t.Id == id, token);
-            _repository.Collections.Remove(entity);
-            await _repository.SaveChangesAsync(token);
-            return true;
-        }
+        //    return manageDto;
+        //}
 
         #endregion
     }
 
-    public class CollectionDetails
-    {
-        public int Id { get; set; }
-        public string Name { get; set; }
-        public int Overall { get; set; }
-        public int OutsideScoring { get; set; }
-        public int InsideScoring { get; set; }
-        public int Playmaking { get; set; }
-        public int Athleticism { get; set; }
-        public int Defending { get; set; }
-        public int Rebounding { get; set; }
-        public int ResultCount { get; set; }
-        public IEnumerable<SearchPlayerResultDto> Results { get; set; }
-    }
-
-    public class SearchPlayerViewModel : PlayerFilter
-    {
-        public int ResultCount { get; set; }
-        public IEnumerable<SearchPlayerResultDto> Results { get; set; }
-    }
-
-    public class HeightComparer : IComparer<string>
+    internal class HeightComparer : IComparer<string>
     {
         public int Compare(string x, string y)
         {

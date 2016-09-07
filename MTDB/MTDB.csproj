@@ -395,7 +395,16 @@
     <Compile Include="Helpers\SelectLists.cs" />
     <Compile Include="Helpers\ServicedController.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
+    <Compile Include="Models\Collection\CollectionDetailsModel.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
+    <Compile Include="Models\Player\CreatePlayerModel.cs" />
+    <Compile Include="Models\Player\ManageEditModel.cs" />
+    <Compile Include="Models\Player\ManageModel.cs" />
+    <Compile Include="Models\Player\ManageType.cs" />
+    <Compile Include="Models\Player\PlayerModel.cs" />
+    <Compile Include="Models\Player\PlayerSearchModel.cs" />
+    <Compile Include="Models\Player\UpdatePlayerModel.cs" />
+    <Compile Include="Models\Shared\StatModel.cs" />
     <Compile Include="MVCForumIdentity\AuthenticationService.cs" />
     <Compile Include="MVCForumIdentity\IdentityBuilder.cs" />
     <Compile Include="MVCForumIdentity\IdentityUserProvider.cs" />
@@ -920,7 +929,6 @@
     <Content Include="Views\Pack\CreateDraft.cshtml" />
     <Content Include="Views\Pack\DraftResults.cshtml" />
     <Content Include="Views\Pack\DraftDetails.cshtml" />
-    <Content Include="Views\Shared\EditorTemplates\StatDto.cshtml" />
     <Content Include="Views\Player\Edit.cshtml" />
     <Content Include="Views\Comments\Index.cshtml" />
     <Content Include="Views\Shared\Comments.cshtml" />
@@ -1122,7 +1130,7 @@
     <Content Include="Views\Manage\SetPassword.cshtml" />
     <Content Include="Views\Manage\VerifyPhoneNumber.cshtml" />
     <Content Include="Views\Shared\Lockout.cshtml" />
-    <Content Include="Views\Player\Index.cshtml" />
+    <Content Include="Views\Player\List.cshtml" />
     <Content Include="Views\Lineup\Index.cshtml" />
   </ItemGroup>
   <ItemGroup />

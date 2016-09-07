@@ -1,11 +1,8 @@
-﻿
-@using MTDB.Helpers
-@model MTDB.Core.ViewModels.UpdatePlayerDto
-
+﻿@using MTDB.Helpers
+@model MTDB.Models.Player.UpdatePlayerModel
 @{
     ViewBag.Title = "Create";
 }
-
 
 @using (Html.BeginForm("Edit", "Player", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
@@ -65,7 +62,16 @@
                     @Html.ThemedValidationMessageFor(m => m.Overall)
                 </div>
 
-                @Html.EditorFor(m => m.Attributes)
+                @for (var i = 0; i < Model.Attributes.Count; i++)
+                {
+                    <div class="line line-dashed b-b line-lg pull-in"></div>
+
+                    <div class="form-group">
+                        <label>@Model.Attributes[i].Name</label>
+                        @Html.HiddenFor(m => m.Attributes[i].Id)
+                        @Html.UpDownFor(m => m.Attributes[i].Value)
+                    </div>
+                }
 
                 <div class="line line-dashed b-b line-lg pull-in"></div>
 
@@ -135,48 +141,48 @@
                 <div class="form-group">
                     <label>Theme</label>
                     <div class="input-group">
-                        @Html.ChosenDropBoxFor(p => p.Theme, new SelectList(Model.Themes, "Id", "Name"))
+                        @Html.ChosenDropBoxFor(p => p.ThemeId, new SelectList(Model.AvailableThemes, "Value", "Text"))
                         <span class="input-group-btn">
                             <a href="@Url.Action("Manage")" class="btn btn-default">Manage</a>
                         </span>
                     </div>
-                    @Html.ThemedValidationMessageFor(m => m.Theme)
+                    @Html.ThemedValidationMessageFor(m => m.ThemeId)
                 </div>
 
                 <div class="line line-dashed b-b line-lg pull-in"></div>
                 <div class="form-group">
                     <label>Team</label>
                     <div class="input-group">
-                        @Html.ChosenDropBoxFor(p => p.Team, new SelectList(Model.Teams, "Id", "Name"))
+                        @Html.ChosenDropBoxFor(p => p.TeamId, new SelectList(Model.AvailableTeams, "Value", "Text"))
                         <span class="input-group-btn">
                             <a href="@Url.Action("Manage")" class="btn btn-default">Manage</a>
                         </span>
                     </div>
-                    @Html.ThemedValidationMessageFor(m => m.Team)
+                    @Html.ThemedValidationMessageFor(m => m.TeamId)
                 </div>
 
                 <div class="line line-dashed b-b line-lg pull-in"></div>
                 <div class="form-group">
                     <label>Tier</label>
                     <div class="input-group">
-                        @Html.ChosenDropBoxFor(p => p.Tier, new SelectList(Model.Tiers, "Id", "Name"))
+                        @Html.ChosenDropBoxFor(p => p.TierId, new SelectList(Model.AvailableTiers, "Value", "Text"))
                         <span class="input-group-btn">
                             <a href="@Url.Action("Manage")" class="btn btn-default">Manage</a>
                         </span>
                     </div>
-                    @Html.ThemedValidationMessageFor(m => m.Tier)
+                    @Html.ThemedValidationMessageFor(m => m.TierId)
                 </div>
 
                 <div class="line line-dashed b-b line-lg pull-in"></div>
                 <div class="form-group">
                     <label>Collection</label>
                     <div class="input-group">
-                        @Html.ChosenDropBoxFor(p => p.Collection, new SelectList(Model.Collections, "Id", "Name"))
+                        @Html.ChosenDropBoxFor(p => p.CollectionId, new SelectList(Model.AvailableCollections, "Value", "Text"))
                         <span class="input-group-btn">
                             <a href="@Url.Action("Manage")" class="btn btn-default">Manage</a>
                         </span>
                     </div>
-                    @Html.ThemedValidationMessageFor(m => m.Collection)
+                    @Html.ThemedValidationMessageFor(m => m.CollectionId)
                 </div>
 
                 <div class="line line-dashed b-b line-lg pull-in"></div>

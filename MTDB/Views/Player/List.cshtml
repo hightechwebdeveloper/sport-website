@@ -1,12 +1,6 @@
 ﻿@using MTDB.Core
 @using MTDB.Helpers
-@model MTDB.Controllers.PlayerSearchViewModel
-@{
-    var tiers = new SelectList(Model.Tiers, "Name", "Name");
-    var themes = new SelectList(Model.Themes, "Name", "Name");
-    var positions = new SelectList(Model.Positions);
-    var heights = new SelectList(Model.Heights);
-}
+@model MTDB.Models.Player.PlayerSearchModel
 
 <div class="bg-light lter b-b wrapper-md">
     <div class="row">
@@ -40,25 +34,25 @@
                         <div class="form-group">
                             <label class="col-sm-2 control-label">Tier</label>
                             <div class="col-sm-10">
-                                @Html.DropDownListFor(m => m.Tier, tiers, "", new { @class = "form-control m-b" })
+                                @Html.DropDownListFor(m => m.TierId, Model.AvailableTiers, new { @class = "form-control m-b" })
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="col-sm-2 control-label">Theme</label>
                             <div class="col-sm-10">
-                                @Html.DropDownListFor(m => m.Theme, themes, "", new { @class = "form-control m-b" })
+                                @Html.DropDownListFor(m => m.ThemeId, Model.AvailableThemes, new { @class = "form-control m-b" })
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="col-sm-2 control-label">Position</label>
                             <div class="col-sm-10">
-                                @Html.DropDownListFor(m => m.Position, positions, "", new { @class = "form-control m-b" })
+                                @Html.DropDownListFor(m => m.Position, Model.AvailablePositions, new { @class = "form-control m-b" })
                             </div>
                         </div>
                         <div class="form-group">
                             <label class="col-sm-2 control-label">Height</label>
                             <div class="col-sm-10">
-                                @Html.DropDownListFor(m => m.Height, heights, "", new { @class = "form-control m-b" })
+                                @Html.DropDownListFor(m => m.Height, Model.AvailableHeights, new { @class = "form-control m-b" })
                             </div>
                         </div>
                         <div class="line line-dashed b-b line-lg pull-in"></div>
@@ -420,7 +414,7 @@
                 var val = $(element).val();
                 return val != "" && val != 0 && val != "0";
             }).serialize();
-            var url = "@Html.Raw(Url.Action("Index", new {sortedBy = Model.SearchResults.SortedBy, sortOrder = Model.SearchResults.SortOrder}))" + "&" + values;
+            var url = "@Html.Raw(Url.Action("List", new {sortedBy = Model.SearchResults.SortedBy, sortOrder = Model.SearchResults.SortOrder}))" + "&" + values;
             window.location.href = url;
         });
 

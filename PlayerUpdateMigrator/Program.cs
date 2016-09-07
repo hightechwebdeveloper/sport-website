@@ -20,7 +20,7 @@ namespace PlayerUpdateMigrator
             // Will need both the player file and the player update file
             var playerFile = ConfigurationManager.AppSettings["PlayersFile"];
             var updateFile = ConfigurationManager.AppSettings["UpdatesFile"];
-            var repo = new MtdbRepository();
+            var repo = new MtdbContext();
             var players = GetPlayersIdAndUri(playerFile, repo.Players.ToList()).ToList();
             var existingUpdates = repo.PlayerUpdateChanges.ToList();
 

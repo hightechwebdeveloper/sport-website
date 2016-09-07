@@ -24,7 +24,7 @@ namespace MTDB.MvcForumIdentity {
 		private readonly MVCForumContext context;
 
 		public MembershipService(IWebUserProvider userProvider,
-            MtdbRepository mtdbContext) {
+            Core.EntityFramework.MtdbContext mtdbContext) {
 			this.userProvider = userProvider;
 
             //this.context = forumContext;

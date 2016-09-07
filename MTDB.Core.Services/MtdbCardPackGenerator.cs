@@ -13,7 +13,7 @@ namespace MTDB.Core.Services
 {
     public class MtdbCardPackGenerator : BaseCardPackGenerator<MtdbCardPackDto>
     {
-        public MtdbCardPackGenerator(MtdbRepository repository) : base(repository)
+        public MtdbCardPackGenerator(EntityFramework.MtdbContext repository) : base(repository)
         {
         }
         
@@ -75,7 +75,7 @@ namespace MTDB.Core.Services
 
     public class FantasyDraftPackGenerator : BaseCardPackGenerator<FantasyDraftPackDto>
     {
-        public FantasyDraftPackGenerator(MtdbRepository repository) : base(repository)
+        public FantasyDraftPackGenerator(EntityFramework.MtdbContext repository) : base(repository)
         {
         }
 
@@ -186,9 +186,9 @@ namespace MTDB.Core.Services
 
     public abstract class BaseCardPackGenerator<T>
     {
-        protected MtdbRepository Repository { get; private set; }
+        protected EntityFramework.MtdbContext Repository { get; private set; }
 
-        protected BaseCardPackGenerator(MtdbRepository repository)
+        protected BaseCardPackGenerator(EntityFramework.MtdbContext repository)
         {
             Repository = repository;
         }

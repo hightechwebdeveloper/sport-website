@@ -36,31 +36,36 @@ namespace MTDB.Core.EntityFramework.Entities
 
         public bool Private { get; set; }
 
+        public int? TierId { get; set; }
+        public int? ThemeId { get; set; }
+        public int? TeamId { get; set; }
+        public int? CollectionId { get; set; }
+
         public virtual Tier Tier { get; set; }
         public virtual Theme Theme { get; set; }
         public virtual Team Team { get; set; }
         public virtual ApplicationUser User { get; set; }
         public virtual Collection Collection { get; set; }
 
-        public virtual ICollection<PlayerStat> Stats
+        public virtual ICollection<PlayerStat> PlayerStats
         {
             get { return _playerStats ?? (_playerStats = new List<PlayerStat>()); }
             protected set { _playerStats = value; }
         }
 
-        public virtual ICollection<PlayerBadge> Badges
+        public virtual ICollection<PlayerBadge> PlayerBadges
         {
             get { return _badges ?? (_badges = new List<PlayerBadge>()); }
             protected set { _badges = value; }
         }
 
-        public virtual ICollection<PlayerTendency> Tendencies
+        public virtual ICollection<PlayerTendency> PlayerTendencies
         {
             get { return _tendencies ?? (_tendencies = new List<PlayerTendency>()); }
             protected set { _tendencies = value; }
         }
 
-        public virtual ICollection<PlayerUpdateChange> Changes
+        public virtual ICollection<PlayerUpdateChange> PlayerUpdateChanges
         {
             get { return _changes ?? (_changes = new List<PlayerUpdateChange>()); }
             protected set { _changes = value; }

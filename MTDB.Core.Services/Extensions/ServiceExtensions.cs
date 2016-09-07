@@ -13,16 +13,6 @@ namespace MTDB.Core.Services.Extensions
 {
     public static class ServiceExtensions
     {
-        public static IQueryable<Player> FilterByName(this IQueryable<Player> players, string name)
-        {
-            if (!name.HasValue())
-                return players;
-
-            name = name.Replace("\"", "");
-
-            return players.Where(p => p.Name.Contains(name));
-        }
-
         public static IQueryable<Player> FilterByStats(this IQueryable<Player> players,
             IEnumerable<StatFilter> statFilters)
         {
@@ -42,46 +32,27 @@ namespace MTDB.Core.Services.Extensions
 
                 if (filter.Id != null)
                 {
-                    players = players.Where(p => p.Stats.Any(a => a.Stat.Id == filter.Id && a.Value >= filter.Value));
+                    players = players.Where(p => p.PlayerStats.Any(a => a.Stat.Id == filter.Id && a.Value >= filter.Value));
                 }
                 else
                 {
                     players = players.Where(p =>
-                        p.Stats.Any(a => a.Stat.UriName == filter.UriName && a.Value >= filter.Value));
+                        p.PlayerStats.Any(a => a.Stat.UriName == filter.UriName && a.Value >= filter.Value));
                 }
             }
 
             return players;
         }
 
-        public static IQueryable<Player> OrderByOverallScore(this IQueryable<Player> players)
-        {
-            return players.OrderByDescending(p => p.Overall);
-        }
+        //public static async Task<IEnumerable<Stat>> ToStats(this IEnumerable<StatDto> dtos, EntityFramework.MtdbContext repository, CancellationToken token)
+        //{
+        //    var ids = dtos.Select(t => t.Id);
+        //    return await repository.Stats
+        //        .Where(t => ids.Contains(t.Id))
+        //        .ToListAsync(token);
+        //}
 
-        public static IQueryable<T> OrderByRecentlyAdded<T>(this IQueryable<T> query) where T : EntityBase
-        {
-            return query.OrderByDescending(p => p.CreatedDate);
-        }
-
-        public static string ToFeetAndInches(this int inches)
-        {
-            var feet = inches / 12;
-            var inchesLeft = inches % 12;
-
-            return $"{feet}'{inchesLeft}\"";
-
-        }
-
-        public static async Task<IEnumerable<Stat>> ToStats(this IEnumerable<StatDto> dtos, MtdbRepository repository, CancellationToken token)
-        {
-            var ids = dtos.Select(t => t.Id);
-            return await repository.Stats
-                .Where(t => ids.Contains(t.Id))
-                .ToListAsync(token);
-        }
-
-        public static async Task<Lineup> AddPlayer(this Lineup lineup, MtdbRepository repository, int? id, LineupPositionType position)
+        public static async Task<Lineup> AddPlayer(this Lineup lineup, EntityFramework.MtdbContext repository, int? id, LineupPositionType position)
         {
             if (!id.HasValue)
                 return lineup;
@@ -99,7 +70,7 @@ namespace MTDB.Core.Services.Extensions
             return lineup;
         }
 
-        public static async Task<Lineup> RemovePlayer(this Lineup lineup, MtdbRepository repository, int? id, LineupPositionType position)
+        public static async Task<Lineup> RemovePlayer(this Lineup lineup, EntityFramework.MtdbContext repository, int? id, LineupPositionType position)
         {
             if (!id.HasValue)
                 return lineup;
@@ -118,12 +89,12 @@ namespace MTDB.Core.Services.Extensions
         {
             return new AggregatedCategories
             {
-                OutsideScoring = (int)Math.Ceiling(player.Stats.Where(s => s.Stat.Category.Id == 1).Average(ps => ps.Value)),
-                InsideScoring = (int)Math.Ceiling(player.Stats.Where(s => s.Stat.Category.Id == 2).Average(ps => ps.Value)),
-                Playmaking = (int)Math.Ceiling(player.Stats.Where(s => s.Stat.Category.Id == 3).Average(ps => ps.Value)),
-                Athleticism = (int)Math.Ceiling(player.Stats.Where(s => s.Stat.Category.Id == 4).Average(ps => ps.Value)),
-                Defending = (int)Math.Ceiling(player.Stats.Where(s => s.Stat.Category.Id == 5).Average(ps => ps.Value)),
-                Rebounding = (int)Math.Ceiling(player.Stats.Where(s => s.Stat.Category.Id == 6).Average(ps => ps.Value))
+                OutsideScoring = (int)Math.Ceiling(player.PlayerStats.Where(s => s.Stat.Category.Id == 1).Average(ps => ps.Value)),
+                InsideScoring = (int)Math.Ceiling(player.PlayerStats.Where(s => s.Stat.Category.Id == 2).Average(ps => ps.Value)),
+                Playmaking = (int)Math.Ceiling(player.PlayerStats.Where(s => s.Stat.Category.Id == 3).Average(ps => ps.Value)),
+                Athleticism = (int)Math.Ceiling(player.PlayerStats.Where(s => s.Stat.Category.Id == 4).Average(ps => ps.Value)),
+                Defending = (int)Math.Ceiling(player.PlayerStats.Where(s => s.Stat.Category.Id == 5).Average(ps => ps.Value)),
+                Rebounding = (int)Math.Ceiling(player.PlayerStats.Where(s => s.Stat.Category.Id == 6).Average(ps => ps.Value))
             };
         }
 
@@ -174,22 +145,6 @@ namespace MTDB.Core.Services.Extensions
                 ? $"{baseUrl}{playerUri}.png" 
                 : $"{baseUrl}{playerUri}-40x56.png";
         }
-
-        public static async Task<IEnumerable<Player>> ToPlayers(this IEnumerable<CardDto> cards, MtdbRepository repository)
-        {
-            if (!cards.HasItems())
-                return null;
-
-            var players = new List<Player>();
-
-            foreach (var card in cards)
-            {
-                players.Add(await repository.Players.FirstOrDefaultAsync(p => p.Id == card.Id));
-            }
-
-            return players;
-        }
-
     }
 
     public enum ImageSize

@@ -9,9 +9,9 @@ using MTDB.Core.EntityFramework;
 namespace MTDB.MvcForumIdentity {
 
 	public class AuthenticationService : IAuthenticationService {
-		private readonly MtdbRepository _mtdbContext;
+		private readonly MtdbContext _mtdbContext;
 
-		public AuthenticationService(MtdbRepository mtdbContext) {
+		public AuthenticationService(MtdbContext mtdbContext) {
 			this._mtdbContext = mtdbContext;
 		}
 

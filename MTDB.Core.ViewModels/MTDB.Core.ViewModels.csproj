@@ -66,8 +66,6 @@
     <Compile Include="PlayerFilter.cs" />
     <Compile Include="StatFilter.cs" />
     <Compile Include="GroupScoreDto.cs" />
-    <Compile Include="PlayerDto.cs" />
-    <Compile Include="StatDto.cs" />
     <Compile Include="TierDto.cs" />
   </ItemGroup>
   <ItemGroup>

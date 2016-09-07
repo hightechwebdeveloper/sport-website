@@ -1,31 +1,60 @@
 ﻿using System.Data.SqlClient;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using MTDB.Core;
+using MTDB.Core.EntityFramework.Entities;
 using MTDB.Core.Services;
+using MTDB.Core.Services.Extensions;
 using MTDB.Core.ViewModels;
 using MTDB.Helpers;
+using MTDB.Models.Collection;
 
 namespace MTDB.Controllers
 {
-    public class CollectionController : ServicedController<PlayerService>
+    public class CollectionController : BaseController
     {
-        public CollectionController()
-        { }
+        private readonly CollectionService _collectionService;
 
-        public CollectionController(PlayerService playerService)
+        public CollectionController()
         {
-            _service = playerService;
+            this._collectionService = new CollectionService(this.Repository);
         }
 
-        private PlayerService _service;
-        protected override PlayerService Service => _service ?? (_service = new PlayerService(Repository));
+        private void PreparePlayerItemModel(CollectionDetailsViewModel.PlayerItemModel model, Player player)
+        {
+            var position = player.PrimaryPosition;
+
+            if (player.SecondaryPosition != null)
+                position = $"{position}/{player.SecondaryPosition}";
+
+            model.Id = player.Id;
+            model.Name = player.Name;
+            model.UriName = player.UriName;
+            model.ImageUri = player.GetImageUri(ImageSize.PlayerSearch);
+            model.Position = position;
+            model.Tier = player.Tier.Name;
+            model.Collection = player.Collection?.Name;
+            model.Xbox = player.Xbox;
+            model.PS4 = player.PS4;
+            model.PC = player.PC;
+            model.Height = player.Height;
+            model.Overall = player.Overall;
+            model.OutsideScoring = player.OutsideScoring.Value;
+            model.InsideScoring = player.InsideScoring.Value;
+            model.Playmaking = player.Playmaking.Value;
+            model.Athleticism = player.Athleticism.Value;
+            model.Defending = player.Defending.Value;
+            model.Rebounding = player.Rebounding.Value;
+            model.CreatedDate = player.CreatedDate;
+            model.Prvate = player.Private;
+        }
 
         [Route("collections")]
         public async Task<ActionResult> Index(CancellationToken token)
         {
-            var collections = await Service.GetCollections(token);
+            var collections = await _collectionService.GetGroupedCollections(token);
             return View(collections);
         }
 
@@ -37,10 +66,18 @@ namespace MTDB.Controllers
                 return RedirectToAction("Index");
             }
 
-            var collectionDetails = await Service.GetPlayersForCollection((page - 1) * pageSize, pageSize, sortedBy, sortOrder, groupName, name, token, User.IsInRole("Admin"));
+            var collectionDetails = await _collectionService.GetPlayersForCollection((page - 1) * pageSize, pageSize, sortedBy, sortOrder, groupName, name, token, User.IsInRole("Admin"));
 
             if (collectionDetails == null)
                 return RedirectToAction("Index");
+
+            var playerItems = collectionDetails.Results
+                .Select(p =>
+                {
+                    var playerModel = new CollectionDetailsViewModel.PlayerItemModel();
+                    PreparePlayerItemModel(playerModel, p);
+                    return playerModel;
+                });
 
             var collectionViewModel = new CollectionDetailsViewModel
             {
@@ -52,28 +89,12 @@ namespace MTDB.Controllers
                 Overall = collectionDetails.Overall,
                 Playmaking = collectionDetails.Playmaking,
                 Players =
-                    new PagedResults<SearchPlayerResultDto>(collectionDetails.Results, page, pageSize,
+                    new PagedResults<CollectionDetailsViewModel.PlayerItemModel>(playerItems, page, pageSize,
                         collectionDetails.ResultCount, sortedBy, sortOrder),
                 Rebounding = collectionDetails.Rebounding,
             };
 
-
-
             return View(collectionViewModel);
         }
-
-    }
-
-    public class CollectionDetailsViewModel
-    {
-        public string Name { get; set; }
-        public int Overall { get; set; }
-        public int OutsideScoring { get; set; }
-        public int InsideScoring { get; set; }
-        public int Playmaking { get; set; }
-        public int Athleticism { get; set; }
-        public int Defending { get; set; }
-        public int Rebounding { get; set; }
-        public PagedResults<SearchPlayerResultDto> Players { get; set; }
     }
 }

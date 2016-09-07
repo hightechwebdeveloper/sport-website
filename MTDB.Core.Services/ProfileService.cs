@@ -13,28 +13,32 @@ namespace MTDB.Core.Services
 {
     public class ProfileService
     {
-        private readonly MtdbRepository _repository;
+        private readonly EntityFramework.MtdbContext _repository;
 
-        public ProfileService(MtdbRepository repository)
+        public ProfileService(EntityFramework.MtdbContext repository)
         {
             _repository = repository;
         }
-
-        public ProfileService() : this(new MtdbRepository())
-        { }
-
-        public async Task<ProfileDto> GetProfileByUserName(string username, CancellationToken cancellationToken)
+        
+        public async Task<ProfileDto> GetProfileByUser(ApplicationUser user, CancellationToken cancellationToken)
         {
+            var userId = user.Id;
             var cardpacks = await _repository.CardPacks
-                                            .Include(cp => cp.Players.Select(p => p.Player))
-                                            .Where(p => p.User.UserName.Equals(username, StringComparison.OrdinalIgnoreCase))
-                                            .OrderByRecentlyAdded()
-                                            .ToListAsync(cancellationToken);
-
-            var lineups = await _repository.Lineups
-                .Include(l => l.User)
-                .Where(p => p.User.UserName.Equals(username, StringComparison.OrdinalIgnoreCase))
-                .OrderByRecentlyAdded()
+                .Include(cp => cp.Players.Select(p => p.Player))
+                .Where(p => p.User.Id == userId)
+                .OrderByDescending(p => p.CreatedDate)
+                .Select(pack => new
+                {
+                    Id = pack.Id,
+                    Name = pack.Name,
+                    CardPackTypeId = pack.CardPackTypeId,
+                    Points = pack.Points,
+                    PlayerNames = pack
+                            .Players
+                            .OrderByDescending(x => x.Player.Points)
+                            .Take(5)
+                            .Select(x => x.Player.Name)
+                })
                 .ToListAsync(cancellationToken);
 
             var cardPackDtos = cardpacks.Select(p => new CardPackDto
@@ -42,13 +46,20 @@ namespace MTDB.Core.Services
                 Id = p.Id,
                 Name = p.Name,
                 PackType = (CardPackType)p.CardPackTypeId,
-                Players = p.Players.OrderByDescending(x => x.Player.Points).Take(5).Select(x => x.Player.Name),
-                Points = p.Points
+                Points = p.Points,
+                Players = p.PlayerNames
             });
+
+
+            var lineups = await _repository.Lineups
+                .Include(l => l.User)
+                .Where(p => p.User.Id == userId)
+                .OrderByDescending(p => p.CreatedDate)
+                .ToListAsync(cancellationToken);
 
             return new ProfileDto
             {
-                Name = username,
+                Name = user.UserName,
                 CardPacks = cardPackDtos,
                 Lineups = lineups.ToSearchDtos()
             };

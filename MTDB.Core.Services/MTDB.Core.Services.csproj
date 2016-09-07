@@ -105,16 +105,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CollectionService.cs" />
     <Compile Include="CommentService.cs" />
+    <Compile Include="DivisionService.cs" />
     <Compile Include="MtdbCardPackGenerator.cs" />
     <Compile Include="LineupService.cs" />
     <Compile Include="Extensions\MappingExtensions.cs" />
     <Compile Include="PackService.cs" />
+    <Compile Include="PagedList.cs" />
     <Compile Include="PlayerService.cs" />
     <Compile Include="PlayerUpdateService.cs" />
     <Compile Include="ProfileService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Extensions\ServiceExtensions.cs" />
+    <Compile Include="StatService.cs" />
+    <Compile Include="TeamService.cs" />
+    <Compile Include="ThemeService.cs" />
+    <Compile Include="TierService.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\MTDB.Core.EntityFramework\MTDB.Core.EntityFramework.csproj">

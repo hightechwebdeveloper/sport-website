@@ -337,8 +337,11 @@ namespace MTDB.Controllers
                     return RedirectToAction("Index", "Player");
                 }
             }
+            var user = await UserManager.FindByNameAsync(userName);
+            if (user == null)
+                return HttpNotFound();
 
-            var profile = await Service.GetProfileByUserName(userName, cancellationToken);
+            var profile = await Service.GetProfileByUser(user, cancellationToken);
 
             return View(profile);
         }

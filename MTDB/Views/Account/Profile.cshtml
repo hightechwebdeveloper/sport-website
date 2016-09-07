@@ -1,4 +1,5 @@
 ﻿@using MTDB.Core
+@using MTDB.Core.EntityFramework.Entities
 @model MTDB.Core.Services.ProfileDto
 
 @{
@@ -51,7 +52,7 @@
                                 {
                                     <tr>
                                         <td>
-                                            @if (pack.PackType == "mtdb")
+                                            @if (pack.PackType == CardPackType.Mtdb)
                                             {
                                                 @Html.ActionLink(pack.Name, "MtdbDetails", new { controller = "Pack", id = pack.Id })
                                             }

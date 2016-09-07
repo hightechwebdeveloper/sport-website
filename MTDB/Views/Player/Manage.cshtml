@@ -1,5 +1,6 @@
 ﻿@using MTDB.Core.ViewModels
-@model MTDB.Core.ViewModels.ManageDto
+@using MTDB.Models.Player
+@model MTDB.Models.Player.ManageModel
 
 @{
     ViewBag.Title = "Manage";
@@ -37,7 +38,7 @@
                             <ul id="theme" class="list-unstyled collapse">
                                 @foreach (var item in Model.Themes)
                                 {
-                                    <li><a onclick="javascript:OpenWindow('@(Url.Action("ManageEditPopup", "Player", new { type = ManageTypeDto.Theme, id = item.Id, btnId = "updateInput" }))', 450, 500, true); return false;">@item.Name</a> <button name="id" value="@item.Id" class="btn btn-link btn-xs" onclick="return confirm('Are you sure you want to delete this item?')"><i class="fa fa-times"></i></button></li>
+                                    <li><a onclick="javascript:OpenWindow('@(Url.Action("ManageEditPopup", "Player", new { type = ManageType.Theme, id = item.Key, btnId = "updateInput" }))', 450, 500, true); return false;">@item.Value</a> <button name="id" value="@item.Key" class="btn btn-link btn-xs" onclick="return confirm('Are you sure you want to delete this item?')"><i class="fa fa-times"></i></button></li>
                                 }
                             </ul>
                         }
@@ -49,7 +50,7 @@
                             <ul id="team" class="list-unstyled collapse">
                                 @foreach (var item in Model.Teams)
                                 {
-                                    <li><a onclick="javascript:OpenWindow('@(Url.Action("ManageEditPopup", "Player", new { type = ManageTypeDto.Team, id = item.Id, btnId = "updateInput" }))', 450, 500, true); return false;">@item.Name</a> <button name="id" value="@item.Id" class="btn btn-link btn-xs" onclick="return confirm('Are you sure you want to delete this item?')"><i class="fa fa-times"></i></button></li>
+                                    <li><a onclick="javascript:OpenWindow('@(Url.Action("ManageEditPopup", "Player", new { type = ManageType.Team, id = item.Key, btnId = "updateInput" }))', 450, 500, true); return false;">@item.Value</a> <button name="id" value="@item.Key" class="btn btn-link btn-xs" onclick="return confirm('Are you sure you want to delete this item?')"><i class="fa fa-times"></i></button></li>
                                 }
                             </ul>
                         }
@@ -61,7 +62,7 @@
                             <ul id="tier" class="list-unstyled collapse">
                                 @foreach (var item in Model.Tiers)
                                 {
-                                    <li><a onclick="javascript:OpenWindow('@(Url.Action("ManageEditPopup", "Player", new { type = ManageTypeDto.Tier, id = item.Id, btnId = "updateInput" }))', 450, 500, true); return false;">@item.Name</a> <button name="id" value="@item.Id" class="btn btn-link btn-xs" onclick="return confirm('Are you sure you want to delete this item?')"><i class="fa fa-times"></i></button></li>
+                                    <li><a onclick="javascript:OpenWindow('@(Url.Action("ManageEditPopup", "Player", new { type = ManageType.Tier, id = item.Key, btnId = "updateInput" }))', 450, 500, true); return false;">@item.Value</a> <button name="id" value="@item.Key" class="btn btn-link btn-xs" onclick="return confirm('Are you sure you want to delete this item?')"><i class="fa fa-times"></i></button></li>
                                 }
                             </ul>
                         }
@@ -73,7 +74,7 @@
                             <ul id="collection" class="list-unstyled collapse">
                                 @foreach (var item in Model.Collections)
                                 {
-                                    <li><a onclick="javascript:OpenWindow('@(Url.Action("ManageEditPopup", "Player", new { type = ManageTypeDto.Collection, id = item.Id, btnId = "updateInput" }))', 450, 500, true); return false;">@item.Name</a> <button name="id" value="@item.Id" class="btn btn-link btn-xs" onclick="return confirm('Are you sure you want to delete this item?')"><i class="fa fa-times"></i></button></li>
+                                    <li><a onclick="javascript:OpenWindow('@(Url.Action("ManageEditPopup", "Player", new { type = ManageType.Collection, id = item.Key, btnId = "updateInput" }))', 450, 500, true); return false;">@item.Value</a> <button name="id" value="@item.Key" class="btn btn-link btn-xs" onclick="return confirm('Are you sure you want to delete this item?')"><i class="fa fa-times"></i></button></li>
                                 }
                             </ul>
                         }

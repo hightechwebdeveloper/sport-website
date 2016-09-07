@@ -9,22 +9,43 @@ using MTDB.Core.EntityFramework.Entities;
 namespace MTDB.Core.EntityFramework
 {
 
-    public class MtdbRepository : IdentityDbContext<ApplicationUser>
+    public class MtdbContext : IdentityDbContext<ApplicationUser>
     {
-        public MtdbRepository(string connectionString) : base(connectionString, throwIfV1Schema: false)
+        public MtdbContext(string connectionString) : base(connectionString, throwIfV1Schema: false)
         {
 
         }
 
-        public MtdbRepository() : base("MTDBRepository", throwIfV1Schema: false)
+        public MtdbContext() : base("MTDBRepository", throwIfV1Schema: false)
         {
             this.Database.CommandTimeout = int.MaxValue;
         }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-            //modelBuilder.Entity<PlayerUpdate>()
-            //    .HasMany(p => p.Changes);
+            modelBuilder.Entity<Player>()
+                .Property(puc => puc.TierId)
+                .HasColumnName("Tier_Id");
+            modelBuilder.Entity<Player>()
+               .Property(puc => puc.ThemeId)
+               .HasColumnName("Theme_Id");
+            modelBuilder.Entity<Player>()
+                .Property(puc => puc.TeamId)
+                .HasColumnName("Team_Id");
+            modelBuilder.Entity<Player>()
+                .Property(puc => puc.CollectionId)
+                .HasColumnName("Collection_Id");
+
+            modelBuilder.Entity<PlayerStat>()
+                .Property(puc => puc.PlayerId)
+                .HasColumnName("Player_Id");
+            modelBuilder.Entity<PlayerStat>()
+                .Property(puc => puc.StatId)
+                .HasColumnName("Stat_Id");
+
+            modelBuilder.Entity<Team>()
+                .Property(puc => puc.DivisionId)
+                .HasColumnName("Division_Id");
 
             modelBuilder.Entity<PlayerUpdateChange>()
                 .Property(puc => puc.PlayerUpdateId)
@@ -39,7 +60,7 @@ namespace MTDB.Core.EntityFramework
                 .HasColumnName("Player_Id");
             modelBuilder.Entity<PlayerUpdateChange>()
                 .HasRequired(puc => puc.Player)
-                .WithMany(p => p.Changes)
+                .WithMany(p => p.PlayerUpdateChanges)
                 .HasForeignKey(puc => puc.PlayerId);
 
             modelBuilder.Entity<Badge>()
@@ -50,7 +71,7 @@ namespace MTDB.Core.EntityFramework
                 .HasKey(pb => new { pb.PlayerId, pb.BadgeId });
             modelBuilder.Entity<PlayerBadge>()
                       .HasRequired(x => x.Player)
-                      .WithMany(x => x.Badges)
+                      .WithMany(x => x.PlayerBadges)
                       .HasForeignKey(x => x.PlayerId);
             modelBuilder.Entity<PlayerBadge>()
                       .HasRequired(x => x.Badge)
@@ -61,7 +82,7 @@ namespace MTDB.Core.EntityFramework
                 .HasKey(pb => new { pb.PlayerId, pb.TendencyId });
             modelBuilder.Entity<PlayerTendency>()
                       .HasRequired(x => x.Player)
-                      .WithMany(x => x.Tendencies)
+                      .WithMany(x => x.PlayerTendencies)
                       .HasForeignKey(x => x.PlayerId);
             modelBuilder.Entity<PlayerTendency>()
                       .HasRequired(x => x.Tendency)
@@ -99,9 +120,9 @@ namespace MTDB.Core.EntityFramework
 
         public DbSet<Tendency> Tendencies { get; set; }
 
-        public static MtdbRepository Create()
+        public static MtdbContext Create()
         {
-            return new MtdbRepository();
+            return new MtdbContext();
         }
     }
 

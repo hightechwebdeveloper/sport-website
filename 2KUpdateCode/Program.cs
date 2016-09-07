@@ -22,7 +22,7 @@ namespace _2KUpdateCode
 
             var token = new CancellationTokenSource();
             var parallelOptions = new ParallelOptions { CancellationToken = token.Token };
-            var repository = new MtdbRepository();
+            var repository = new MtdbContext();
             var playerService = new PlayerService(repository);
 
             var players = playerService.GetPlayersByUri(CancellationToken.None, withUrls.Select(p => p.Url).ToArray()).Result;

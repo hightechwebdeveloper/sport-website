@@ -5,6 +5,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using MTDB.Core.Caching;
 using MTDB.Core.EntityFramework;
 using MTDB.Core.EntityFramework.Entities;
 using MTDB.Core.Services.Extensions;
@@ -14,22 +15,35 @@ namespace MTDB.Core.Services
 {
     public class PackService
     {
+        #region
+        /// <summary>
+        /// Key for caching
+        /// </summary>
+        /// <remarks>
+        /// {0} : query of request
+        /// </remarks>
+        private const string CARDPACKS_COUNT_BY_QUERY = "MTDB.cardpacks.count.query-{0}";
+        /// <summary>
+        /// Key pattern to clear cache
+        /// </summary>
+        private const string CARDPACKS_COUNT_PATTERN_KEY = "MTDB.cardpacks.count.";
+        #endregion
+
         #region Fields
 
-        private readonly MtdbRepository _repository;
+        private readonly EntityFramework.MtdbContext _repository;
+        private readonly ICacheManager _memoryCacheManager;
 
         #endregion
 
         #region Ctor
 
-        public PackService(MtdbRepository repository)
+        public PackService(EntityFramework.MtdbContext repository)
         {
             _repository = repository;
+            _memoryCacheManager = new MemoryCacheManager();
         }
-
-        public PackService() : this(new MtdbRepository())
-        { }
-
+        
         #endregion
 
         #region Utilities
@@ -172,6 +186,9 @@ namespace MTDB.Core.Services
 
             var rowsChanged = await _repository.SaveChangesAsync(cancellationToken);
 
+            //clear caching
+            _memoryCacheManager.RemoveByPattern(CARDPACKS_COUNT_PATTERN_KEY);
+
             return rowsChanged > 0;
         }
 
@@ -196,6 +213,9 @@ namespace MTDB.Core.Services
             _repository.CardPacks.Add(cardPack);
 
             var rowsChanged = await _repository.SaveChangesAsync(cancellationToken);
+
+            //clear caching
+            _memoryCacheManager.RemoveByPattern(CARDPACKS_COUNT_PATTERN_KEY);
 
             return rowsChanged > 0;
         }
@@ -254,7 +274,11 @@ namespace MTDB.Core.Services
                     Score = pack.Points,
 
                 }).ToList();
-            var count = await query.CountAsync(cancellationToken);
+
+            var key = string.Format(CARDPACKS_COUNT_BY_QUERY, query);
+            var count = await _memoryCacheManager.GetAsync(key, async () => await query.CountAsync(cancellationToken));
+
+            //var count = await query.CountAsync(cancellationToken);
 
             return new LeaderboardDto
             {

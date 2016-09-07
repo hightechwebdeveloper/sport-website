@@ -48,7 +48,7 @@ namespace MTDB.Core.EntityFramework
             return list.Count == 0 ? default(T) : list[r.Next(0, list.Count)];
         }
 
-        public static IEnumerable<MTDBPackLeaderboard> GetMTDBLeaderboard(this MtdbRepository repository, int count, string packType, DateTimeOffset? startDate)
+        public static IEnumerable<MTDBPackLeaderboard> GetMTDBLeaderboard(this MtdbContext repository, int count, string packType, DateTimeOffset? startDate)
         {
             var query = $"SELECT TOP({count}) * FROM vw_Leaderboard WHERE 1=1 ";
             if (!string.IsNullOrWhiteSpace(packType))
@@ -119,6 +119,25 @@ namespace MTDB.Core.EntityFramework
             {
                 return source.OrderByDescending(defaultColumn).Skip(skip).Take(take);
             }
+        }
+
+        public static IQueryable<T> Sort<T>(this IQueryable<T> source, string name, SortOrder sortOrder, string defaultColumn, Dictionary<string, string> nameMap = null)
+        {
+            if (nameMap != null && nameMap.Any())
+            {
+                if (!Equals(nameMap.Comparer, StringComparer.InvariantCultureIgnoreCase))
+                    nameMap = new Dictionary<string, string>(nameMap, StringComparer.InvariantCultureIgnoreCase);
+
+                if (nameMap.ContainsKey(name))
+                    name = nameMap[name];
+            }
+
+            if (sortOrder == SortOrder.Unspecified)
+                sortOrder = SortOrder.Descending;
+
+            return sortOrder == SortOrder.Ascending 
+                ? source.OrderBy(defaultColumn) 
+                : source.OrderByDescending(name);
         }
 
         private static IQueryable<T> OrderBy<T>(this IQueryable<T> source, string ordering, params object[] values)

@@ -18,8 +18,8 @@ namespace MTDB.MvcForumIdentity {
 			Database.SetInitializer<MVCForumContext>(new CreateDatabaseIfNotExists<MVCForumContext>());
 
 			container.RegisterPerRequest<IContext, Context>();
-			container.RegisterPerRequest<DbContext, MVCForumContext>(new Dictionary<string, object> { { "nameOrConnectionString", ConfigurationManager.ConnectionStrings["mvcForum.DataProvider.MainDB"].ConnectionString } });
-            container.RegisterPerRequest<MtdbRepository, MtdbRepository>();
+			container.RegisterPerRequest<System.Data.Entity.DbContext, MVCForumContext>(new Dictionary<string, object> { { "nameOrConnectionString", ConfigurationManager.ConnectionStrings["mvcForum.DataProvider.MainDB"].ConnectionString } });
+            container.RegisterPerRequest<Core.EntityFramework.MtdbContext, Core.EntityFramework.MtdbContext>();
 
             container.RegisterGeneric(typeof(IRepository<>), typeof(Repository<>));
 

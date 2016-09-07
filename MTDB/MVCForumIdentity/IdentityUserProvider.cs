@@ -18,7 +18,7 @@ namespace MTDB.MvcForumIdentity {
 		private readonly IRepository<ForumUser> userRepo;
         private readonly MVCForumContext _forumContext;
 
-        public IdentityUserProvider(IRepository<ForumUser> userRepo, MtdbRepository mtdbContext) {
+        public IdentityUserProvider(IRepository<ForumUser> userRepo, MtdbContext mtdbContext) {
             this._forumContext = new MVCForumContext("mvcForum.DataProvider.MainDB"); 
             this.userRepo = userRepo;
 			this.userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(mtdbContext));

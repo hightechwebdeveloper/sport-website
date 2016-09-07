@@ -1,6 +1,7 @@
 ﻿@using MTDB.Core.ViewModels
 @using MTDB.Helpers
-@model ManageEditDto
+@using MTDB.Models.Player
+@model MTDB.Models.Player.ManageEditModel
 @{
     Layout = "~/Views/Shared/_PopupLayout.cshtml";
 
@@ -64,11 +65,11 @@
         $('#team').hide();
         $('#tier').hide();
         $('#collection').hide();
-        if (type == '@((int) ManageTypeDto.Team)') {
+        if (type == '@((int) ManageType.Team)') {
             $('#team').show();
-        } else if (type == '@((int) ManageTypeDto.Tier)') {
+        } else if (type == '@((int)ManageType.Tier)') {
             $('#tier').show();
-        } else if (type == '@((int) ManageTypeDto.Collection)') {
+        } else if (type == '@((int)ManageType.Collection)') {
             $('#collection').show();
         }
     }
@@ -85,14 +86,14 @@
         @Html.TextBoxFor(model => model.Name, new { @class = "form-control" })
         <span class="help-block">@Html.ValidationMessageFor(model => model.Name)</span>
     </div>
-    <div id="team" @(Model.Type != ManageTypeDto.Team ? Html.Raw("style='display: none'") : null)>
+    <div id="team" @(Model.Type != ManageType.Team ? Html.Raw("style='display: none'") : null)>
         <div class="form-group">
             <label for="@Html.IdFor(model => model.DivisionId)" class="control-label">Division</label>
             @Html.DropDownListFor(model => model.DivisionId, availableDivisions, new { @class = "form-control" })
             <span class="help-block">@Html.ValidationMessageFor(model => model.DivisionId)</span>
         </div>
     </div>
-    <div id="tier" @(Model.Type != ManageTypeDto.Tier ? Html.Raw("style='display: none'") : null)>
+    <div id="tier" @(Model.Type != ManageType.Tier ? Html.Raw("style='display: none'") : null)>
         <div class="form-group">
             <label for="@Html.IdFor(model => model.DrawChance)" class="control-label">Draw chance</label>
             @Html.TextBoxFor(model => model.DrawChance, new { @class = "form-control" })
@@ -102,7 +103,7 @@
             @Html.UpDownFor(p => p.SortOrder, "form-control", -999999999, 999999999)
         </div>  
     </div>
-    <div id="collection" @(Model.Type != ManageTypeDto.Collection ? Html.Raw("style='display: none'") : null)>
+    <div id="collection" @(Model.Type != ManageType.Collection ? Html.Raw("style='display: none'") : null)>
         <div class="form-group">
             <label for="@Html.IdFor(model => model.ThemeGroupName)" class="control-label">Group name</label>
             @Html.DropDownListFor(model => model.ThemeGroupName, availableGroups, new { @class = "form-control" })

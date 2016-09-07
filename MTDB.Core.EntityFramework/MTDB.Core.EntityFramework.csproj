@@ -84,7 +84,7 @@
     <Compile Include="Entities\TendencyType.cs" />
     <Compile Include="Entities\Theme.cs" />
     <Compile Include="Entities\Tier.cs" />
-    <Compile Include="MtdbRepository.cs" />
+    <Compile Include="MtdbContext.cs" />
     <Compile Include="Entities\EntityBase.cs" />
     <Compile Include="Entities\Player.cs" />
     <Compile Include="Entities\PlayerStat.cs" />

@@ -14,32 +14,13 @@ namespace MTDB.Core.Services
 {
     public class LineupService
     {
-        private MtdbRepository _repository;
+        private readonly EntityFramework.MtdbContext _repository;
 
-        public LineupService(MtdbRepository repository)
+        public LineupService(EntityFramework.MtdbContext repository)
         {
             _repository = repository;
         }
-
-        public LineupService() : this(new MtdbRepository())
-        { }
-
-        public async Task<IEnumerable<LineupSearchPlayerDto>> GetLineupPlayers(CancellationToken token, bool showHidden = false)
-        {
-            var query = _repository.Players.AsQueryable();
-
-            if (!showHidden)
-                query = query.Where(p => !p.Private);
-
-            query = query.OrderBy(p => p.Name);
-
-            var players =
-                await query.Select(p => new LineupSearchPlayerDto {Name = p.Name + " - OVR " + p.Overall, Id = p.Id})
-                    .ToListAsync(token);
-            
-            return players;
-        }
-
+        
         public async Task<int> UpdateLineup(ApplicationUser user, CreateLineupDto dto, CancellationToken token)
         {
             var existingLineup = await _repository.Lineups.FirstOrDefaultAsync(x => x.Id == dto.Id, token);

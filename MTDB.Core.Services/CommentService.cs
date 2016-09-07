@@ -14,15 +14,12 @@ namespace MTDB.Core.Services
 {
     public class CommentService
     {
-        private readonly MtdbRepository _repository;
+        private readonly EntityFramework.MtdbContext _repository;
 
-        public CommentService(MtdbRepository repository)
+        public CommentService(EntityFramework.MtdbContext repository)
         {
             _repository = repository;
         }
-
-        public CommentService() : this(new MtdbRepository())
-        { }
 
         public async Task<CommentsViewModel> GetComments(string pageUrl, CancellationToken token)
         {

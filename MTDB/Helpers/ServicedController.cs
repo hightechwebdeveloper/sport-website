@@ -8,10 +8,9 @@ using Microsoft.AspNet.Identity.Owin;
 namespace MTDB.Helpers
 {
     [AsyncTimeout(300000)]
-    public abstract class ServicedController<T> : Controller
+    public abstract class BaseController : Controller
     {
         private ApplicationUserManager _userManager;
-        protected abstract T Service { get; }
 
         protected ApplicationUserManager UserManager
         {
@@ -25,12 +24,12 @@ namespace MTDB.Helpers
             }
         }
 
-        private MtdbRepository _repository;
-        protected MtdbRepository Repository
+        private MtdbContext _repository;
+        protected MtdbContext Repository
         {
             get
             {
-                return _repository ?? HttpContext.GetOwinContext().GetUserManager<MtdbRepository>();
+                return _repository ?? new MtdbContext();
             }
             private set
             {
@@ -49,7 +48,7 @@ namespace MTDB.Helpers
 
             return user;
         }
-        
+
         // TODO: Is there a better way?
         protected void SetCommentsPageUrl(string id)
         {
@@ -60,5 +59,10 @@ namespace MTDB.Helpers
 
             ViewBag.CommentsPageUrl = $@"{controller}\{action}\{id}";
         }
+    }
+
+    public abstract class ServicedController<T> : BaseController
+    {
+        protected abstract T Service { get; }
     }
 }

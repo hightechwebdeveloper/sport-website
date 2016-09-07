@@ -28,8 +28,7 @@ namespace PlayerUpdater
             try
             {
                 var positions = GetPositions();
-                var repo = new MtdbRepository();
-                var playerService = new PlayerService();
+                var repo = new MTDB.Core.EntityFramework.MtdbContext();
 
                 var existingPlayers =
                     repo.Players.ToList();
@@ -215,7 +214,7 @@ namespace PlayerUpdater
                                 playerStat.Stat = stat;
                                 playerStat.Value = statValue;
 
-                                player.Stats.Add(playerStat);
+                                player.PlayerStats.Add(playerStat);
 
                             }
 
