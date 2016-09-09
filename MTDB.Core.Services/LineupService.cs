@@ -106,7 +106,7 @@ namespace MTDB.Core.Services
             var lineup = new Lineup
             {
                 Name = dto.Name.ReplaceBlockedWordsWithMTDB(),
-                User = user
+                UserId = user.Id
             };
 
             await lineup.AddPlayer(_repository, dto.PointGuardId, LineupPositionType.PointGuard);

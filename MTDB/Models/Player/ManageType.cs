@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-namespace MTDB.Models.Player
+﻿namespace MTDB.Models.Player
 {
     public enum ManageType
     {

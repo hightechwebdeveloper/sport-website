@@ -4,7 +4,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using MTDB.Core.EntityFramework;
 using MTDB.Core.EntityFramework.Entities;
-using MTDB.Core.ViewModels;
 using System.Data.Entity;
 using MTDB.Core.Caching;
 
@@ -41,7 +40,7 @@ namespace MTDB.Core.Services
         public async Task<IList<Tier>> GetTiers(CancellationToken token)
         {
             var tiers = await
-                _memoryCacheManager.GetAsync(TIERS_All, async () =>
+                _memoryCacheManager.GetAsync(TIERS_All, int.MaxValue, async () =>
                     await _dbContext.Tiers.OrderBy(p => p.SortOrder).ToListAsync(token));
             return tiers;
         }

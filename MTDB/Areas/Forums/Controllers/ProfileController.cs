@@ -2,7 +2,6 @@
 using System.Web.Mvc;
 using ApplicationBoilerplate.DataProvider;
 using mvcForum.Web.Controllers;
-using mvcForum.Web.Extensions;
 using mvcForum.Web.Helpers;
 using mvcForum.Web.Interfaces;
 using mvcForum.Web.ViewModels;

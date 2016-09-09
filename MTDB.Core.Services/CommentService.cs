@@ -1,6 +1,4 @@
-﻿using AutoMapper;
-using MTDB.Core.EntityFramework;
-using MTDB.Core.EntityFramework.Entities;
+﻿using MTDB.Core.EntityFramework.Entities;
 using MTDB.Core.ViewModels;
 using System;
 using System.Collections.Generic;

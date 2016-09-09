@@ -4,7 +4,6 @@ using System.Data.Entity;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using MTDB.Core.EntityFramework;
 using MTDB.Core.EntityFramework.Entities;
 using MTDB.Core.Services.Extensions;
 using MTDB.Core.ViewModels;
@@ -13,8 +12,11 @@ namespace MTDB.Core.Services
 {
     public class MtdbCardPackGenerator : BaseCardPackGenerator<MtdbCardPackDto>
     {
+        private readonly TierService _tierService;
+
         public MtdbCardPackGenerator(EntityFramework.MtdbContext repository) : base(repository)
         {
+            this._tierService = new TierService(repository);
         }
         
         public override async Task<MtdbCardPackDto> GeneratePack(CancellationToken cancellationToken)
@@ -23,9 +25,8 @@ namespace MTDB.Core.Services
             #region logic with max performance
 
             var random = new Random(Environment.TickCount);
-            var tiers = await Repository.Tiers
-                .OrderBy(t => t.DrawChance)
-                .ToListAsync(cancellationToken);
+            var tiers = (await _tierService.GetTiers(cancellationToken))
+                .OrderBy(t => t.DrawChance);
 
             #region little control
 
@@ -75,8 +76,11 @@ namespace MTDB.Core.Services
 
     public class FantasyDraftPackGenerator : BaseCardPackGenerator<FantasyDraftPackDto>
     {
+        private readonly TierService _tierService;
+
         public FantasyDraftPackGenerator(EntityFramework.MtdbContext repository) : base(repository)
         {
+            this._tierService = new TierService(repository);
         }
 
         public override async Task<FantasyDraftPackDto> GeneratePack(CancellationToken cancellationToken)
@@ -87,9 +91,8 @@ namespace MTDB.Core.Services
             #region logic with max performance
 
             var random = new Random(Environment.TickCount);
-            var tiers = await Repository.Tiers
-                .OrderBy(t => t.DrawChance)
-                .ToListAsync(cancellationToken);
+            var tiers = (await _tierService.GetTiers(cancellationToken))
+                .OrderBy(t => t.DrawChance);
 
             #region little control
 

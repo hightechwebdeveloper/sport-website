@@ -29,7 +29,9 @@ namespace MTDB.Helpers
         {
             get
             {
-                return _repository ?? new MtdbContext();
+                if (_repository == null)
+                    _repository = new MtdbContext();
+                return _repository ;
             }
             private set
             {

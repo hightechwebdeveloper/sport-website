@@ -6,7 +6,7 @@
         public int BadgeId { get; set; }
         public BadgeLevel BadgeLevel { get; set; }
 
-        public virtual Player Player { get; set; }
+        //public virtual Player Player { get; set; }
         public virtual Badge Badge { get; set; }
     }
 }

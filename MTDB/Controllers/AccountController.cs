@@ -102,7 +102,7 @@ namespace MTDB.Controllers
                 case SignInStatus.Success:
                     if (string.IsNullOrWhiteSpace(returnUrl))
                     {
-                        return RedirectToAction("Index", "Player");
+                        return RedirectToAction("List", "Player");
                     }
                     else
                     {
@@ -130,7 +130,7 @@ namespace MTDB.Controllers
             if (!string.IsNullOrEmpty(returnUrl))
                 return RedirectToLocal(returnUrl);
 
-            return RedirectToAction("Index", "Player");
+            return RedirectToAction("List", "Player");
         }
 
         //
@@ -334,7 +334,7 @@ namespace MTDB.Controllers
                 }
                 else
                 {
-                    return RedirectToAction("Index", "Player");
+                    return RedirectToAction("List", "Player");
                 }
             }
             var user = await UserManager.FindByNameAsync(userName);
@@ -386,7 +386,7 @@ namespace MTDB.Controllers
 
                 if (string.IsNullOrWhiteSpace(returnUrl))
                 {
-                    return RedirectToAction("Index", "Player");
+                    return RedirectToAction("List", "Player");
                 }
                 else
                 {

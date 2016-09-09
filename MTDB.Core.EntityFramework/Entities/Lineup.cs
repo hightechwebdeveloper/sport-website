@@ -18,6 +18,7 @@ namespace MTDB.Core.EntityFramework.Entities
         public int Xbox { get; set; }
         public int PS4 { get; set; }
         public int PC { get; set; }
+        public string UserId { get; set ; }
 
         public virtual ApplicationUser User { get; set; }
 

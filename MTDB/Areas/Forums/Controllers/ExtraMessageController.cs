@@ -4,7 +4,6 @@ using System.Web.Mvc;
 using ApplicationBoilerplate.DataProvider;
 using mvcForum.Core;
 using mvcForum.Core.Abstractions.Interfaces;
-using mvcForum.Web;
 using mvcForum.Web.Controllers;
 using mvcForum.Web.Extensions;
 using mvcForum.Web.Helpers;

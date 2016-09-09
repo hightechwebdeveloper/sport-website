@@ -1,17 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Net;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Mvc;
-using System.Web.Services.Description;
 using MTDB.Core;
-using MTDB.Core.EntityFramework;
 using MTDB.Core.EntityFramework.Entities;
 using MTDB.Core.Services;
 using MTDB.Core.Services.Extensions;
@@ -107,13 +103,15 @@ namespace MTDB.Controllers
             model.Overall = player.Overall;
             model.Private = player.Private;
             model.GroupAverages = player.PlayerStats.OrderBy(s => s.Stat.Category.SortOrder).GroupBy(
-                playerStat => playerStat.Stat.Category,
-                playerStat => playerStat.Value, (key, statValues) => new
+                playerStat => playerStat.Stat.Category.Id,
+                playerStat => playerStat, 
+                (key, statValues) => new
                 {
-                    Group = key,
-                    Stats = statValues
+                    GroupKey = key,
+                    GroupName = statValues.First().Stat.Category.Name,
+                    Stats = statValues.Select(c => c.Value)
                 })
-                .Select(s => new PlayerModel.GroupScoreModel {Id = s.Group.Id, Name = s.Group.Name, Average = (int) s.Stats.Average()});
+                .Select(s => new PlayerModel.GroupScoreModel {Id = s.GroupKey, Name = s.GroupName, Average = (int) s.Stats.Average()});
         
             model.PlayerBadges = player.PlayerBadges
                 .OrderByDescending(psb => psb.Badge.BadgeGroupId.HasValue)
@@ -218,25 +216,25 @@ namespace MTDB.Controllers
             }
             
             //themes
-            model.AvailableThemes.Add(new SelectListItem { Text = string.Empty, Value = "0" });
+            model.AvailableThemes.Add(new SelectListItem { Text = string.Empty, Value = string.Empty });
             var themes = await _themeService.GetThemes(cancellationToken);
             foreach (var i in themes)
                 model.AvailableThemes.Add(new SelectListItem { Text = i.Name, Value = i.Id.ToString() });
 
             //tiers
-            model.AvailableTiers.Add(new SelectListItem { Text = string.Empty, Value = "0" });
+            model.AvailableTiers.Add(new SelectListItem { Text = string.Empty, Value = string.Empty });
             var tiers = await _tierService.GetTiers(cancellationToken);
             foreach (var i in tiers)
                 model.AvailableTiers.Add(new SelectListItem { Text = i.Name, Value = i.Id.ToString() });
 
             //teams
-            model.AvailableTeams.Add(new SelectListItem { Text = string.Empty, Value = "0" });
+            model.AvailableTeams.Add(new SelectListItem { Text = string.Empty, Value = string.Empty });
             var teams = await _teamService.GetTeams(cancellationToken);
             foreach (var i in teams)
                 model.AvailableTeams.Add(new SelectListItem { Text = i.Name, Value = i.Id.ToString() });
 
             //collections
-            model.AvailableCollections.Add(new SelectListItem { Text = string.Empty, Value = "0" });
+            model.AvailableCollections.Add(new SelectListItem { Text = string.Empty, Value = string.Empty });
             var collections = await _collectionService.GetCollections(cancellationToken);
             foreach (var i in collections)
                 model.AvailableCollections.Add(new SelectListItem { Text = i.Name, Value = i.Id.ToString() });
@@ -282,25 +280,25 @@ namespace MTDB.Controllers
             }
 
             //themes
-            model.AvailableThemes.Add(new SelectListItem { Text = string.Empty, Value = "0" });
+            model.AvailableThemes.Add(new SelectListItem { Text = string.Empty, Value = string.Empty });
             var themes = await _themeService.GetThemes(cancellationToken);
             foreach (var i in themes)
                 model.AvailableThemes.Add(new SelectListItem { Text = i.Name, Value = i.Id.ToString() });
 
             //tiers
-            model.AvailableTiers.Add(new SelectListItem { Text = string.Empty, Value = "0" });
+            model.AvailableTiers.Add(new SelectListItem { Text = string.Empty, Value = string.Empty });
             var tiers = await _tierService.GetTiers(cancellationToken);
             foreach (var i in tiers)
                 model.AvailableTiers.Add(new SelectListItem { Text = i.Name, Value = i.Id.ToString() });
 
             //teams
-            model.AvailableTeams.Add(new SelectListItem { Text = string.Empty, Value = "0" });
+            model.AvailableTeams.Add(new SelectListItem { Text = string.Empty, Value = string.Empty });
             var teams = await _teamService.GetTeams(cancellationToken);
             foreach (var i in teams)
                 model.AvailableTeams.Add(new SelectListItem { Text = i.Name, Value = i.Id.ToString() });
 
             //collections
-            model.AvailableCollections.Add(new SelectListItem { Text = string.Empty, Value = "0" });
+            model.AvailableCollections.Add(new SelectListItem { Text = string.Empty, Value = string.Empty });
             var collections = await _collectionService.GetCollections(cancellationToken);
             foreach (var i in collections)
                 model.AvailableCollections.Add(new SelectListItem { Text = i.Name, Value = i.Id.ToString() });
@@ -510,7 +508,7 @@ namespace MTDB.Controllers
                 player.PlayerStats.Add(pStat);
             }
 
-            var aggregated = player.AggregateStats();
+            var aggregated = await player.AggregateStats(this.Repository, cancellationToken);
             player.OutsideScoring = aggregated.OutsideScoring;
             player.InsideScoring = aggregated.InsideScoring;
             player.Playmaking = aggregated.Playmaking;
@@ -589,7 +587,7 @@ namespace MTDB.Controllers
                 pStat.Value = attribute.Value;
             }
 
-            var aggregated = player.AggregateStats();
+            var aggregated = await player.AggregateStats(this.Repository, cancellationToken);
             player.OutsideScoring = aggregated.OutsideScoring;
             player.InsideScoring = aggregated.InsideScoring;
             player.Playmaking = aggregated.Playmaking;
@@ -640,7 +638,7 @@ namespace MTDB.Controllers
                 .Replace(term.Trim(), " ");
             var terms = term.Split(' ');
 
-            var preFiltered = await _playerService.SearchPlayers(0, int.MaxValue, terms: terms, token: cancellationToken);
+            var preFiltered = await _playerService.SearchPlayers(1, 20, terms: terms, token: cancellationToken);
             var filtered = preFiltered
                 .Where(p => terms.All(termS => p.Name.Split(' ').Any(pName => pName.StartsWith(termS, StringComparison.InvariantCultureIgnoreCase))));
 
@@ -672,8 +670,8 @@ namespace MTDB.Controllers
                 return null;
 
 
-            var model = new PlayerSearchModel.PlayerItemModel();
-            PreparePlayerItemModel(model, player);
+            var model = new PlayerModel();
+            PreparePlayerModel(model, player);
 
             return Json(model, JsonRequestBehavior.AllowGet);
         }

@@ -689,7 +689,7 @@ namespace MTDB.Core.Services
                     }
                 }
 
-                var aggregated = player.AggregateStats();
+                var aggregated = await player.AggregateStats(_dbContext, token);
                 player.OutsideScoring = aggregated.OutsideScoring;
                 player.InsideScoring = aggregated.InsideScoring;
                 player.Playmaking = aggregated.Playmaking;
@@ -770,7 +770,7 @@ namespace MTDB.Core.Services
 
             foreach (var stat in player.PlayerStats)
             {
-                var compareStat = oldPlayer.PlayerStats.First(ps => ps.Stat.Id == stat.Id);
+                var compareStat = oldPlayer.PlayerStats.First(ps => ps.Id == stat.Id);
                 var change = DetermineChange(existingUpdates?.Changes, oldPlayer, compareStat.Stat.Name, stat.Value.ToString(), compareStat.Value.ToString(), PlayerUpdateType.Stat, out shouldDelete);
 
                 if (compareStat.Value != stat.Value && performUpdate)

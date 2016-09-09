@@ -1,14 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data.Entity;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using MTDB.Core.Caching;
 using MTDB.Core.EntityFramework;
 using MTDB.Core.EntityFramework.Entities;
-using MTDB.Core.ViewModels;
 
 namespace MTDB.Core.Services
 {
@@ -43,7 +39,7 @@ namespace MTDB.Core.Services
         public async Task<IEnumerable<Theme>> GetThemes(CancellationToken token)
         {
             var themes = await
-                _memoryCacheManager.GetAsync(THEMES_All, async () =>
+                _memoryCacheManager.GetAsync(THEMES_All, int.MaxValue, async () =>
                     await _dbContext.Themes.ToListAsync(token));
             return themes;
         }

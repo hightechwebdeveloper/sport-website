@@ -85,16 +85,20 @@ namespace MTDB.Core.Services.Extensions
             return lineup;
         }
 
-        public static AggregatedCategories AggregateStats(this Player player)
+        public static async Task<AggregatedCategories> AggregateStats(this Player player, MtdbContext dbContext, CancellationToken token)
         {
+            var statService = new StatService(dbContext);
+            var stats = await statService.GetStats(token);
+            
+
             return new AggregatedCategories
             {
-                OutsideScoring = (int)Math.Ceiling(player.PlayerStats.Where(s => s.Stat.Category.Id == 1).Average(ps => ps.Value)),
-                InsideScoring = (int)Math.Ceiling(player.PlayerStats.Where(s => s.Stat.Category.Id == 2).Average(ps => ps.Value)),
-                Playmaking = (int)Math.Ceiling(player.PlayerStats.Where(s => s.Stat.Category.Id == 3).Average(ps => ps.Value)),
-                Athleticism = (int)Math.Ceiling(player.PlayerStats.Where(s => s.Stat.Category.Id == 4).Average(ps => ps.Value)),
-                Defending = (int)Math.Ceiling(player.PlayerStats.Where(s => s.Stat.Category.Id == 5).Average(ps => ps.Value)),
-                Rebounding = (int)Math.Ceiling(player.PlayerStats.Where(s => s.Stat.Category.Id == 6).Average(ps => ps.Value))
+                OutsideScoring = (int)Math.Ceiling(player.PlayerStats.Where(ps => stats.Where(s => s.Category.Id == 1).Select(s => s.Id).Contains(ps.StatId)).Average(ps => ps.Value)),
+                InsideScoring = (int)Math.Ceiling(player.PlayerStats.Where(ps => stats.Where(s => s.Category.Id == 2).Select(s => s.Id).Contains(ps.StatId)).Average(ps => ps.Value)),
+                Playmaking = (int)Math.Ceiling(player.PlayerStats.Where(ps => stats.Where(s => s.Category.Id == 3).Select(s => s.Id).Contains(ps.StatId)).Average(ps => ps.Value)),
+                Athleticism = (int)Math.Ceiling(player.PlayerStats.Where(ps => stats.Where(s => s.Category.Id == 4).Select(s => s.Id).Contains(ps.StatId)).Average(ps => ps.Value)),
+                Defending = (int)Math.Ceiling(player.PlayerStats.Where(ps => stats.Where(s => s.Category.Id == 5).Select(s => s.Id).Contains(ps.StatId)).Average(ps => ps.Value)),
+                Rebounding = (int)Math.Ceiling(player.PlayerStats.Where(ps => stats.Where(s => s.Category.Id == 6).Select(s => s.Id).Contains(ps.StatId)).Average(ps => ps.Value))
             };
         }
 

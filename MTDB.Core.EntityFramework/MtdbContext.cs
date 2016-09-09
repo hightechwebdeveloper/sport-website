@@ -1,5 +1,4 @@
 ﻿using System.Data.Entity;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
@@ -35,6 +34,14 @@ namespace MTDB.Core.EntityFramework
             modelBuilder.Entity<Player>()
                 .Property(puc => puc.CollectionId)
                 .HasColumnName("Collection_Id");
+            modelBuilder.Entity<Player>()
+                .HasMany(p => p.PlayerTendencies)
+                .WithRequired()
+                .HasForeignKey(pt => pt.PlayerId);
+            modelBuilder.Entity<Player>()
+                .HasMany(p => p.PlayerBadges)
+                .WithRequired()
+                .HasForeignKey(pt => pt.PlayerId);
 
             modelBuilder.Entity<PlayerStat>()
                 .Property(puc => puc.PlayerId)
@@ -60,8 +67,25 @@ namespace MTDB.Core.EntityFramework
                 .HasColumnName("Player_Id");
             modelBuilder.Entity<PlayerUpdateChange>()
                 .HasRequired(puc => puc.Player)
-                .WithMany(p => p.PlayerUpdateChanges)
+                .WithMany()
                 .HasForeignKey(puc => puc.PlayerId);
+
+
+            modelBuilder.Entity<Comment>()
+                .Property(puc => puc.UserId)
+                .HasColumnName("User_Id");
+
+            modelBuilder.Entity<Lineup>()
+                .Property(puc => puc.UserId)
+                .HasColumnName("User_Id");
+
+            modelBuilder.Entity<CardPack>()
+                .Property(puc => puc.UserId)
+                .HasColumnName("User_Id");
+
+            modelBuilder.Entity<CardPackPlayer>()
+                .Property(puc => puc.PlayerId)
+                .HasColumnName("Player_Id");
 
             modelBuilder.Entity<Badge>()
                       .HasOptional(x => x.BadgeGroup)
@@ -70,20 +94,12 @@ namespace MTDB.Core.EntityFramework
             modelBuilder.Entity<PlayerBadge>()
                 .HasKey(pb => new { pb.PlayerId, pb.BadgeId });
             modelBuilder.Entity<PlayerBadge>()
-                      .HasRequired(x => x.Player)
-                      .WithMany(x => x.PlayerBadges)
-                      .HasForeignKey(x => x.PlayerId);
-            modelBuilder.Entity<PlayerBadge>()
                       .HasRequired(x => x.Badge)
                       .WithMany()
                       .HasForeignKey(x => x.BadgeId);
 
             modelBuilder.Entity<PlayerTendency>()
                 .HasKey(pb => new { pb.PlayerId, pb.TendencyId });
-            modelBuilder.Entity<PlayerTendency>()
-                      .HasRequired(x => x.Player)
-                      .WithMany(x => x.PlayerTendencies)
-                      .HasForeignKey(x => x.PlayerId);
             modelBuilder.Entity<PlayerTendency>()
                       .HasRequired(x => x.Tendency)
                       .WithMany()

@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Data.Entity;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using CsvHelper;
-using MTDB.Core.EntityFramework;
 using MTDB.Core.EntityFramework.Entities;
-using MTDB.Core.Services;
 using MTDB.Core.Services.Extensions;
 
 namespace PlayerUpdater
@@ -41,7 +39,7 @@ namespace PlayerUpdater
                     var existingPlayer =
                         existingPlayers.FirstOrDefault(p => p.UriName == player.UriName);
 
-                    var stats = player.AggregateStats();
+                    var stats = player.AggregateStats(repo, CancellationToken.None).Result;
                     player.OutsideScoring = stats.OutsideScoring;
                     player.InsideScoring = stats.InsideScoring;
                     player.Athleticism = stats.Athleticism;
@@ -210,7 +208,6 @@ namespace PlayerUpdater
                                     continue;
 
                                 var playerStat = new PlayerStat();
-                                playerStat.Player = player;
                                 playerStat.Stat = stat;
                                 playerStat.Value = statValue;
 

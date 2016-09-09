@@ -7,7 +7,6 @@ namespace MTDB.Core.EntityFramework.Entities
         private ICollection<PlayerStat> _playerStats;
         private ICollection<PlayerBadge> _badges;
         private ICollection<PlayerTendency> _tendencies;
-        private ICollection<PlayerUpdateChange> _changes;
 
         public string Name { get; set; }
         public string UriName { get; set; }
@@ -63,12 +62,6 @@ namespace MTDB.Core.EntityFramework.Entities
         {
             get { return _tendencies ?? (_tendencies = new List<PlayerTendency>()); }
             protected set { _tendencies = value; }
-        }
-
-        public virtual ICollection<PlayerUpdateChange> PlayerUpdateChanges
-        {
-            get { return _changes ?? (_changes = new List<PlayerUpdateChange>()); }
-            protected set { _changes = value; }
         }
     }
 }

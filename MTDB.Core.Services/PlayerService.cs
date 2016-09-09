@@ -5,9 +5,7 @@ using System.Data.SqlClient;
 using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Net;
-using System.Net.Http;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
@@ -16,7 +14,6 @@ using MTDB.Core.EntityFramework;
 using MTDB.Core.EntityFramework.Entities;
 using MTDB.Core.Services.Extensions;
 using MTDB.Core.ViewModels;
-using net.openstack.Core;
 
 namespace MTDB.Core.Services
 {
@@ -30,27 +27,43 @@ namespace MTDB.Core.Services
         //private const int CDN77_CDNID = 62905;
         //private const string CDN77_APIUSER = "chris@chrissmoove.com";
         //private const string CDN77_APIPASSWORD = "FwTKGp9Cv1bPntcNHELWMhA2IQjR63Bg";
+
+        private const string PLAYER_BY_ID = "MTDB.player.id-{0}";
+        private const string PLAYER_BY_URI = "MTDB.player.uri-{0}";
         /// <summary>
         /// Key for caching
         /// </summary>
-        private const string PLAYER_HEIGHTS = "MTDB.player.heights";
+        /// <remarks>
+        /// {0} : pageIndex
+        /// {1} : pageSize
+        /// {2} : sortByColumn
+        /// {3} : sortOrder
+        /// {4} : terms
+        /// {5} : showHidden
+        /// </remarks>
+        private const string PLAYER_SEARCH =
+            "MTDB.player.search-{0}-{1}-{2}-{3}-{4}-{5}";
+        private const string PLAYERS_HEIGHTS = "MTDB.player.heights";
+
         #endregion
 
         #region Fields 
 
-        private readonly MtdbContext _repository;
+        private readonly MtdbContext _dbContext;
         private readonly ICacheManager _memoryCacheManager;
         private readonly PlayerUpdateService _playerUpdateService;
+        private readonly RedisCacheManager _redisCacheManager;
 
         #endregion
 
         #region Ctor
 
-        public PlayerService(MtdbContext repository)
+        public PlayerService(MtdbContext dbContext)
         {
-            _repository = repository;
+            _dbContext = dbContext;
             _memoryCacheManager = new MemoryCacheManager();
-            _playerUpdateService = new PlayerUpdateService(_repository);
+            _redisCacheManager = RedisCacheManager.Instance;
+            _playerUpdateService = new PlayerUpdateService(_dbContext);
         }
         
         #endregion
@@ -77,11 +90,11 @@ namespace MTDB.Core.Services
                 counter++;
                 if (isNew)
                 {
-                    existing = _repository.Players.Any(p => p.UriName == name);
+                    existing = _dbContext.Players.Any(p => p.UriName == name);
                 }
                 else
                 {
-                    existing = _repository.Players.Any(p => p.UriName == name && p.Id != playerId);
+                    existing = _dbContext.Players.Any(p => p.UriName == name && p.Id != playerId);
                 }
 
             }
@@ -188,8 +201,7 @@ namespace MTDB.Core.Services
         #endregion
 
         #region Methods
-
-        #region Players
+            
         
         public async Task<IPagedList<Player>> SearchPlayers(int pageIndex, int pageSize,
             //Expression<Func<Player, object>> orderBy,
@@ -213,29 +225,46 @@ namespace MTDB.Core.Services
                 .Where(t => !string.IsNullOrWhiteSpace(t))
                 .ToArray();
 
-            var query = _repository.Players
+            var useCache = true;
+
+            var query = _dbContext.Players
                 .Include(p => p.Tier)
                 .Include(p => p.Collection)
                 .AsQueryable();
 
-            if (terms.HasItems())
-            {
-                query = query
-                    .Where(p => terms.All(term => p.Name.Contains(term)));
-            }
-                
+            if (!showHidden)
+                query = query.Where(p => !p.Private);
+
             if (position.HasValue() && position != "Any")
+            {
                 query = query.Where(p => p.PrimaryPosition == position || p.SecondaryPosition == position);
+                useCache = false;
+            }
             if (height.HasValue() && height != "Any")
+            {
                 query = query.Where(p => p.Height == height);
+                useCache = false;
+            }
             if (themeId != null && themeId > 0)
+            {
                 query = query.Where(p => p.Theme.Id == themeId);
+                useCache = false;
+            }
             if (tierId != null && tierId > 0)
+            {
                 query = query.Where(p => p.Tier.Id == tierId);
+                useCache = false;
+            }
             if (teamId != null && teamId > 0)
+            {
                 query = query.Where(p => p.Team.Id == teamId);
+                useCache = false;
+            }
             if (collectionId != null && collectionId > 0)
+            {
                 query = query.Where(p => p.Collection.Id == collectionId);
+                useCache = false;
+            }
 
             if (platform.HasValue() && (priceMin.HasValue || priceMax.HasValue))
             {
@@ -260,13 +289,31 @@ namespace MTDB.Core.Services
                             query = query.Where(p => p.PC <= priceMax);
                         break;
                 }
+                useCache = false;
             }
 
             if (stats.HasItems())
+            {
                 query = query.FilterByStats(stats);
+                useCache = false;
+            }
 
-            if (!showHidden)
-                query = query.Where(p => !p.Private);
+            if (terms.HasItems())
+            {
+                var termQuery = query
+                    .Where(p => terms.All(term => p.Name.Contains(term)));
+
+                //performance optimization
+                var preFiltered = await termQuery
+                    .Select(x => new { x.Id, x.Name })
+                    .ToListAsync(token);
+
+                var filtered = preFiltered
+                    .Where(p => terms.All(term => p.Name.Split(' ').Any(pName => pName.StartsWith(term, StringComparison.InvariantCultureIgnoreCase))))
+                    .Select(x => x.Id);
+
+                query = query.Where(p => filtered.Contains(p.Id));
+            }
 
             var sortMap = new Dictionary<string, string>();
             sortMap.Add("CreatedDateString", "CreatedDate");
@@ -274,22 +321,39 @@ namespace MTDB.Core.Services
 
             query = query
                 .Sort(sortByColumn, sortOrder, "Overall", sortMap);
-
+            
             //paging
-            return await PagedList<Player>.ExecuteAsync(query, pageIndex, pageSize, token);
+            Func<Task<PagedList<Player>>> acquire = () => PagedList<Player>.ExecuteAsync(query, pageIndex, pageSize, token);
+
+            //todo will be posible to use when lists of entity will be deleted. We need call this from other services.
+            useCache = false;
+            //if (!useCache)
+                return await acquire();
+            
+            //or use just query.tostring() ?
+            //var key =
+            //    string.Format(PLAYER_SEARCH, pageIndex, pageSize, sortByColumn, sortOrder, string.Join(",", terms), showHidden);
+            //return await _redisCacheManager.GetAsync(key, acquire);
         }
 
         public async Task<Player> GetPlayer(int id, CancellationToken token)
         {
-            var player = await _repository.Players
-                //.Include(p => p.Badges.Select(pb => pb.Badge.BadgeGroup))
-                //.Include(p => p.Stats.Select(ps => ps.Stat.Category))
-                //.Include(p => p.Team)
-                //.Include(p => p.Collection)
-                //.Include(p => p.Theme)
-                //.Include(p => p.Tendencies.Select(pt => pt.Tendency))
-                .FirstOrDefaultAsync(p => p.Id == id, token);
-            return player;
+            if (id == 0)
+                return null;
+
+            var key = string.Format(PLAYER_BY_ID, id);
+            return await _redisCacheManager.GetAsync(key, int.MaxValue, async () =>
+            {
+                return await _dbContext.Players
+                    .Include(p => p.PlayerBadges.Select(pb => pb.Badge.BadgeGroup))
+                    .Include(p => p.PlayerStats.Select(ps => ps.Stat.Category))
+                    .Include(p => p.Team.Division.Conference)
+                    .Include(p => p.Collection)
+                    .Include(p => p.Theme)
+                    .Include(p => p.Tier)
+                    .Include(p => p.PlayerTendencies.Select(pt => pt.Tendency))
+                    .FirstOrDefaultAsync(p => p.Id == id, token);
+            });
         }
 
         public async Task<Player> GetPlayerByUri(string uri, CancellationToken token)
@@ -297,39 +361,53 @@ namespace MTDB.Core.Services
             if (string.IsNullOrWhiteSpace(uri))
                 return null;
 
-            return await _repository.Players
-                .FirstOrDefaultAsync(p => p.UriName.Equals(uri, StringComparison.OrdinalIgnoreCase), token);
+            var key = string.Format(PLAYER_BY_URI, uri);
+            return await _redisCacheManager.GetAsync(key, int.MaxValue, async () =>
+            {
+                return await _dbContext.Players
+                    .Include(p => p.PlayerBadges.Select(pb => pb.Badge.BadgeGroup))
+                    .Include(p => p.PlayerStats.Select(ps => ps.Stat.Category))
+                    .Include(p => p.Team.Division.Conference)
+                    .Include(p => p.Collection)
+                    .Include(p => p.Theme)
+                    .Include(p => p.Tier)
+                    .Include(p => p.PlayerTendencies.Select(pt => pt.Tendency))
+                    .FirstOrDefaultAsync(p => p.UriName.Equals(uri, StringComparison.OrdinalIgnoreCase), token);
+            });
         }
         
         public async Task<IEnumerable<Player>> GetPlayersByUri(CancellationToken token, params string[] uris)
         {
-            return await _repository.Players.Where(p => uris.Contains(p.UriName)).ToListAsync(token);
-
+            return await _dbContext.Players.Where(p => uris.Contains(p.UriName)).ToListAsync(token);
         }
         
         public async Task CreatePlayer(Player player, CancellationToken token)
         {
             player.UriName = GetUri(0, player.Name);
-            await _repository.SaveChangesAsync(token);
+            _dbContext.Players.Add(player);
+            await _dbContext.SaveChangesAsync(token);
 
             //clear caches
-            _memoryCacheManager.RemoveByPattern(PLAYER_HEIGHTS);
+            _memoryCacheManager.RemoveByPattern(PLAYERS_HEIGHTS);
         }
 
         public async Task UpdatePlayer(Player player, CancellationToken token)
         {
-            var oldPlayer = _repository.Players.AsNoTracking().First(p => p.Id == player.Id);
+            var oldPlayer = _dbContext.Players.First(p => p.Id == player.Id);
+            await _playerUpdateService.DetermineChanges(oldPlayer, player, token);
 
             if (!oldPlayer.Name.Equals(player.Name))
             {
                 player.UriName = GetUri(player.Id, player.Name, false);
             }
-            await _repository.SaveChangesAsync(token);
-            
-            //clear caches
-            _memoryCacheManager.RemoveByPattern(PLAYER_HEIGHTS);
+            _dbContext.Entry(oldPlayer).CurrentValues.SetValues(player);
+            await _dbContext.SaveChangesAsync(token);
 
-            await _playerUpdateService.DetermineChanges(oldPlayer, player, token);
+            //clear caches
+            var keybyId = string.Format(PLAYER_BY_ID, player.Id);
+            _memoryCacheManager.RemoveByPattern(keybyId);
+            var keyByUri = string.Format(PLAYER_BY_URI, player.UriName);
+            _memoryCacheManager.RemoveByPattern(keyByUri);
         }
 
         public async Task DeletePlayer(Player player, CancellationToken token)
@@ -337,41 +415,41 @@ namespace MTDB.Core.Services
             if (player == null)
                 return;
 
-            var changes = await _repository.PlayerUpdateChanges
+            var changes = await _dbContext.PlayerUpdateChanges
                 .Where(c => c.Player.Id == player.Id)
                 .ToListAsync(token);
-            _repository.PlayerUpdateChanges.RemoveRange(changes);
+            _dbContext.PlayerUpdateChanges.RemoveRange(changes);
 
-            var cpPlayers = await _repository.CardPackPlayers
+            var cpPlayers = await _dbContext.CardPackPlayers
                 .Where(c => c.Player.Id == player.Id)
                 .ToListAsync(token);
-            _repository.CardPackPlayers.RemoveRange(cpPlayers);
+            _dbContext.CardPackPlayers.RemoveRange(cpPlayers);
 
-            var lineupPlayers = await _repository.LineupPlayers
+            var lineupPlayers = await _dbContext.LineupPlayers
                 .Where(c => c.Player.Id == player.Id)
                 .ToListAsync(token);
-            _repository.LineupPlayers.RemoveRange(lineupPlayers);
+            _dbContext.LineupPlayers.RemoveRange(lineupPlayers);
 
-            _repository.PlayerStats.RemoveRange(player.PlayerStats);
-
-            _repository.Players.Remove(player);
-
+            _dbContext.PlayerStats.RemoveRange(player.PlayerStats);
+            _dbContext.Players.Remove(player);
+            
             //clear caches
-            _memoryCacheManager.RemoveByPattern(PLAYER_HEIGHTS);
+            var keybyId = string.Format(PLAYER_BY_ID, player.Id);
+            _memoryCacheManager.RemoveByPattern(keybyId);
+            var keyByUri = string.Format(PLAYER_BY_URI, player.UriName);
+            _memoryCacheManager.RemoveByPattern(keyByUri);
 
-            await _repository.SaveChangesAsync(token);
+            await _dbContext.SaveChangesAsync(token);
         }
 
         public async Task<IEnumerable<string>> GetHeights(CancellationToken token)
         {
             var heights = await
-                _memoryCacheManager.GetAsync(PLAYER_HEIGHTS, async () =>
-                    await _repository.Players.Select(p => p.Height).Distinct().ToListAsync(token));
+                _memoryCacheManager.GetAsync(PLAYERS_HEIGHTS, async () =>
+                    await _dbContext.Players.Select(p => p.Height).Distinct().ToListAsync(token));
             return heights.OrderBy(p => p, new HeightComparer());
         }
-
-        #endregion
-
+        
         //public async Task<List<SearchPlayerResultDto>> AutoCompleteSearch(string termString, CancellationToken token, bool showHidden = false)
         //{
         //    if (string.IsNullOrWhiteSpace(termString))

@@ -8,7 +8,6 @@ using MTDB.Core.Services;
 using MTDB.Core.ViewModels;
 using MTDB.Core.ViewModels.Lineups;
 using MTDB.Helpers;
-using PagedList;
 
 namespace MTDB.Controllers
 {

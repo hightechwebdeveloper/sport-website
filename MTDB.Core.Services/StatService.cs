@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data.Entity;
-using System.Linq;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using MTDB.Core.Caching;
@@ -41,8 +38,8 @@ namespace MTDB.Core.Services
         public async Task<IList<Stat>> GetStats(CancellationToken token)
         {
             var stats = await
-                _memoryCacheManager.GetAsync(STATS_All, async () =>
-                    await _dbContext.Stats.ToListAsync(token));
+                _memoryCacheManager.GetAsync(STATS_All, int.MaxValue, async () =>
+                    await _dbContext.Stats.Include(s => s.Category).ToListAsync(token));
             return stats;
         }
 

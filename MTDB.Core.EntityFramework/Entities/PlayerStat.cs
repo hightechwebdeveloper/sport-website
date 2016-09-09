@@ -8,7 +8,7 @@ namespace MTDB.Core.EntityFramework.Entities
 
         public int StatId { get; set; }
 
-        public virtual Player Player { get; set; }
+        //public virtual Player Player { get; set; }
         public virtual Stat Stat { get; set; }
     }
 }

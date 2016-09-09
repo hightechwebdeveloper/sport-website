@@ -172,16 +172,15 @@ namespace MTDB.Core.Services
             var cardPack = new CardPack
             {
                 Name = pack.Name.ReplaceBlockedWordsWithMTDB(),
-                User = user,
+                UserId = user.Id,
                 CardPackType = CardPackType.Mtdb,
                 Points = pack.Cards.Sum(p => p.Points)
             };
 
             foreach (var card in pack.Cards)
             {
-                cardPack.Players.Add(new CardPackPlayer { CardPack = cardPack, Player = _repository.Players.AttachById(card.Id) });
+                cardPack.Players.Add(new CardPackPlayer { PlayerId = card.Id });
             }
-
             _repository.CardPacks.Add(cardPack);
 
             var rowsChanged = await _repository.SaveChangesAsync(cancellationToken);
@@ -200,7 +199,7 @@ namespace MTDB.Core.Services
             var cardPack = new CardPack
             {
                 Name = pack.Name.ReplaceBlockedWordsWithMTDB(),
-                User = user,
+                UserId = user.Id,
                 CardPackType = CardPackType.Draft,
                 Points = pack.Points,
             };

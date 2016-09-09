@@ -39,7 +39,7 @@ namespace MTDB.Core.Services
         public async Task<IList<Division>> GetDivisions(CancellationToken token)
         {
             var divisions = await
-                _memoryCacheManager.GetAsync(DIVISIONS_All, async () =>
+                _memoryCacheManager.GetAsync(DIVISIONS_All, int.MaxValue, async () =>
                     await _dbContext.Divisions.Include(d => d.Conference).ToListAsync(token));
             return divisions;
         }

@@ -41,7 +41,7 @@ namespace MTDB.Controllers
                     ParentId = parentId,
                     PageUrl = pageUrl,
                     Text = text,
-                    User = await GetAuthenticatedUser(),
+                    UserId = (await GetAuthenticatedUser()).Id,
                 }, cancellationToken);
             }
 

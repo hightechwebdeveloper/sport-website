@@ -18,11 +18,14 @@ namespace MTDB.Core.Caching
         private readonly ConnectionMultiplexer _muxer;
         private readonly IDatabase _db;
         private readonly ICacheManager _perRequestCacheManager;
+
+        private static RedisCacheManager _instance;
+
         #endregion
 
         #region Ctor
 
-        public RedisCacheManager()
+        private RedisCacheManager()
         {
             var redisCachingConnectionString = ConfigurationManager.AppSettings["RedisCachingConnectionString"];
             if (string.IsNullOrEmpty(redisCachingConnectionString))
@@ -34,6 +37,8 @@ namespace MTDB.Core.Caching
             this._db = _muxer.GetDatabase();
             this._perRequestCacheManager = new MemoryCacheManager();
         }
+
+        public static RedisCacheManager Instance => _instance ?? (_instance = new RedisCacheManager());
 
         #endregion
 

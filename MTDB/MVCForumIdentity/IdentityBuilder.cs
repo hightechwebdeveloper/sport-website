@@ -1,11 +1,6 @@
 using ApplicationBoilerplate.DataProvider;
 using ApplicationBoilerplate.DependencyInjection;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.EntityFramework;
-using MTDB.Core.EntityFramework;
-using MTDB.Models;
 using mvcForum.DataProvider.EntityFramework;
-using System;
 using System.Collections.Generic;
 using System.Configuration;
 using System.Data.Entity;

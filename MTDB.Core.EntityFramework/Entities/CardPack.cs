@@ -10,6 +10,8 @@ namespace MTDB.Core.EntityFramework.Entities
         public int CardPackTypeId { get; set; }
         public int Points { get; set; }
 
+        public string UserId { get; set; }
+
         public virtual ApplicationUser User { get; set; }
 
         public virtual ICollection<CardPackPlayer> Players

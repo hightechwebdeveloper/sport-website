@@ -1,6 +1,4 @@
-﻿using System;
-using System.ComponentModel.DataAnnotations;
-using mvcForum.Core;
+﻿using System.ComponentModel.DataAnnotations;
 using mvcForum.Web.ViewModels;
 using MVCBootstrap.Web.Mvc.Attributes;
 
