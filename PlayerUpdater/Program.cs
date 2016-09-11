@@ -5,8 +5,10 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using CsvHelper;
-using MTDB.Core.EntityFramework.Entities;
+using MTDB.Core.Services.Catalog;
 using MTDB.Core.Services.Extensions;
+using MTDB.Data;
+using MTDB.Data.Entities;
 
 namespace PlayerUpdater
 {
@@ -26,12 +28,13 @@ namespace PlayerUpdater
             try
             {
                 var positions = GetPositions();
-                var repo = new MTDB.Core.EntityFramework.MtdbContext();
+                var repo = new MtdbContext();
+                var statService = new StatService(repo);
 
                 var existingPlayers =
-                    repo.Players.ToList();
+                    repo.Set<Player>().ToList();
 
-                var players = GetPlayers(repo.Stats.ToList(), positions, repo.Tiers.ToList(), repo.Teams.ToList(), repo.Themes.ToList(), repo.Collections.ToList());
+                var players = GetPlayers(repo.Set<Stat>().ToList(), positions, repo.Set<Tier>().ToList(), repo.Set<Team>().ToList(), repo.Set<Theme>().ToList(), repo.Set<Collection>().ToList());
                 int added = 0;
 
                 foreach (var player in players)
@@ -39,7 +42,7 @@ namespace PlayerUpdater
                     var existingPlayer =
                         existingPlayers.FirstOrDefault(p => p.UriName == player.UriName);
 
-                    var stats = player.AggregateStats(repo, CancellationToken.None).Result;
+                    var stats = player.AggregateStats(statService, CancellationToken.None).Result;
                     player.OutsideScoring = stats.OutsideScoring;
                     player.InsideScoring = stats.InsideScoring;
                     player.Athleticism = stats.Athleticism;
@@ -50,7 +53,7 @@ namespace PlayerUpdater
 
                     if (existingPlayer == null)
                     {
-                        repo.Players.Add(player);
+                        repo.Set<Player>().Add(player);
                         Console.WriteLine("Adding {0}", player.Name);
                         added++;
                     }

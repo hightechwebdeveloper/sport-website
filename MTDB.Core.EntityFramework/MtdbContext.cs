@@ -1,23 +1,22 @@
 ﻿using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
 using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
-using MTDB.Core.EntityFramework.Entities;
+using MTDB.Data.Entities;
 
-namespace MTDB.Core.EntityFramework
+namespace MTDB.Data
 {
-
-    public class MtdbContext : IdentityDbContext<ApplicationUser>
+    public class MtdbContext : IdentityDbContext<ApplicationUser>, IDbContext
     {
-        public MtdbContext(string connectionString) : base(connectionString, throwIfV1Schema: false)
-        {
-
-        }
-
         public MtdbContext() : base("MTDBRepository", throwIfV1Schema: false)
         {
             this.Database.CommandTimeout = int.MaxValue;
+        }
+        public static MtdbContext Create()
+        {
+            return new MtdbContext();
         }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
@@ -111,34 +110,14 @@ namespace MTDB.Core.EntityFramework
             base.OnModelCreating(modelBuilder);
         }
 
-        public DbSet<Player> Players { get; set; }
-        public DbSet<PlayerStat> PlayerStats { get; set; }
-        public DbSet<PlayerUpdate> PlayerUpdates { get; set; }
-        public DbSet<Stat> Stats { get; set; }
-        public DbSet<StatCategory> StatCategories { get; set; }
-        public DbSet<Lineup> Lineups { get; set; }
-        public DbSet<LineupPlayer> LineupPlayers { get; set; }
-
-        public DbSet<Tier> Tiers { get; set; }
-        public DbSet<Theme> Themes { get; set; }
-        public DbSet<Conference> Conferences { get; set; }
-        public DbSet<Division> Divisions { get; set; }
-        public DbSet<Team> Teams { get; set; }
-        public DbSet<CardPack> CardPacks { get; set; }
-        public DbSet<CardPackPlayer> CardPackPlayers { get; set; }
-        public DbSet<Collection> Collections { get; set; }
-        public DbSet<Comment> Comments { get; set; }
-        public DbSet<PlayerUpdateChange> PlayerUpdateChanges { get; set; }
-
-        public DbSet<Badge> Badges { get; set; }
-        public DbSet<PlayerBadge> PlayerBadges { get; set; }
-        public DbSet<BadgeGroup> BadgeGroups { get; set; }
-
-        public DbSet<Tendency> Tendencies { get; set; }
-
-        public static MtdbContext Create()
+        public DbSet<TEntity> Set<TEntity>() where TEntity : class
         {
-            return new MtdbContext();
+            return base.Set<TEntity>();
+        }
+
+        public DbRawSqlQuery<TElement> SqlQuery<TElement>(string sql, params object[] parameters)
+        {
+            return this.Database.SqlQuery<TElement>(sql, parameters);
         }
     }
 

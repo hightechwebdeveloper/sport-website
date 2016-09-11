@@ -3,34 +3,29 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Mvc;
-using MTDB.Core.EntityFramework.Entities;
-using MTDB.Core.Services;
+using MTDB.Core.Services.Lineups;
 using MTDB.Core.ViewModels;
 using MTDB.Core.ViewModels.Lineups;
+using MTDB.Data.Entities;
 using MTDB.Helpers;
 
 namespace MTDB.Controllers
 {
-    public class LineupController : ServicedController<LineupService>
+    public class LineupController : BaseController
     {
-        public LineupController()
-        {
-        }
+        private readonly LineupService _lineupService;
 
-        public LineupController(LineupService lineupService)
+        public LineupController(LineupService lineupLineupService)
         {
-            _service = lineupService;
+            _lineupService = lineupLineupService;
         }
-
-        private LineupService _service;
-        protected override LineupService Service => _service ?? (_service = new LineupService(Repository));
 
         [Route("lineups")]
         [HttpGet]
         public async Task<ActionResult> Index(CancellationToken cancellationToken, string sortedBy = "dateAdded", SortOrder sortOrder = SortOrder.Descending, int page = 1, int pageSize = 25)
         {
             var user = await GetAuthenticatedUser();
-            var lineups = await Service.SearchLineups((page - 1) * pageSize, pageSize, sortedBy, sortOrder, cancellationToken);
+            var lineups = await _lineupService.SearchLineups((page - 1) * pageSize, pageSize, sortedBy, sortOrder, cancellationToken);
             var vm = new PagedResults<LineupSearchDto>(lineups.Records, page, pageSize, lineups.RecordCount, sortedBy, sortOrder);
             
             ViewBag.User = user?.UserName;
@@ -59,7 +54,7 @@ namespace MTDB.Controllers
 
             var user = await GetAuthenticatedUser();
 
-            var lineupId = await Service.CreateLineup(user, createLineup, cancellationToken);
+            var lineupId = await _lineupService.CreateLineup(user, createLineup, cancellationToken);
 
             if (lineupId > 0)
             {
@@ -73,7 +68,7 @@ namespace MTDB.Controllers
         [Route("lineups/edit")]
         public async Task<ActionResult> Edit(int lineupId, CancellationToken cancellationToken)
         {
-            var dto = await Service.GetLineup(lineupId, cancellationToken);
+            var dto = await _lineupService.GetLineup(lineupId, cancellationToken);
             if (dto == null)
                 return HttpNotFound();
             var user = await GetAuthenticatedUser();
@@ -126,7 +121,7 @@ namespace MTDB.Controllers
                 return HttpNotFound();
             }
             var lineupId = model.Id.Value;
-            var dto = await Service.GetLineup(lineupId, cancellationToken);
+            var dto = await _lineupService.GetLineup(lineupId, cancellationToken);
             if (dto == null)
             {
                 return HttpNotFound();
@@ -137,23 +132,23 @@ namespace MTDB.Controllers
 
             if (ModelState.IsValid)
             {
-                await Service.UpdateLineup(user, model, cancellationToken);
+                await _lineupService.UpdateLineup(user, model, cancellationToken);
                 return RedirectToAction("Details", new { id = lineupId });
             }
 
-            model.PointGuard = model.PointGuardId.HasValue ? await Service.GetLineupPlayer(lineupId, model.PointGuardId.Value, LineupPositionType.PointGuard, cancellationToken) : null;
-            model.ShootingGuard = model.ShootingGuardId.HasValue ? await Service.GetLineupPlayer(lineupId, model.ShootingGuardId.Value, LineupPositionType.ShootingGuard, cancellationToken) : null;
-            model.SmallForward = model.SmallForwardId.HasValue ? await Service.GetLineupPlayer(lineupId, model.SmallForwardId.Value, LineupPositionType.SmallForward, cancellationToken) : null;
-            model.PowerForward = model.PowerForwardId.HasValue ? await Service.GetLineupPlayer(lineupId, model.PowerForwardId.Value, LineupPositionType.PowerForward, cancellationToken) : null;
-            model.Center = model.CenterId.HasValue ? await Service.GetLineupPlayer(lineupId, model.CenterId.Value, LineupPositionType.Center, cancellationToken) : null;
-            model.Bench1 = model.Bench1Id.HasValue ? await Service.GetLineupPlayer(lineupId, model.Bench1Id.Value, LineupPositionType.Bench1, cancellationToken) : null;
-            model.Bench2 = model.Bench2Id.HasValue ? await Service.GetLineupPlayer(lineupId, model.Bench2Id.Value, LineupPositionType.Bench2, cancellationToken) : null;
-            model.Bench3 = model.Bench3Id.HasValue ? await Service.GetLineupPlayer(lineupId, model.Bench3Id.Value, LineupPositionType.Bench3, cancellationToken) : null;
-            model.Bench4 = model.Bench4Id.HasValue ? await Service.GetLineupPlayer(lineupId, model.Bench4Id.Value, LineupPositionType.Bench4, cancellationToken) : null;
-            model.Bench5 = model.Bench5Id.HasValue ? await Service.GetLineupPlayer(lineupId, model.Bench5Id.Value, LineupPositionType.Bench5, cancellationToken) : null;
-            model.Bench6 = model.Bench6Id.HasValue ? await Service.GetLineupPlayer(lineupId, model.Bench6Id.Value, LineupPositionType.Bench6, cancellationToken) : null;
-            model.Bench7 = model.Bench7Id.HasValue ? await Service.GetLineupPlayer(lineupId, model.Bench7Id.Value, LineupPositionType.Bench7, cancellationToken) : null;
-            model.Bench8 = model.Bench8Id.HasValue ? await Service.GetLineupPlayer(lineupId, model.Bench8Id.Value, LineupPositionType.Bench8, cancellationToken) : null;
+            model.PointGuard = model.PointGuardId.HasValue ? await _lineupService.GetLineupPlayer(lineupId, model.PointGuardId.Value, LineupPositionType.PointGuard, cancellationToken) : null;
+            model.ShootingGuard = model.ShootingGuardId.HasValue ? await _lineupService.GetLineupPlayer(lineupId, model.ShootingGuardId.Value, LineupPositionType.ShootingGuard, cancellationToken) : null;
+            model.SmallForward = model.SmallForwardId.HasValue ? await _lineupService.GetLineupPlayer(lineupId, model.SmallForwardId.Value, LineupPositionType.SmallForward, cancellationToken) : null;
+            model.PowerForward = model.PowerForwardId.HasValue ? await _lineupService.GetLineupPlayer(lineupId, model.PowerForwardId.Value, LineupPositionType.PowerForward, cancellationToken) : null;
+            model.Center = model.CenterId.HasValue ? await _lineupService.GetLineupPlayer(lineupId, model.CenterId.Value, LineupPositionType.Center, cancellationToken) : null;
+            model.Bench1 = model.Bench1Id.HasValue ? await _lineupService.GetLineupPlayer(lineupId, model.Bench1Id.Value, LineupPositionType.Bench1, cancellationToken) : null;
+            model.Bench2 = model.Bench2Id.HasValue ? await _lineupService.GetLineupPlayer(lineupId, model.Bench2Id.Value, LineupPositionType.Bench2, cancellationToken) : null;
+            model.Bench3 = model.Bench3Id.HasValue ? await _lineupService.GetLineupPlayer(lineupId, model.Bench3Id.Value, LineupPositionType.Bench3, cancellationToken) : null;
+            model.Bench4 = model.Bench4Id.HasValue ? await _lineupService.GetLineupPlayer(lineupId, model.Bench4Id.Value, LineupPositionType.Bench4, cancellationToken) : null;
+            model.Bench5 = model.Bench5Id.HasValue ? await _lineupService.GetLineupPlayer(lineupId, model.Bench5Id.Value, LineupPositionType.Bench5, cancellationToken) : null;
+            model.Bench6 = model.Bench6Id.HasValue ? await _lineupService.GetLineupPlayer(lineupId, model.Bench6Id.Value, LineupPositionType.Bench6, cancellationToken) : null;
+            model.Bench7 = model.Bench7Id.HasValue ? await _lineupService.GetLineupPlayer(lineupId, model.Bench7Id.Value, LineupPositionType.Bench7, cancellationToken) : null;
+            model.Bench8 = model.Bench8Id.HasValue ? await _lineupService.GetLineupPlayer(lineupId, model.Bench8Id.Value, LineupPositionType.Bench8, cancellationToken) : null;
             
             return View("Edit", model);
         }
@@ -166,7 +161,7 @@ namespace MTDB.Controllers
                 return RedirectToAction("Index");
 
             var user = await GetAuthenticatedUser();
-            var lineup = await Service.GetLineup(id, cancellationToken);
+            var lineup = await _lineupService.GetLineup(id, cancellationToken);
             ViewData["AllowEdit"] = user != null && lineup.AuthorId == user.Id;
             ViewData["AllowDelete"] = user != null && ( lineup.AuthorId == user.Id || User.IsInRole("Admin"));
 
@@ -182,7 +177,7 @@ namespace MTDB.Controllers
         [Route("lineups/delete")]
         public async Task<ActionResult> Delete(int id, CancellationToken cancellationToken)
         {
-            await Service.DeleteLineup(id, cancellationToken);
+            await _lineupService.DeleteLineup(id, cancellationToken);
             return RedirectToAction("Index");
         }
     }

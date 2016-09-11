@@ -1,5 +1,4 @@
 ﻿@model mvcForum.Web.ViewModels.UserViewModel
-@using mvcForum.Web.Helpers;
 @{
 	ViewBag.Title = ForumHelper.GetString("User.Title", new { Name = Model.Name });
 	Layout = "~/areas/forum/views/shared/forumlayout.cshtml";

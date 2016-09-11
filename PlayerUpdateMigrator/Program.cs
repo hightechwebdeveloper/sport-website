@@ -4,8 +4,8 @@ using System.Configuration;
 using System.IO;
 using System.Linq;
 using CsvHelper;
-using MTDB.Core.EntityFramework;
-using MTDB.Core.EntityFramework.Entities;
+using MTDB.Data;
+using MTDB.Data.Entities;
 
 namespace PlayerUpdateMigrator
 {
@@ -21,8 +21,8 @@ namespace PlayerUpdateMigrator
             var playerFile = ConfigurationManager.AppSettings["PlayersFile"];
             var updateFile = ConfigurationManager.AppSettings["UpdatesFile"];
             var repo = new MtdbContext();
-            var players = GetPlayersIdAndUri(playerFile, repo.Players.ToList()).ToList();
-            var existingUpdates = repo.PlayerUpdateChanges.ToList();
+            var players = GetPlayersIdAndUri(playerFile, repo.Set<Player>().ToList()).ToList();
+            var existingUpdates = repo.Set<PlayerUpdateChange>().ToList();
 
             var changes = GetUpdatesFromFile(updateFile, players);
 
@@ -61,8 +61,8 @@ namespace PlayerUpdateMigrator
                 return playerUpdate;
             }).ToList();
 
-            repo.PlayerUpdates.AddRange(toAdd);
-            repo.PlayerUpdateChanges.AddRange(toAdd.SelectMany(p => p.Changes));
+            repo.Set<PlayerUpdate>().AddRange(toAdd);
+            repo.Set<PlayerUpdateChange>().AddRange(toAdd.SelectMany(p => p.Changes));
             repo.SaveChanges();
             // Check if the update is > maxupdate in the PlayerUpdate table
             // If it is, add it to playerupdates

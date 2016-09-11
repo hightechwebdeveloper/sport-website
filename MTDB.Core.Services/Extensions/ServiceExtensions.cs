@@ -5,9 +5,10 @@ using System.Data.Entity;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using MTDB.Core.EntityFramework;
-using MTDB.Core.EntityFramework.Entities;
+using MTDB.Core.Services.Catalog;
+using MTDB.Data;
 using MTDB.Core.ViewModels;
+using MTDB.Data.Entities;
 
 namespace MTDB.Core.Services.Extensions
 {
@@ -52,12 +53,12 @@ namespace MTDB.Core.Services.Extensions
         //        .ToListAsync(token);
         //}
 
-        public static async Task<Lineup> AddPlayer(this Lineup lineup, EntityFramework.MtdbContext repository, int? id, LineupPositionType position)
+        public static async Task<Lineup> AddPlayer(this Lineup lineup, IDbContext repository, int? id, LineupPositionType position)
         {
             if (!id.HasValue)
                 return lineup;
 
-            var player = await repository.Players.FirstOrDefaultAsync(p => p.Id == id);
+            var player = await repository.Set<Player>().FirstOrDefaultAsync(p => p.Id == id);
 
             if (player == null)
                 return lineup;
@@ -70,7 +71,7 @@ namespace MTDB.Core.Services.Extensions
             return lineup;
         }
 
-        public static async Task<Lineup> RemovePlayer(this Lineup lineup, EntityFramework.MtdbContext repository, int? id, LineupPositionType position)
+        public static Lineup RemovePlayer(this Lineup lineup, int? id)
         {
             if (!id.HasValue)
                 return lineup;
@@ -80,16 +81,14 @@ namespace MTDB.Core.Services.Extensions
             {
                 lineup.Players.Remove(playerToRemove);
             }
-            
+
 
             return lineup;
         }
 
-        public static async Task<AggregatedCategories> AggregateStats(this Player player, MtdbContext dbContext, CancellationToken token)
+        public static async Task<AggregatedCategories> AggregateStats(this Player player, StatService statService, CancellationToken token)
         {
-            var statService = new StatService(dbContext);
             var stats = await statService.GetStats(token);
-            
 
             return new AggregatedCategories
             {

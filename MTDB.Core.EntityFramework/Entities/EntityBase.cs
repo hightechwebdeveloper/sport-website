@@ -1,6 +1,6 @@
 using System;
 
-namespace MTDB.Core.EntityFramework.Entities
+namespace MTDB.Data.Entities
 {
     public abstract class EntityBase
     {

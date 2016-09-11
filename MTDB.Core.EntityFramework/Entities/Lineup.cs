@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace MTDB.Core.EntityFramework.Entities
+namespace MTDB.Data.Entities
 {
     public class Lineup : EntityBase
     {

@@ -4,10 +4,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using MTDB.Core;
-using MTDB.Core.EntityFramework.Entities;
-using MTDB.Core.Services;
+using MTDB.Core.Services.Catalog;
 using MTDB.Core.Services.Extensions;
 using MTDB.Core.ViewModels;
+using MTDB.Data.Entities;
 using MTDB.Helpers;
 using MTDB.Models.Collection;
 
@@ -17,9 +17,9 @@ namespace MTDB.Controllers
     {
         private readonly CollectionService _collectionService;
 
-        public CollectionController()
+        public CollectionController(CollectionService collectionService)
         {
-            this._collectionService = new CollectionService(this.Repository);
+            this._collectionService = collectionService;
         }
 
         private void PreparePlayerItemModel(CollectionDetailsViewModel.PlayerItemModel model, Player player)

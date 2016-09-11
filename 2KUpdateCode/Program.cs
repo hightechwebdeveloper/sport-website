@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.IO;
 using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using CsvHelper;
-using MTDB.Core.EntityFramework;
-using MTDB.Core.Services;
+using MTDB.Data;
+using MTDB.Data.Entities;
 
 namespace _2KUpdateCode
 {
@@ -19,13 +17,9 @@ namespace _2KUpdateCode
             var gamePlayers = Get2KPlayers().ToList();
 
             var withUrls = gamePlayers.Where(p => p["URL"] != null).Select(p => new { Url = GetUrl(p), Player = p });
-
-            var token = new CancellationTokenSource();
-            var parallelOptions = new ParallelOptions { CancellationToken = token.Token };
+            
             var repository = new MtdbContext();
-            var playerService = new PlayerService(repository);
-
-            var players = playerService.GetPlayersByUri(CancellationToken.None, withUrls.Select(p => p.Url).ToArray()).Result;
+            var players = repository.Set<Player>().Where(p => withUrls.Select(pu => pu.Url).ToArray().Contains(p.UriName)).ToList();
 
             foreach (var playerUri in withUrls)
             {

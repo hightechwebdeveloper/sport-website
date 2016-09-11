@@ -5,29 +5,21 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Mvc;
-using MTDB.Core.EntityFramework.Entities;
-using MTDB.Core.Services;
+using MTDB.Core.Services.Packs;
 using MTDB.Core.ViewModels;
+using MTDB.Data.Entities;
 using MTDB.Helpers;
 
 namespace MTDB.Controllers
 {
-    public class PackController : ServicedController<PackService>
+    public class PackController : BaseController
     {
+        private readonly PackService _packService;
 
-        public PackController()
+        public PackController(PackService packPackService)
         {
-
+            _packService = packPackService;
         }
-
-        public PackController(PackService packService)
-        {
-            _service = packService;
-        }
-
-        private PackService _service;
-        protected override PackService Service => _service ?? (_service = new PackService(Repository));
-
 
         [Route("packs")]
         [Route("pack")]
@@ -49,7 +41,7 @@ namespace MTDB.Controllers
 
             while (pack == null)
             {
-                pack = await Service.CreateMtdbCardPack(cancellationToken);
+                pack = await _packService.CreateMtdbCardPack(cancellationToken);
             }
 
             TempData["Pack"] = pack;
@@ -81,7 +73,7 @@ namespace MTDB.Controllers
 
             pack.Cards = tempDto.Cards;
 
-            var saved = await Service.SaveMtdbPack(user, pack, cancellationToken);
+            var saved = await _packService.SaveMtdbPack(user, pack, cancellationToken);
 
             if (saved)
             {
@@ -116,7 +108,7 @@ namespace MTDB.Controllers
             if (id == 0)
                 return View("Index");
 
-            var pack = await Service.GetMtdbCardPackById(id, cancellationToken);
+            var pack = await _packService.GetMtdbCardPackById(id, cancellationToken);
 
             if (pack == null)
                 return View("Index");
@@ -134,7 +126,7 @@ namespace MTDB.Controllers
         [HttpGet]
         public async Task<ActionResult> CreateDraft(CancellationToken cancellationToken)
         {
-            var draftData = await Service.CreateFantasyDraftPack(cancellationToken);
+            var draftData = await _packService.CreateFantasyDraftPack(cancellationToken);
 
             var tracker = new DraftPackTracker
             {
@@ -200,7 +192,7 @@ namespace MTDB.Controllers
 
             var user = await GetAuthenticatedUser();
 
-            var saved = await Service.SaveDraftPack(user, results, cancellationToken);
+            var saved = await _packService.SaveDraftPack(user, results, cancellationToken);
 
             if (saved)
             {
@@ -301,7 +293,7 @@ namespace MTDB.Controllers
             if (id == 0)
                 return View("Index");
 
-            var pack = await Service.GetDraftPackById(id, cancellationToken);
+            var pack = await _packService.GetDraftPackById(id, cancellationToken);
 
             if (pack == null)
                 return View("Index");
@@ -345,7 +337,7 @@ namespace MTDB.Controllers
                     break;
             }
 
-            var leaderboard = await Service.GetLeaderboardSorted((page - 1) * pageSize, pageSize, cardType, enumRange, sortedBy, sortOrder, cancellationToken);
+            var leaderboard = await _packService.GetLeaderboardSorted((page - 1) * pageSize, pageSize, cardType, enumRange, sortedBy, sortOrder, cancellationToken);
 
             string uri = pack;
             if (pack == null)

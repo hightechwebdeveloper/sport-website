@@ -1,0 +1,37 @@
+﻿@model mvcForum.Web.ViewModels.ForumViewModel
+@using mvcForum.Web.Helpers;
+@using MTDB.Web.Framework
+
+@if (Model.Accessible && Model.LastPosted.HasValue && Model.LastTopicId.HasValue)
+{
+    @*<div class="avatar avatar-32 user user-role-registered-user">
+        <a href="/members/Jammawamma1">
+            <img style="max-width: 32px" src="http://media-Hearth.cursecdn.com/avatars/thumbnails/274/463/32/32/635844073934543070.jpeg" alt="Jammawamma1's avatar" onerror="if (this.src != 'http://www.gravatar.com/avatar/00000000000000000000000000000000?d=mm&amp;f=y') this.src = 'http://www.gravatar.com/avatar/00000000000000000000000000000000?d=mm&amp;f=y';">
+        </a>
+
+        <i class="u-icon u-icon-online"></i>
+
+    </div>*@
+
+    <div class="post-title forum-thread forum-thread-pinned forum-thread-normal">
+        <a href="@Url.RouteUrl("ShowTopic", new { id = Model.LastTopicId, title = Model.LastTopicTitle.ToSlug(), additional = "sincelast"  })#sincelast" title="@Model.LastTopicTitle.ToSlug()">@Model.LastTopicTitle.ToSlug()</a>
+    </div>
+    <div class="post-author">
+        by 
+        <a href="@Url.RouteUrl("ShowProfile", new RouteValueDictionary { { "id", Model.AuthorId }, { "name", Model.Author.ToSlug() } })"><span class="user user-role-registered-user">@Model.Author</span></a>
+    </div>
+    <div class="post-date date">
+        <abbr class="tip standard-date standard-datetime" title="@Model.LastPosted.Value.ToString("G")">@Model.LastPosted.Value.UtcDateTime.ToTimeAgo()</abbr>
+        @*<a class="tip go-latest" title="Go to last post" href="@Url.RouteUrl("ShowTopic", new { id = Model.LastTopicId, title = Model.LastTopicTitle.ToSlug(), additional = "sincelast"  })#sincelast"><i class="u-icon u-icon-jump">Go to last post</i></a>*@
+    </div>
+
+    @*@ForumHelper.GetHtmlString("LastTopic.By", new object[] {
+                                                            Model.LastUsername.Wrap("<a href=\"" + Url.RouteUrl("ShowProfile", new RouteValueDictionary { { "id", Model.AuthorId }, { "name", Model.Author.ToSlug() } }) + "\">{#}</a>"),
+                                                            Model.LastPosted.Value.UtcDateTime,
+                                                            Model.LastTopicTitle.Wrap("<a href=\"" + Url.RouteUrl("ShowTopic", new { id = Model.LastTopicId, title = Model.LastTopicTitle.ToSlug(), additional = "sincelast"  }) + "#sincelast\">{#}</a>")
+                                                        })*@
+}
+else
+{
+    @ForumHelper.GetHtmlString("LastPost.NoPost")
+}

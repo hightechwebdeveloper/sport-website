@@ -1,30 +1,27 @@
-﻿using MTDB.Core.EntityFramework.Entities;
-using MTDB.Core.Services;
-using MTDB.Helpers;
+﻿using MTDB.Helpers;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using MTDB.Core.Services.Common;
+using MTDB.Data.Entities;
 
 namespace MTDB.Controllers
 {
     [RoutePrefix("comments")]
-    public class CommentsController : ServicedController<CommentService>
+    public class CommentsController : BaseController
     {
-        public CommentsController() { }
+        private readonly CommentService _commentService;
 
         public CommentsController(CommentService commentService)
         {
-            _service = commentService;
+            _commentService = commentService;
         }
-
-        private CommentService _service;
-        protected override CommentService Service => _service ?? (_service = new CommentService(Repository));
 
         [HttpGet]
         [Route("")]
         public async Task<ActionResult> Index(string pageUrl, CancellationToken cancellationToken)
         {
-            var data = await Service.GetComments(pageUrl, cancellationToken);
+            var data = await _commentService.GetComments(pageUrl, cancellationToken);
 
             return PartialView(data);
         }
@@ -36,7 +33,7 @@ namespace MTDB.Controllers
         {
             if (!string.IsNullOrWhiteSpace(text) && !string.IsNullOrWhiteSpace(pageUrl))
             {
-                var dto = await Service.CreateComment(new Comment
+                var dto = await _commentService.CreateComment(new Comment
                 {
                     ParentId = parentId,
                     PageUrl = pageUrl,

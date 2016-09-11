@@ -2,8 +2,7 @@
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using MTDB.Core;
-using MTDB.Core.EntityFramework;
-using MTDB.Core.Services;
+using MTDB.Data;
 using MTDB.Helpers;
 using MTDB.Models;
 using reCAPTCHA.MVC;
@@ -13,38 +12,24 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using MTDB.Core.Services.Common;
 
 namespace MTDB.Controllers
 {
     [Authorize]
     [RoutePrefix("account")]
-    public class AccountController : ServicedController<ProfileService>
+    public class AccountController : BaseController
     {
+        private readonly ProfileService _profileService;
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
 
-        public AccountController() { }
-
-        public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager)
+        public AccountController(ProfileService profileService)
         {
-            UserManager = userManager;
-            SignInManager = signInManager;
+            _profileService = profileService;
         }
 
-        private ProfileService _service;
-        protected override ProfileService Service => _service ?? (_service = new ProfileService(Repository));
-
-        public ApplicationSignInManager SignInManager
-        {
-            get
-            {
-                return _signInManager ?? HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
-            }
-            private set
-            {
-                _signInManager = value;
-            }
-        }
+        private ApplicationSignInManager SignInManager => _signInManager ?? HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
 
         //
         // GET: /Account/Login
@@ -341,7 +326,7 @@ namespace MTDB.Controllers
             if (user == null)
                 return HttpNotFound();
 
-            var profile = await Service.GetProfileByUser(user, cancellationToken);
+            var profile = await _profileService.GetProfileByUser(user, cancellationToken);
 
             return View(profile);
         }

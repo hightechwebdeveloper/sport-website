@@ -1,12 +1,16 @@
-﻿using System;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 using System.Web.Optimization;
 using System.Web.Routing;
-using mvcForum.Web.Areas.Forum;
-using mvcForum.Web.Areas.ForumAdmin;
-using mvcForum.Web.Areas.ForumAPI;
+using Autofac;
+using Autofac.Integration.Mvc;
 using Microsoft.ApplicationInsights.Extensibility;
-using MTDB.Areas.Forum;
+using MTDB.Controllers;
+using MTDB.Core.Caching;
+using MTDB.Data;
+using MTDB.Core.Services.Catalog;
+using MTDB.Core.Services.Common;
+using MTDB.Core.Services.Lineups;
+using MTDB.Core.Services.Packs;
 
 namespace MTDB
 {
@@ -14,13 +18,42 @@ namespace MTDB
     {
         protected void Application_Start()
         {
-            mvcForum.Web.ApplicationConfiguration.Initialize();
+            var builder = new ContainerBuilder();
+
+            builder.RegisterType<AccountController>().InstancePerRequest();
+            builder.RegisterType<CollectionController>().InstancePerRequest();
+            builder.RegisterType<CommentsController>().InstancePerRequest();
+            builder.RegisterType<LineupController>().InstancePerRequest();
+            builder.RegisterType<ManageController>().InstancePerRequest();
+            builder.RegisterType<MiscController>().InstancePerRequest();
+            builder.RegisterType<PackController>().InstancePerRequest();
+            builder.RegisterType<PlayerController>().InstancePerRequest();
+            builder.RegisterType<PlayerUpdateController>().InstancePerRequest();
+            //builder.RegisterControllers(typeof(MvcApplication).Assembly);
+
+            builder.Register<IDbContext>(c => new MtdbContext()).InstancePerLifetimeScope();
+            
+            builder.RegisterType<RedisCacheManager>().InstancePerLifetimeScope();
+            builder.RegisterType<MemoryCacheManager>().SingleInstance();
+            builder.RegisterType<PerRequestCacheManager>().InstancePerLifetimeScope();
+
+            builder.RegisterType<CollectionService>().InstancePerRequest();
+            builder.RegisterType<CommentService>().InstancePerRequest();
+            builder.RegisterType<DivisionService>().InstancePerRequest();
+            builder.RegisterType<LineupService>().InstancePerRequest();
+            builder.RegisterType<PackService>().InstancePerRequest();
+            builder.RegisterType<PlayerService>().InstancePerRequest();
+            builder.RegisterType<PlayerUpdateService>().InstancePerRequest();
+            builder.RegisterType<ProfileService>().InstancePerRequest();
+            builder.RegisterType<StatService>().InstancePerRequest();
+            builder.RegisterType<TeamService>().InstancePerRequest();
+            builder.RegisterType<ThemeService>().InstancePerRequest();
+            builder.RegisterType<TierService>().InstancePerRequest();
+
+            var container = builder.Build();
+            DependencyResolver.SetResolver(new AutofacDependencyResolver(container));
 
             RouteConfig.RegisterRoutes(RouteTable.Routes);
-            RegisterArea<ExtraForumAreaRegistration>(RouteTable.Routes, null);
-            RegisterArea<ForumsAreaRegistration>(RouteTable.Routes, null);
-            RegisterArea<ForumAdminAreaRegistration>(RouteTable.Routes, null);
-            RegisterArea<ForumAPIAreaRegistration>(RouteTable.Routes, null);
 
             FilterConfig.RegisterGlobalFilters(GlobalFilters.Filters);
             BundleConfig.RegisterBundles(BundleTable.Bundles);
@@ -30,21 +63,6 @@ namespace MTDB
             #if DEBUG
             TelemetryConfiguration.Active.DisableTelemetry = true;
             #endif
-        }
-
-        public static void RegisterArea<T>(RouteCollection routes, object state) where T : AreaRegistration
-        {
-            AreaRegistration registration = (AreaRegistration)Activator.CreateInstance(typeof(T));
-
-            AreaRegistrationContext context = new AreaRegistrationContext(registration.AreaName, routes, state);
-
-            var tNamespace = registration.GetType().Namespace;
-            if (tNamespace != null)
-            {
-                context.Namespaces.Add(tNamespace + ".*");
-            }
-
-            registration.RegisterArea(context);
         }
     }
 }

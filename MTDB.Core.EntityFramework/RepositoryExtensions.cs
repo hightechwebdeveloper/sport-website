@@ -5,9 +5,9 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using MTDB.Core.EntityFramework.Entities;
+using MTDB.Data.Entities;
 
-namespace MTDB.Core.EntityFramework
+namespace MTDB.Data
 {
     public static class RepositoryExtensions
     {

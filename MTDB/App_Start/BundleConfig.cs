@@ -46,7 +46,6 @@ namespace MTDB
                          "s.css", new CssRewriteUrlTransform())
                 .Include("~/libs/assets/font-awesome/css/font-awesome.min.css", new CssRewriteUrlTransform())
                 .Include("~/libs/assets/simple-line-icons/css/simple-line-icons.css", new CssRewriteUrlTransform()));
-
         }
     }
 }

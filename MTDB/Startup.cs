@@ -1,4 +1,7 @@
-﻿using Microsoft.Owin;
+﻿using Microsoft.AspNet.Identity;
+using Microsoft.Owin;
+using Microsoft.Owin.Security.Cookies;
+using MTDB.Data;
 using Owin;
 
 [assembly: OwinStartupAttribute(typeof(MTDB.Startup))]
@@ -8,7 +11,16 @@ namespace MTDB
     {
         public void Configuration(IAppBuilder app)
         {
-            ConfigureAuth(app);
+            app.CreatePerOwinContext(MtdbContext.Create);
+            app.CreatePerOwinContext<ApplicationUserManager>(ApplicationUserManager.Create);
+            app.CreatePerOwinContext<ApplicationSignInManager>(ApplicationSignInManager.Create);
+
+            app.UseCookieAuthentication(new CookieAuthenticationOptions
+            {
+                AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie,
+                LoginPath = new PathString("/account/login"),
+                CookieName = "authentication"
+            });
 
             //redirect www to non-www
             app.Use(async (context, next) =>

@@ -5,31 +5,27 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
-using MTDB.Core.Services;
+using MTDB.Core.Services.Catalog;
 using MTDB.Core.ViewModels;
 using MTDB.Core.ViewModels.PlayerUpdates;
 using MTDB.Helpers;
 
 namespace MTDB.Controllers
 {
-    public class PlayerUpdateController : ServicedController<PlayerUpdateService>
+    public class PlayerUpdateController : BaseController
     {
-        public PlayerUpdateController()
-        { }
+        private readonly PlayerUpdateService _playerUpdateService;
 
-        public PlayerUpdateController(PlayerUpdateService playerUpdateService)
+        public PlayerUpdateController(PlayerUpdateService playerUpdatePlayerUpdateService)
         {
-            _service = playerUpdateService;
+            _playerUpdateService = playerUpdatePlayerUpdateService;
         }
-
-        private PlayerUpdateService _service;
-        protected override PlayerUpdateService Service => _service ?? (_service = new PlayerUpdateService(Repository));
 
         [HttpGet]
         [Route("playerupdates")]
         public async Task<ActionResult> Index(CancellationToken cancellationToken, int page = 1, int pageSize = 25)
         {
-            var updates = await Service.GetUpdates((page - 1) * pageSize, pageSize, cancellationToken);
+            var updates = await _playerUpdateService.GetUpdates((page - 1) * pageSize, pageSize, cancellationToken);
             var vm = new PagedResults<PlayerUpdatesViewModel>(updates.Results, page, pageSize, updates.TotalCount);
             return View(vm);
         }
@@ -54,11 +50,11 @@ namespace MTDB.Controllers
             //if on page one get all new cards
             if (page == 1)
             {
-                var newCards = await Service.GetAllNewCards(date, token);
+                var newCards = await _playerUpdateService.GetAllNewCards(date, token);
                 results.AddRange(newCards);
             }
 
-            var updates = await Service.GetUpdate(date, (page - 1) * pageSize, pageSize, token);
+            var updates = await _playerUpdateService.GetUpdate(date, (page - 1) * pageSize, pageSize, token);
             results.AddRange(updates.Results);
             
             var model = new PlayerUpdateDetailsViewModel
@@ -68,7 +64,7 @@ namespace MTDB.Controllers
                 Updates = new PagedResults<PlayerUpdateViewModel>(results, page, pageSize, updates.TotalCount),
                 Visible = updates.Visible,
                 DisplayNewCards = page == 1,
-                TotalUpdateCount = await Service.GetToalUpdateCountForDate(date, token)
+                TotalUpdateCount = await _playerUpdateService.GetToalUpdateCountForDate(date, token)
             };
             return View(model);
         }
@@ -82,7 +78,7 @@ namespace MTDB.Controllers
             try
             {
                 date = new DateTime(year, month, day);
-                await Service.UpdateTitle(date, title, token);
+                await _playerUpdateService.UpdateTitle(date, title, token);
             }
             catch (Exception)
             {
@@ -99,7 +95,7 @@ namespace MTDB.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<ActionResult> Create(HttpPostedFileBase file, CancellationToken token)
         {
-            var successful = await Service.UpdatePlayersFromFile(file, token);
+            var successful = await _playerUpdateService.UpdatePlayersFromFile(file, token);
 
             if (successful)
             {
@@ -120,7 +116,7 @@ namespace MTDB.Controllers
             try
             {
                 date = new DateTime(year, month, day);
-                var successful = await Service.PublishUpdate(date, title, token);
+                var successful = await _playerUpdateService.PublishUpdate(date, title, token);
                 if (successful)
                 {
                     return RedirectToAction("Details", new { date.Year, date.Month, date.Day });
@@ -146,7 +142,7 @@ namespace MTDB.Controllers
             try
             {
                 date = new DateTime(year, month, day);
-                var successful = await Service.DeleteUpdate(date, token);
+                var successful = await _playerUpdateService.DeleteUpdate(date, token);
             }
             catch (Exception)
             {

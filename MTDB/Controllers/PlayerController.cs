@@ -8,10 +8,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using MTDB.Core;
-using MTDB.Core.EntityFramework.Entities;
-using MTDB.Core.Services;
+using MTDB.Core.Services.Catalog;
 using MTDB.Core.Services.Extensions;
 using MTDB.Core.ViewModels;
+using MTDB.Data.Entities;
 using MTDB.Helpers;
 using MTDB.Models.Player;
 using MTDB.Models.Shared;
@@ -34,15 +34,22 @@ namespace MTDB.Controllers
 
         #region ctor
 
-        public PlayerController()
+        public PlayerController(
+            PlayerService playerService,
+            TierService tierService,
+            ThemeService themeService,
+            TeamService teamService,
+            CollectionService collectionService,
+            StatService statService,
+            DivisionService divisionService)
         {
-            this._playerService = new PlayerService(this.Repository);
-            this._tierService = new TierService(this.Repository);
-            this._themeService = new ThemeService(this.Repository);
-            this._teamService = new TeamService(this.Repository);
-            this._collectionService = new CollectionService(this.Repository);
-            this._statService = new StatService(this.Repository);
-            this._divisionService = new DivisionService(this.Repository);
+            this._playerService = playerService;
+            this._tierService = tierService;
+            this._themeService = themeService;
+            this._teamService = teamService;
+            this._collectionService = collectionService;
+            this._statService = statService;
+            this._divisionService = divisionService;
         }
 
         #endregion
@@ -424,8 +431,9 @@ namespace MTDB.Controllers
                 this.HttpContext.Response.StatusCode = (int)HttpStatusCode.Forbidden;
                 return Json("Forbidden", JsonRequestBehavior.AllowGet);
             }
-
-            return Json(player, JsonRequestBehavior.AllowGet);
+            var model = new PlayerModel();
+            PreparePlayerModel(model, player);
+            return Json(model, JsonRequestBehavior.AllowGet);
         }
 
         [HttpGet]
@@ -508,7 +516,7 @@ namespace MTDB.Controllers
                 player.PlayerStats.Add(pStat);
             }
 
-            var aggregated = await player.AggregateStats(this.Repository, cancellationToken);
+            var aggregated = await player.AggregateStats(_statService, cancellationToken);
             player.OutsideScoring = aggregated.OutsideScoring;
             player.InsideScoring = aggregated.InsideScoring;
             player.Playmaking = aggregated.Playmaking;
@@ -587,7 +595,7 @@ namespace MTDB.Controllers
                 pStat.Value = attribute.Value;
             }
 
-            var aggregated = await player.AggregateStats(this.Repository, cancellationToken);
+            var aggregated = await player.AggregateStats(_statService, cancellationToken);
             player.OutsideScoring = aggregated.OutsideScoring;
             player.InsideScoring = aggregated.InsideScoring;
             player.Playmaking = aggregated.Playmaking;

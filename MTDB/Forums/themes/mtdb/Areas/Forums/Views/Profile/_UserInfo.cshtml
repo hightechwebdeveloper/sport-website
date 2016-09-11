@@ -1,0 +1,47 @@
+﻿@using MTDB.Web.Framework
+@model mvcForum.Web.ViewModels.UserViewModel
+
+<section class="p-user p-user-a s_myAccount">
+    <div class="p-user-info ">
+        <ul class="p-user-details">
+            <li class="user-avatar">
+                <div class="avatar avatar-100 user user-role-registered-user">
+                    <a>
+                        <img style="max-width: 100px" src="/themes/mtdb/images/avatar.png"/>
+                    </a>
+                    @*@if ((Model.LastVisit - DateTime.UtcNow).Minutes <= 30)*@
+                    @if (Model.Authenticated)
+                    {
+                        <i class="u-icon u-icon-online"></i>
+                    }
+                </div>
+            </li>
+
+            <li class="username">@Html.DisplayFor(x => x.Name)</li>
+            @*@if (!String.IsNullOrWhiteSpace(Model.FullName))
+            {
+                <dl>
+                    <dt>@Html.LabelFor(x => x.FullName)</dt>
+                    <dd>@Html.DisplayFor(x => x.Name)</dd>
+                </dl>
+            }*@
+
+            <li class="role">
+                <span class="user-role-registered-user">Registered User</span>
+            </li>
+
+            <li class="joined">
+                First visit <span class="tip" title="@Model.FirstVisit.ToLocalTime().ToString("G")">@Model.FirstVisit.ToTimeAgo()</span>
+                <br>
+                Last active <span class="tip standard-datetime">@Model.LastVisit.ToTimeAgo()</span>
+            </li>
+
+            @if ((Model.UserFlag & mvcForum.Core.UserFlag.PublicEmailAddress) == mvcForum.Core.UserFlag.PublicEmailAddress)
+            {
+                <li class="joined">
+                    Email <span class="tip">@Html.DisplayFor(x => x.Email)</span>
+                </li>
+            }
+        </ul>
+    </div>
+</section>

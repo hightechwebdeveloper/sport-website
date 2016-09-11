@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
-using MTDB.Core.EntityFramework.Entities;
 using MTDB.Core.ViewModels;
+using MTDB.Data.Entities;
 
 namespace MTDB.Core.Services.Extensions
 {

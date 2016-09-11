@@ -51,56 +51,16 @@
     <PublishDatabases>false</PublishDatabases>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ApplicationBoilerplate, Version=0.7.3.31109, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MVCBootstrap.0.7.3.31109\lib\net40\ApplicationBoilerplate.dll</HintPath>
+    <Reference Include="Autofac, Version=4.1.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\packages\Autofac.4.1.0\lib\net45\Autofac.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="CodeKicker.BBCode, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MVCForum.1.4.5.40417\lib\net40\CodeKicker.BBCode.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Commons.Web.Mvc.PrecompiledViews, Version=1.0.5.0, Culture=neutral, PublicKeyToken=b66b1a10e1d96b4d, processorArchitecture=MSIL">
-      <HintPath>..\packages\MVCForum.1.4.5.40417\lib\net40\Commons.Web.Mvc.PrecompiledViews.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="CreativeMinds.BotScout, Version=0.5.1202.1901, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\BotScout.Net.0.5.0\lib\net40\CreativeMinds.BotScout.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="CreativeMinds.Security, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MVCForum.1.4.5.40417\lib\net40\CreativeMinds.Security.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="CreativeMinds.StopForumSpam, Version=0.5.12.218, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\StopForumSpam.Net.0.5.0\lib\net40\CreativeMinds.StopForumSpam.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Elmah, Version=1.2.13605.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\elmah.corelibrary.1.2\lib\Elmah.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Elmah.Mvc, Version=2.1.2.1389, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Elmah.Mvc.2.1.2\lib\net40\Elmah.Mvc.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="HtmlAgilityPack, Version=1.4.6.0, Culture=neutral, PublicKeyToken=bd319b19eaf3b43a, processorArchitecture=MSIL">
-      <HintPath>..\packages\HtmlAgilityPack.1.4.6\lib\Net45\HtmlAgilityPack.dll</HintPath>
+    <Reference Include="Autofac.Integration.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\packages\Autofac.Mvc5.4.0.0\lib\net451\Autofac.Integration.Mvc.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="ICSharpCode.SharpZipLib, Version=0.86.0.518, Culture=neutral, PublicKeyToken=1b03e6acf1164f73, processorArchitecture=MSIL">
       <HintPath>..\packages\SharpZipLib.0.86.0\lib\20\ICSharpCode.SharpZipLib.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Joel.Net.Akismet, Version=1.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MVCForum.1.4.5.40417\lib\net40\Joel.Net.Akismet.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Lucene.Net, Version=3.0.3.0, Culture=neutral, PublicKeyToken=85089178b9ac3181, processorArchitecture=MSIL">
-      <HintPath>..\packages\Lucene.Net.3.0.3\lib\NET40\Lucene.Net.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="markdownsharp, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MVCForum.1.4.5.40417\lib\net40\markdownsharp.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.AI.Agent.Intercept, Version=1.2.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -148,38 +108,6 @@
       <HintPath>..\packages\Microsoft.Bcl.Async.1.0.168\lib\net40\Microsoft.Threading.Tasks.Extensions.Desktop.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="MVCBootstrap, Version=0.7.3.31109, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MVCBootstrap.0.7.3.31109\lib\net40\MVCBootstrap.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="MVCBootstrap.EntityFramework, Version=0.7.3.31109, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MVCBootstrap.0.7.3.31109\lib\net40\MVCBootstrap.EntityFramework.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="MVCBootstrap.Ninject, Version=0.7.3.31109, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MVCBootstrap.0.7.3.31109\lib\net40\MVCBootstrap.Ninject.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="mvcForum.AddOns, Version=1.4.5.40417, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MVCForum.1.4.5.40417\lib\net40\mvcForum.AddOns.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="mvcForum.Core, Version=1.4.5.40417, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MVCForum.1.4.5.40417\lib\net40\mvcForum.Core.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="mvcForum.DataProvider.EntityFramework, Version=1.4.5.40417, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MVCForum.1.4.5.40417\lib\net40\mvcForum.DataProvider.EntityFramework.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="mvcForum.SearchProvider.Lucene, Version=1.4.5.40417, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MVCForum.1.4.5.40417\lib\net40\mvcForum.SearchProvider.Lucene.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="mvcForum.Web, Version=1.4.5.40417, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MVCForum.1.4.5.40417\lib\net40\mvcForum.Web.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="MVCThemes, Version=0.3.3.40222, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\MVCThemes.0.3.3\lib\net40\MVCThemes.dll</HintPath>
       <Private>True</Private>
@@ -188,32 +116,8 @@
       <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Ninject, Version=3.0.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
-      <HintPath>..\packages\Ninject.3.0.1.10\lib\net45-full\Ninject.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Ninject.Web.Common, Version=3.0.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
-      <HintPath>..\packages\Ninject.Web.Common.3.0.0.7\lib\net45-full\Ninject.Web.Common.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Ninject.Web.Mvc, Version=3.0.0.0, Culture=neutral, PublicKeyToken=c7192dc5380945e7, processorArchitecture=MSIL">
-      <HintPath>..\packages\Ninject.MVC3.3.0.0.6\lib\net45-full\Ninject.Web.Mvc.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="NWebsec, Version=4.2.0.0, Culture=neutral, PublicKeyToken=3613da5f958908a1, processorArchitecture=MSIL">
-      <HintPath>..\packages\NWebsec.4.2.0\lib\45\NWebsec.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="NWebsec.Core, Version=1.5.0.0, Culture=neutral, PublicKeyToken=3613da5f958908a1, processorArchitecture=MSIL">
-      <HintPath>..\packages\NWebsec.Core.1.5.0\lib\45\NWebsec.Core.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="reCAPTCHA.MVC, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\reCAPTCH.MVC.1.0.1\lib\net45\reCAPTCHA.MVC.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="RestSharp, Version=104.1.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MVCForum.1.4.5.40417\lib\net40\RestSharp.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="SendGrid, Version=6.3.4.0, Culture=neutral, PublicKeyToken=4f047e93159395ca, processorArchitecture=MSIL">
@@ -226,22 +130,6 @@
     </Reference>
     <Reference Include="SendGridMail, Version=6.3.4.0, Culture=neutral, PublicKeyToken=4f047e93159395ca, processorArchitecture=MSIL">
       <HintPath>..\packages\Sendgrid.6.3.4\lib\SendGridMail.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="SimpleAuthentication.Core, Version=0.3.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MVCForum.1.4.5.40417\lib\net40\SimpleAuthentication.Core.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="SimpleAuthentication.Mvc, Version=0.3.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MVCForum.1.4.5.40417\lib\net40\SimpleAuthentication.Mvc.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="simplelocalisation, Version=0.9.6.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SimpleLocalisation.0.9.6\lib\net40\simplelocalisation.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="simplelocalisation.web, Version=0.9.6.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\SimpleLocalisation.0.9.6\lib\net40\simplelocalisation.web.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -305,10 +193,6 @@
       <HintPath>..\packages\WebActivator.1.5\lib\net40\WebActivator.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="WebActivatorEx, Version=2.0.0.0, Culture=neutral, PublicKeyToken=7b26dc2a43f6a0d4, processorArchitecture=MSIL">
-      <HintPath>..\packages\MVCForum.1.4.5.40417\lib\net40\WebActivatorEx.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="WebGrease">
       <Private>True</Private>
       <HintPath>..\packages\WebGrease.1.5.2\lib\WebGrease.dll</HintPath>
@@ -370,14 +254,6 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\IdentityConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
-    <Compile Include="App_Start\SendGridMessageService.cs" />
-    <Compile Include="App_Start\Startup.Auth.cs" />
-    <Compile Include="Areas\Forums\Controllers\ExtraIdentityController.cs" />
-    <Compile Include="Areas\Forums\Controllers\ProfileController.cs" />
-    <Compile Include="Areas\Forums\Controllers\ExtraMessageController.cs" />
-    <Compile Include="Areas\Forums\ExtraForumAreaRegistration.cs" />
-    <Compile Include="Areas\Forums\ForumsAreaRegistration.cs" />
-    <Compile Include="Areas\Forums\Models\UserPreferencesModel.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\CollectionController.cs" />
     <Compile Include="Controllers\CommentsController.cs" />
@@ -393,7 +269,7 @@
     <Compile Include="Helpers\HtmlHelpers.cs" />
     <Compile Include="Helpers\RequestHelpers.cs" />
     <Compile Include="Helpers\SelectLists.cs" />
-    <Compile Include="Helpers\ServicedController.cs" />
+    <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Collection\CollectionDetailsModel.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
@@ -405,17 +281,10 @@
     <Compile Include="Models\Player\PlayerSearchModel.cs" />
     <Compile Include="Models\Player\UpdatePlayerModel.cs" />
     <Compile Include="Models\Shared\StatModel.cs" />
-    <Compile Include="MVCForumIdentity\AuthenticationService.cs" />
-    <Compile Include="MVCForumIdentity\IdentityBuilder.cs" />
-    <Compile Include="MVCForumIdentity\IdentityUserProvider.cs" />
-    <Compile Include="MVCForumIdentity\MembershipService.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App_Data\texts\MVCForum.AddOns.xml" />
-    <Content Include="App_Data\texts\MVCForum.SearchProvider.Lucene.xml" />
-    <Content Include="App_Data\texts\MVCForum.Web.xml" />
     <Content Include="Content\animate.css" />
     <Content Include="Content\bootstrap-datepicker.css" />
     <Content Include="Content\bootstrap-datepicker.min.css" />
@@ -426,304 +295,50 @@
     <Content Include="Content\bootstrap-datepicker3.standalone.css" />
     <Content Include="Content\bootstrap-datepicker3.standalone.min.css" />
     <Content Include="Content\bootstrap.css" />
-    <Content Include="Content\css\bootstrap\additional.css" />
-    <Content Include="Content\css\bootstrap\bootstrap-responsive.css" />
-    <Content Include="Content\css\bootstrap\bootstrap-responsive.min.css" />
-    <Content Include="Content\css\bootstrap\bootstrap.css" />
-    <Content Include="Content\css\bootstrap\bootstrap.min.css" />
-    <Content Include="Content\css\forum\forum.css" />
-    <Content Include="Content\css\forum\print.css" />
-    <Content Include="Content\css\forum\tweaks_ie.css" />
-    <Content Include="Content\css\markitup\images\bg-container.png" />
-    <Content Include="Content\css\markitup\images\bg-editor-bbcode.png" />
-    <Content Include="Content\css\markitup\images\bg-editor-dotclear.png" />
-    <Content Include="Content\css\markitup\images\bg-editor-html.png" />
-    <Content Include="Content\css\markitup\images\bg-editor-json.png" />
-    <Content Include="Content\css\markitup\images\bg-editor-markdown.png" />
-    <Content Include="Content\css\markitup\images\bg-editor-textile.png" />
-    <Content Include="Content\css\markitup\images\bg-editor-wiki.png" />
-    <Content Include="Content\css\markitup\images\bg-editor-xml.png" />
-    <Content Include="Content\css\markitup\images\bg-editor.png" />
-    <Content Include="Content\css\markitup\images\handle.png" />
-    <Content Include="Content\css\markitup\images\menu.png" />
-    <Content Include="Content\css\markitup\images\submenu.png" />
-    <Content Include="Content\css\markitup\sets\bbcode\images\bold.png" />
-    <Content Include="Content\css\markitup\sets\bbcode\images\clean.png" />
-    <Content Include="Content\css\markitup\sets\bbcode\images\code.png" />
-    <Content Include="Content\css\markitup\sets\bbcode\images\fonts.png" />
-    <Content Include="Content\css\markitup\sets\bbcode\images\italic.png" />
-    <Content Include="Content\css\markitup\sets\bbcode\images\link.png" />
-    <Content Include="Content\css\markitup\sets\bbcode\images\list-bullet.png" />
-    <Content Include="Content\css\markitup\sets\bbcode\images\list-item.png" />
-    <Content Include="Content\css\markitup\sets\bbcode\images\list-numeric.png" />
-    <Content Include="Content\css\markitup\sets\bbcode\images\picture.png" />
-    <Content Include="Content\css\markitup\sets\bbcode\images\preview.png" />
-    <Content Include="Content\css\markitup\sets\bbcode\images\quotes.png" />
-    <Content Include="Content\css\markitup\sets\bbcode\images\stroke.png" />
-    <Content Include="Content\css\markitup\sets\bbcode\images\underline.png" />
-    <Content Include="Content\css\markitup\sets\bbcode\style.css" />
-    <Content Include="Content\css\markitup\sets\markdown\images\bold.png" />
-    <Content Include="Content\css\markitup\sets\markdown\images\code.png" />
-    <Content Include="Content\css\markitup\sets\markdown\images\h1.png" />
-    <Content Include="Content\css\markitup\sets\markdown\images\h2.png" />
-    <Content Include="Content\css\markitup\sets\markdown\images\h3.png" />
-    <Content Include="Content\css\markitup\sets\markdown\images\h4.png" />
-    <Content Include="Content\css\markitup\sets\markdown\images\h5.png" />
-    <Content Include="Content\css\markitup\sets\markdown\images\h6.png" />
-    <Content Include="Content\css\markitup\sets\markdown\images\italic.png" />
-    <Content Include="Content\css\markitup\sets\markdown\images\link.png" />
-    <Content Include="Content\css\markitup\sets\markdown\images\list-bullet.png" />
-    <Content Include="Content\css\markitup\sets\markdown\images\list-numeric.png" />
-    <Content Include="Content\css\markitup\sets\markdown\images\picture.png" />
-    <Content Include="Content\css\markitup\sets\markdown\images\preview.png" />
-    <Content Include="Content\css\markitup\sets\markdown\images\quotes.png" />
-    <Content Include="Content\css\markitup\sets\markdown\style.css" />
-    <Content Include="Content\css\markitup\style.css" />
-    <Content Include="Content\facebook.png" />
     <Content Include="Content\font.css" />
-    <Content Include="Content\google.png" />
-    <Content Include="Content\Images\badges\athlete_bronze.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Images\badges\athlete_gold.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Images\badges\athlete_silver.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Images\badges\athlete_white.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Images\badges\defender_bronze.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Images\badges\defender_gold.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Images\badges\defender_silver.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Images\badges\defender_white.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Images\badges\gymrat_bronze.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Images\badges\gymrat_gold.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Images\badges\gymrat_silver.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Images\badges\gymrat_white.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Images\badges\icon_skillbadge_bronze3.daddb99a0216550c.dds">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Images\badges\icon_skillbadge_gold3.ee0ef4a6d28d33f6.dds">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Images\badges\icon_skillbadge_personality.d101da154eb6338f.dds">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Images\badges\icon_skillbadge_silver3.bff230ceb5d1b19f.dds">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Images\badges\insideshooter_bronze.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Images\badges\insideshooter_gold.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Images\badges\insideshooter_silver.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Images\badges\insideshooter_white.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Images\badges\outsideshooter_bronze.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Images\badges\outsideshooter_gold.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Images\badges\outsideshooter_silver.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Images\badges\outsideshooter_white.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Images\badges\personality.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Images\badges\playermaker_bronze.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Images\badges\playermaker_gold.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Images\badges\playermaker_silver.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Images\badges\playermaker_white.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Images\badges\rebound_bronze.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Images\badges\rebound_gold.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Images\badges\rebound_silver.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Images\badges\rebound_white.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Images\card-guest.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Images\cardback.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Images\draftpack.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Images\loading.gif">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Images\mtdb-v2.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Images\mtdbpack.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Images\mtdb_logo_black.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Images\pack.png">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\Images\retina_wood.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\img\forum\arrow_down.gif" />
-    <Content Include="Content\img\forum\arrow_left.gif" />
-    <Content Include="Content\img\forum\arrow_right.gif" />
-    <Content Include="Content\img\forum\arrow_up.gif" />
-    <Content Include="Content\img\forum\bb_attach.gif" />
-    <Content Include="Content\img\forum\bb_bg.gif" />
-    <Content Include="Content\img\forum\bb_code.gif" />
-    <Content Include="Content\img\forum\bb_expand.gif" />
-    <Content Include="Content\img\forum\bb_quote.gif" />
-    <Content Include="Content\img\forum\bb_select.gif" />
-    <Content Include="Content\img\forum\bg_block.gif" />
-    <Content Include="Content\img\forum\bg_h3.gif" />
-    <Content Include="Content\img\forum\bg_navbar.gif" />
-    <Content Include="Content\img\forum\bg_poll.gif" />
-    <Content Include="Content\img\forum\bg_popup.gif" />
-    <Content Include="Content\img\forum\bg_post.gif" />
-    <Content Include="Content\img\forum\bg_row.gif" />
-    <Content Include="Content\img\forum\bg_row_hover.gif" />
-    <Content Include="Content\img\forum\bg_row_hover2.gif" />
-    <Content Include="Content\img\forum\bg_tabs1.gif" />
-    <Content Include="Content\img\forum\bg_tabs2.gif" />
-    <Content Include="Content\img\forum\bg_th.gif" />
-    <Content Include="Content\img\forum\en\button_pm_forward.gif" />
-    <Content Include="Content\img\forum\en\button_pm_new.gif" />
-    <Content Include="Content\img\forum\en\button_pm_reply.gif" />
-    <Content Include="Content\img\forum\en\button_quick_reply.gif" />
-    <Content Include="Content\img\forum\en\button_topic_locked.gif" />
-    <Content Include="Content\img\forum\en\button_topic_new.gif" />
-    <Content Include="Content\img\forum\en\button_topic_reply.gif" />
-    <Content Include="Content\img\forum\en\icon_contact_pm.gif" />
-    <Content Include="Content\img\forum\en\icon_post_edit.gif" />
-    <Content Include="Content\img\forum\en\icon_post_quote.gif" />
-    <Content Include="Content\img\forum\en\icon_user_online.gif" />
-    <Content Include="Content\img\forum\en\spacer.gif" />
-    <Content Include="Content\img\forum\feed.gif" />
-    <Content Include="Content\img\forum\forum_link.gif" />
-    <Content Include="Content\img\forum\forum_read.gif" />
-    <Content Include="Content\img\forum\forum_read_locked.gif" />
-    <Content Include="Content\img\forum\forum_read_subforum.gif" />
-    <Content Include="Content\img\forum\forum_unread.gif" />
-    <Content Include="Content\img\forum\forum_unread_locked.gif" />
-    <Content Include="Content\img\forum\forum_unread_subforum.gif" />
-    <Content Include="Content\img\forum\icon_back_top.gif" />
-    <Content Include="Content\img\forum\icon_contact_aim.gif" />
-    <Content Include="Content\img\forum\icon_contact_email.gif" />
-    <Content Include="Content\img\forum\icon_contact_icq.gif" />
-    <Content Include="Content\img\forum\icon_contact_jabber.gif" />
-    <Content Include="Content\img\forum\icon_contact_msnm.gif" />
-    <Content Include="Content\img\forum\icon_contact_www.gif" />
-    <Content Include="Content\img\forum\icon_contact_yahoo.gif" />
-    <Content Include="Content\img\forum\icon_fontsize.gif" />
-    <Content Include="Content\img\forum\icon_home.gif" />
-    <Content Include="Content\img\forum\icon_offline.gif" />
-    <Content Include="Content\img\forum\icon_online.gif" />
-    <Content Include="Content\img\forum\icon_pages.gif" />
-    <Content Include="Content\img\forum\icon_post_delete.gif" />
-    <Content Include="Content\img\forum\icon_post_info.gif" />
-    <Content Include="Content\img\forum\icon_post_report.gif" />
-    <Content Include="Content\img\forum\icon_post_target.gif" />
-    <Content Include="Content\img\forum\icon_post_target_unread.gif" />
-    <Content Include="Content\img\forum\icon_rate_bad.gif" />
-    <Content Include="Content\img\forum\icon_rate_good.gif" />
-    <Content Include="Content\img\forum\icon_textbox_search.gif" />
-    <Content Include="Content\img\forum\icon_textbox_search2.gif" />
-    <Content Include="Content\img\forum\icon_topic_attach.gif" />
-    <Content Include="Content\img\forum\icon_topic_reported.gif" />
-    <Content Include="Content\img\forum\icon_topic_unapproved.gif" />
-    <Content Include="Content\img\forum\icon_user_warn.gif" />
-    <Content Include="Content\img\forum\layout\bg_body.gif" />
-    <Content Include="Content\img\forum\layout\bg_content.gif" />
-    <Content Include="Content\img\forum\layout\bg_left.gif" />
-    <Content Include="Content\img\forum\layout\bg_right.gif" />
-    <Content Include="Content\img\forum\layout\bottom_bg.gif" />
-    <Content Include="Content\img\forum\layout\bottom_left.gif" />
-    <Content Include="Content\img\forum\layout\bottom_right.gif" />
-    <Content Include="Content\img\forum\layout\corner_left.gif" />
-    <Content Include="Content\img\forum\layout\corner_right.gif" />
-    <Content Include="Content\img\forum\layout\hdr_bg.gif" />
-    <Content Include="Content\img\forum\layout\hdr_left.gif" />
-    <Content Include="Content\img\forum\layout\hdr_right.gif" />
-    <Content Include="Content\img\forum\no_avatar.gif" />
-    <Content Include="Content\img\forum\post_hide.gif" />
-    <Content Include="Content\img\forum\post_show.gif" />
-    <Content Include="Content\img\forum\site_logo.gif" />
-    <Content Include="Content\img\forum\spacer.gif" />
-    <Content Include="Content\img\forum\sticky_read.gif" />
-    <Content Include="Content\img\forum\sticky_read_locked.gif" />
-    <Content Include="Content\img\forum\sticky_read_locked_mine.gif" />
-    <Content Include="Content\img\forum\sticky_read_mine.gif" />
-    <Content Include="Content\img\forum\sticky_unread.gif" />
-    <Content Include="Content\img\forum\sticky_unread_locked.gif" />
-    <Content Include="Content\img\forum\sticky_unread_locked_mine.gif" />
-    <Content Include="Content\img\forum\sticky_unread_mine.gif" />
-    <Content Include="Content\img\forum\subforum_link.gif" />
-    <Content Include="Content\img\forum\subforum_read.gif" />
-    <Content Include="Content\img\forum\subforum_unread.gif" />
-    <Content Include="Content\img\forum\topic_moved.gif" />
-    <Content Include="Content\img\forum\topic_moved_mine.gif" />
-    <Content Include="Content\img\forum\topic_read.gif" />
-    <Content Include="Content\img\forum\topic_read_hot.gif" />
-    <Content Include="Content\img\forum\topic_read_hot_mine.gif" />
-    <Content Include="Content\img\forum\topic_read_locked.gif" />
-    <Content Include="Content\img\forum\topic_read_locked_mine.gif" />
-    <Content Include="Content\img\forum\topic_read_mine.gif" />
-    <Content Include="Content\img\forum\topic_unread.gif" />
-    <Content Include="Content\img\forum\topic_unread_hot.gif" />
-    <Content Include="Content\img\forum\topic_unread_hot_mine.gif" />
-    <Content Include="Content\img\forum\topic_unread_locked.gif" />
-    <Content Include="Content\img\forum\topic_unread_locked_mine.gif" />
-    <Content Include="Content\img\forum\topic_unread_mine.gif" />
-    <Content Include="Content\img\forum\ucp_item.gif" />
-    <Content Include="Content\img\forum\ucp_section.gif" />
-    <Content Include="Content\img\glyphicons-halflings-white.png" />
-    <Content Include="Content\img\glyphicons-halflings.png" />
+    <Content Include="Content\Images\badges\athlete_bronze.png" />
+    <Content Include="Content\Images\badges\athlete_gold.png" />
+    <Content Include="Content\Images\badges\athlete_silver.png" />
+    <Content Include="Content\Images\badges\athlete_white.png" />
+    <Content Include="Content\Images\badges\defender_bronze.png" />
+    <Content Include="Content\Images\badges\defender_gold.png" />
+    <Content Include="Content\Images\badges\defender_silver.png" />
+    <Content Include="Content\Images\badges\defender_white.png" />
+    <Content Include="Content\Images\badges\gymrat_bronze.png" />
+    <Content Include="Content\Images\badges\gymrat_gold.png" />
+    <Content Include="Content\Images\badges\gymrat_silver.png" />
+    <Content Include="Content\Images\badges\gymrat_white.png" />
+    <Content Include="Content\Images\badges\icon_skillbadge_bronze3.daddb99a0216550c.dds" />
+    <Content Include="Content\Images\badges\icon_skillbadge_gold3.ee0ef4a6d28d33f6.dds" />
+    <Content Include="Content\Images\badges\icon_skillbadge_personality.d101da154eb6338f.dds" />
+    <Content Include="Content\Images\badges\icon_skillbadge_silver3.bff230ceb5d1b19f.dds" />
+    <Content Include="Content\Images\badges\insideshooter_bronze.png" />
+    <Content Include="Content\Images\badges\insideshooter_gold.png" />
+    <Content Include="Content\Images\badges\insideshooter_silver.png" />
+    <Content Include="Content\Images\badges\insideshooter_white.png" />
+    <Content Include="Content\Images\badges\outsideshooter_bronze.png" />
+    <Content Include="Content\Images\badges\outsideshooter_gold.png" />
+    <Content Include="Content\Images\badges\outsideshooter_silver.png" />
+    <Content Include="Content\Images\badges\outsideshooter_white.png" />
+    <Content Include="Content\Images\badges\personality.png" />
+    <Content Include="Content\Images\badges\playermaker_bronze.png" />
+    <Content Include="Content\Images\badges\playermaker_gold.png" />
+    <Content Include="Content\Images\badges\playermaker_silver.png" />
+    <Content Include="Content\Images\badges\playermaker_white.png" />
+    <Content Include="Content\Images\badges\rebound_bronze.png" />
+    <Content Include="Content\Images\badges\rebound_gold.png" />
+    <Content Include="Content\Images\badges\rebound_silver.png" />
+    <Content Include="Content\Images\badges\rebound_white.png" />
+    <Content Include="Content\Images\card-guest.png" />
+    <Content Include="Content\Images\cardback.jpg" />
+    <Content Include="Content\Images\draftpack.jpg" />
+    <Content Include="Content\Images\loading.gif" />
+    <Content Include="Content\Images\mtdb-v2.png" />
+    <Content Include="Content\Images\mtdbpack.jpg" />
+    <Content Include="Content\Images\mtdb_logo_black.png" />
+    <Content Include="Content\Images\pack.png" />
+    <Content Include="Content\Images\retina_wood.jpg" />
     <Content Include="Content\PagedList.css" />
-    <Content Include="Content\twitter.png" />
     <Content Include="libs\assets\animate.css\animate.css" />
     <Content Include="libs\assets\font-awesome\css\font-awesome.css" />
     <Content Include="libs\assets\font-awesome\css\font-awesome.min.css" />
@@ -797,14 +412,11 @@
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="fonts\Material-Design-Icons.svg" />
     <Content Include="Global.asax" />
-    <Content Include="Content\App.css">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+    <Content Include="Content\App.css" />
     <Content Include="Scripts\ai.0.22.9-build00167.js" />
     <Content Include="Scripts\ai.0.22.9-build00167.min.js" />
     <Content Include="Scripts\app.min.js" />
     <Content Include="Scripts\app.src.js" />
-    <Content Include="Scripts\boostrap-collapse.js" />
     <Content Include="Scripts\bootstrap-datepicker.js" />
     <Content Include="Scripts\bootstrap-datepicker.min.js" />
     <Content Include="Scripts\bootstrap.js" />
@@ -816,15 +428,9 @@
     <Content Include="fonts\Material-Design-Icons.eot" />
     <Content Include="fonts\Material-Design-Icons.ttf" />
     <Content Include="fonts\Material-Design-Icons.woff" />
-    <Content Include="Scripts\forum-common.js" />
     <Content Include="Scripts\common.js" />
-    <Content Include="Scripts\jquery-1.7.2.min.js" />
-    <Content Include="Scripts\jquery-ui.min.js">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+    <Content Include="Scripts\jquery-ui.min.js" />
     <Content Include="Scripts\jquery.js" />
-    <Content Include="Scripts\knockout-2.1.0.js" />
-    <Content Include="Scripts\knockout.validation.js" />
     <Content Include="Scripts\locales\bootstrap-datepicker.ar.min.js" />
     <Content Include="Scripts\locales\bootstrap-datepicker.az.min.js" />
     <Content Include="Scripts\locales\bootstrap-datepicker.bg.min.js" />
@@ -891,9 +497,6 @@
     <Content Include="Scripts\locales\bootstrap-datepicker.vi.min.js" />
     <Content Include="Scripts\locales\bootstrap-datepicker.zh-CN.min.js" />
     <Content Include="Scripts\locales\bootstrap-datepicker.zh-TW.min.js" />
-    <Content Include="Scripts\markitup\jquery.markitup.js" />
-    <Content Include="Scripts\markitup\sets\bbcode\set.js" />
-    <Content Include="Scripts\markitup\sets\markdown\set.js" />
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Scripts\mtdb-comments.js" />
     <Content Include="Scripts\respond.js" />
@@ -904,28 +507,7 @@
     <Content Include="Scripts\ui-load.js" />
     <Content Include="Scripts\ui-nav.js" />
     <Content Include="Scripts\ui-toggle.js" />
-    <Content Include="Scripts\viewmodels\accessmaskupdate.js" />
-    <Content Include="Scripts\viewmodels\akismet.js" />
-    <Content Include="Scripts\viewmodels\basicinstall.js" />
-    <Content Include="Scripts\viewmodels\boardupdate.js" />
-    <Content Include="Scripts\viewmodels\categoryupdate.js" />
-    <Content Include="Scripts\viewmodels\forumupdate.js" />
-    <Content Include="Scripts\viewmodels\grouplist.js" />
-    <Content Include="Scripts\viewmodels\groupupdate.js" />
-    <Content Include="Scripts\viewmodels\multipost.js" />
-    <Content Include="Scripts\viewmodels\newusertrial.js" />
-    <Content Include="Scripts\viewmodels\statistics.js" />
-    <Content Include="Scripts\viewmodels\stopforumspam.js" />
-    <Content Include="Scripts\viewmodels\userlist.js" />
-    <Content Include="Scripts\viewmodels\userregistration.js" />
-    <Content Include="Scripts\viewmodels\userupdate.js" />
     <Content Include="Scripts\_references.js" />
-    <Content Include="themes\mtdb\css\compiled.css" />
-    <Content Include="themes\mtdb\css\mtdb.css" />
-    <Content Include="themes\mtdb\images\avatar.png" />
-    <Content Include="themes\mtdb\images\bg.jpg" />
-    <Content Include="themes\mtdb\images\header-texture.png" />
-    <Content Include="themes\mtdb\images\social-buttons.png" />
     <Content Include="Views\Pack\CreateDraft.cshtml" />
     <Content Include="Views\Pack\DraftResults.cshtml" />
     <Content Include="Views\Pack\DraftDetails.cshtml" />
@@ -955,90 +537,7 @@
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Areas\ForumAdmin\Views\accessmask\update.cshtml" />
-    <Content Include="Areas\ForumAdmin\Views\antispam\index.cshtml" />
-    <Content Include="Areas\ForumAdmin\Views\basicinstall\index.cshtml" />
-    <Content Include="Areas\ForumAdmin\Views\basicinstall\status.cshtml" />
-    <Content Include="Areas\ForumAdmin\Views\board\newaccessmaskmodal.cshtml" />
-    <Content Include="Areas\ForumAdmin\Views\board\newcategorymodal.cshtml" />
-    <Content Include="Areas\ForumAdmin\Views\board\update.cshtml" />
-    <Content Include="Areas\ForumAdmin\Views\category\newforummodal.cshtml" />
-    <Content Include="Areas\ForumAdmin\Views\category\update.cshtml" />
-    <Content Include="Areas\ForumAdmin\Views\forum\newsubforummodal.cshtml" />
-    <Content Include="Areas\ForumAdmin\Views\forum\update.cshtml" />
-    <Content Include="Areas\ForumAdmin\Views\group\index.cshtml" />
-    <Content Include="Areas\ForumAdmin\Views\group\newgroupmodal.cshtml" />
-    <Content Include="Areas\ForumAdmin\Views\group\update.cshtml" />
-    <Content Include="Areas\ForumAdmin\Views\home\index.cshtml" />
-    <Content Include="Areas\ForumAdmin\Views\home\newboardmodal.cshtml" />
-    <Content Include="Areas\ForumAdmin\Views\search\index.cshtml" />
-    <Content Include="Areas\ForumAdmin\Views\settings\index.cshtml" />
-    <Content Include="Areas\ForumAdmin\Views\settings\userregistration.cshtml" />
-    <Content Include="Areas\ForumAdmin\Views\shared\accessflag.cshtml" />
-    <Content Include="Areas\ForumAdmin\Views\shared\adminlayout.cshtml" />
-    <Content Include="Areas\ForumAdmin\Views\shared\breadcrumbnavigation.cshtml" />
-    <Content Include="Areas\ForumAdmin\Views\shared\pageheader.cshtml" />
-    <Content Include="Areas\ForumAdmin\Views\shared\topnavigation.cshtml" />
-    <Content Include="Areas\ForumAdmin\Views\user\index.cshtml" />
-    <Content Include="Areas\ForumAdmin\Views\user\newmembershipmodal.cshtml" />
-    <Content Include="Areas\ForumAdmin\Views\user\newusermodal.cshtml" />
-    <Content Include="Areas\ForumAdmin\Views\user\update.cshtml" />
-    <Content Include="Areas\ForumAdmin\Views\web.config" />
-    <Content Include="Areas\Forums\Views\Account\Activate.cshtml" />
-    <Content Include="Areas\Forums\Views\Account\External.cshtml" />
-    <Content Include="Areas\Forums\Views\Account\LogOn.cshtml" />
-    <Content Include="Areas\Forums\Views\Account\Register.cshtml" />
-    <Content Include="Areas\Forums\Views\Account\Success.cshtml" />
-    <Content Include="Areas\Forums\Views\Category\Index.cshtml" />
-    <Content Include="Areas\Forums\Views\File\Attach.cshtml" />
-    <Content Include="Areas\Forums\Views\Forum\Index.cshtml" />
-    <Content Include="Areas\Forums\Views\Home\Index.cshtml" />
-    <Content Include="Areas\Forums\Views\Message\Create.cshtml" />
-    <Content Include="Areas\Forums\Views\Message\Delete.cshtml" />
-    <Content Include="Areas\Forums\Views\Message\Edit.cshtml" />
-    <Content Include="Areas\Forums\Views\Message\Moderate.cshtml" />
-    <Content Include="Areas\Forums\Views\Message\Report.cshtml" />
-    <Content Include="Areas\Forums\Views\Message\Undelete.cshtml" />
-    <Content Include="Areas\Forums\Views\Moderate\Delete.cshtml" />
-    <Content Include="Areas\Forums\Views\Moderate\Index.cshtml" />
-    <Content Include="Areas\Forums\Views\Moderate\Merge.cshtml" />
-    <Content Include="Areas\Forums\Views\Moderate\Move.cshtml" />
-    <Content Include="Areas\Forums\Views\Moderate\Report.cshtml" />
-    <Content Include="Areas\Forums\Views\Moderate\ReportList.cshtml" />
-    <Content Include="Areas\Forums\Views\Moderate\Split.cshtml" />
-    <Content Include="Areas\Forums\Views\Moderate\Topic.cshtml" />
-    <Content Include="Areas\Forums\Views\NoAccess\Index.cshtml" />
-    <Content Include="Areas\Forums\Views\Profile\Index.cshtml" />
-    <Content Include="Areas\Forums\Views\Profile\Update.cshtml" />
-    <Content Include="Areas\Forums\Views\Search\Index.cshtml" />
-    <Content Include="Areas\Forums\Views\Search\Unanswered Topics.cshtml" />
-    <Content Include="Areas\Forums\Views\Shared\AttachmentPartial.cshtml" />
-    <Content Include="Areas\Forums\Views\Shared\BBCodeEditor.cshtml" />
-    <Content Include="Areas\Forums\Views\Shared\BottomScripts.cshtml" />
-    <Content Include="Areas\Forums\Views\Shared\Breadcrumb.cshtml" />
-    <Content Include="Areas\Forums\Views\Shared\CategoryPartial.cshtml" />
-    <Content Include="Areas\Forums\Views\Shared\Footer.cshtml" />
-    <Content Include="Areas\Forums\Views\Shared\ForumButtonsPartial.cshtml" />
-    <Content Include="Areas\Forums\Views\Shared\forumlayout.cshtml" />
-    <Content Include="Areas\Forums\Views\Shared\ForumPagingPartial.cshtml" />
-    <Content Include="Areas\Forums\Views\Shared\ForumPartial.cshtml" />
-    <Content Include="Areas\Forums\Views\Shared\LastMessagePartial.cshtml" />
-    <Content Include="Areas\Forums\Views\Shared\LastTopicPartial.cshtml" />
-    <Content Include="Areas\Forums\Views\Shared\MarkDownEditor.cshtml" />
-    <Content Include="Areas\Forums\Views\Shared\MessagePosterPartial.cshtml" />
-    <Content Include="Areas\Forums\Views\Shared\ModelStateErrors.cshtml" />
-    <Content Include="Areas\Forums\Views\Shared\OlderPosts.cshtml" />
-    <Content Include="Areas\Forums\Views\Shared\RegularEditor.cshtml" />
-    <Content Include="Areas\Forums\Views\Shared\TopicPartial.cshtml" />
-    <Content Include="Areas\Forums\Views\Shared\TopNavigation.cshtml" />
-    <Content Include="Areas\Forums\Views\Topic\Create.cshtml" />
-    <Content Include="Areas\Forums\Views\Topic\Edit.cshtml" />
-    <Content Include="Areas\Forums\Views\Topic\Index.cshtml" />
-    <Content Include="Areas\Forums\Views\Topic\MessagePartial.cshtml" />
-    <Content Include="Areas\Forums\Views\Topic\Moderate.cshtml" />
-    <Content Include="Areas\Forums\Views\Topic\TopicButtonsPartial.cshtml" />
-    <Content Include="Areas\Forums\Views\Topic\TopicPagingPartial.cshtml" />
-    <Content Include="Areas\Forums\Views\web.config" />
+    <None Include="Properties\PublishProfiles\deploy directory.pubxml" />
     <None Include="Properties\PublishProfiles\mtdb - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\mtdb - Web Deploy.pubxml" />
     <Content Include="Web.config">
@@ -1047,61 +546,8 @@
     </Content>
     <Content Include="Views\Shared\_Search.cshtml" />
     <Content Include="Service References\Application Insights\ConnectedService.json" />
-    <Content Include="themes\mtdb\Areas\Forums\Views\Home\Index.cshtml" />
-    <Content Include="themes\mtdb\Areas\Forums\Views\Shared\_Layout.cshtml" />
-    <Content Include="themes\mtdb\Areas\Forums\Views\Shared\TopNavigation.cshtml" />
-    <Content Include="themes\mtdb\Areas\Forums\Views\web.config" />
-    <Content Include="themes\mtdb\Areas\Forums\Views\Shared\CategoryPartial.cshtml" />
-    <Content Include="themes\mtdb\Areas\Forums\Views\Shared\ForumPartial.cshtml" />
-    <Content Include="themes\mtdb\Areas\Forums\Views\Shared\Header.cshtml" />
-    <Content Include="themes\mtdb\Areas\Forums\Views\Shared\LastTopicPartial.cshtml" />
-    <Content Include="themes\mtdb\Areas\Forums\Views\Shared\_ForumLayout.cshtml" />
-    <Content Include="themes\mtdb\Areas\Forums\Views\Forum\Index.cshtml" />
-    <Content Include="themes\mtdb\Areas\Forums\Views\Shared\Breadcrumb.cshtml" />
-    <Content Include="themes\mtdb\Areas\Forums\Views\Shared\ForumToolsPartial.cshtml" />
-    <Content Include="themes\mtdb\Areas\Forums\Views\Shared\ForumPagingPartial.cshtml" />
-    <Content Include="themes\mtdb\Areas\Forums\Views\Shared\TopicPartial.cshtml" />
-    <Content Include="themes\mtdb\Areas\Forums\Views\Shared\LastMessagePartial.cshtml" />
-    <Content Include="themes\mtdb\Areas\Forums\Views\Topic\Index.cshtml" />
-    <Content Include="themes\mtdb\Areas\Forums\Views\Topic\MessagePartial.cshtml" />
-    <Content Include="themes\mtdb\Areas\Forums\Views\Topic\MessagePosterPartial.cshtml" />
-    <Content Include="themes\mtdb\Areas\Forums\Views\Topic\PostActions.cshtml" />
-    <Content Include="themes\mtdb\Areas\Forums\Views\Topic\TopicToolsPartial.cshtml" />
-    <Content Include="themes\mtdb\Areas\Forums\Views\Topic\TopicPagingPartial.cshtml" />
-    <Content Include="themes\mtdb\Areas\Forums\Views\Home\HomeToolsPartial.cshtml" />
-    <Content Include="themes\mtdb\Areas\Forums\Views\Shared\_ContentLayout.cshtml" />
-    <Content Include="themes\mtdb\Areas\Forums\Views\Category\Index.cshtml" />
-    <Content Include="themes\mtdb\Areas\Forums\Views\Category\CategoryToolsPartial.cshtml" />
-    <Content Include="themes\mtdb\Areas\Forums\Views\Message\_Create.cshtml" />
-    <Content Include="themes\mtdb\Areas\Forums\Views\Message\Create.cshtml" />
-    <Content Include="themes\mtdb\fonts\cobalt-ui.woff" />
-    <Content Include="themes\mtdb\Areas\Forums\Views\Message\Edit.cshtml" />
-    <Content Include="themes\mtdb\Areas\Forums\Views\Message\Delete.cshtml" />
-    <Content Include="themes\mtdb\Areas\Forums\Views\Message\Report.cshtml" />
-    <Content Include="themes\mtdb\Areas\Forums\Views\Search\Index.cshtml" />
-    <Content Include="themes\mtdb\Areas\Forums\Views\Search\Unanswered Topics.cshtml" />
-    <Content Include="themes\mtdb\Areas\Forums\Views\Topic\Create.cshtml" />
-    <Content Include="themes\mtdb\Areas\Forums\Views\Topic\Edit.cshtml" />
-    <Content Include="themes\mtdb\Areas\Forums\Views\Shared\_User.cshtml" />
     <Content Include="Views\Profile\Index.cshtml" />
     <Content Include="Views\Profile\Update.cshtml" />
-    <Content Include="themes\mtdb\Areas\Forums\Views\Profile\Index.cshtml" />
-    <Content Include="themes\mtdb\Areas\Forums\Views\Profile\UpdatePreferences.cshtml" />
-    <Content Include="themes\mtdb\Areas\Forums\Views\Profile\_UserInfo.cshtml" />
-    <Content Include="themes\mtdb\Areas\Forums\Views\NoAccess\Index.cshtml" />
-    <Content Include="themes\mtdb\Areas\Forums\Views\Moderate\Delete.cshtml" />
-    <Content Include="themes\mtdb\Areas\Forums\Views\Moderate\Index.cshtml" />
-    <Content Include="themes\mtdb\Areas\Forums\Views\Moderate\Merge.cshtml" />
-    <Content Include="themes\mtdb\Areas\Forums\Views\Moderate\Move.cshtml" />
-    <Content Include="themes\mtdb\Areas\Forums\Views\Moderate\Report.cshtml" />
-    <Content Include="themes\mtdb\Areas\Forums\Views\Moderate\ReportList.cshtml" />
-    <Content Include="themes\mtdb\Areas\Forums\Views\Moderate\Split.cshtml" />
-    <Content Include="themes\mtdb\Areas\Forums\Views\Moderate\Topic.cshtml" />
-    <Content Include="themes\mtdb\Areas\Forums\Views\Shared\_ModerateLayout.cshtml" />
-    <Content Include="themes\mtdb\Areas\Forums\Views\Moderate\Breadcrumb.cshtml" />
-    <Content Include="themes\mtdb\Areas\Forums\Views\Message\Moderate.cshtml" />
-    <Content Include="themes\mtdb\Areas\Forums\Views\Topic\Moderate.cshtml" />
-    <Content Include="themes\mtdb\Areas\Forums\Views\Moderate\ForumPagingPartial.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -1133,7 +579,9 @@
     <Content Include="Views\Player\List.cshtml" />
     <Content Include="Views\Lineup\Index.cshtml" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="App_Data\" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
     <Content Include="fonts\glyphicons-halflings-regular.ttf" />
@@ -1169,13 +617,13 @@
     <Content Include="Views\Pack\Leaderboard.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MTDB.Core.EntityFramework\MTDB.Core.EntityFramework.csproj">
+    <ProjectReference Include="..\MTDB.Core.EntityFramework\MTDB.Data.csproj">
       <Project>{9153DA50-BF3F-45E8-B472-48DE9598C88C}</Project>
-      <Name>MTDB.Core.EntityFramework</Name>
+      <Name>MTDB.Data</Name>
     </ProjectReference>
-    <ProjectReference Include="..\MTDB.Core.Services\MTDB.Core.Services.csproj">
+    <ProjectReference Include="..\MTDB.Core.Services\MTDB.Services.csproj">
       <Project>{47E0C772-EB99-4A8C-816C-18F9358E02AB}</Project>
-      <Name>MTDB.Core.Services</Name>
+      <Name>MTDB.Services</Name>
     </ProjectReference>
     <ProjectReference Include="..\MTDB.Core.ViewModels\MTDB.Core.ViewModels.csproj">
       <Project>{9137AF64-C67E-44F5-8930-E5BDDBA2D5C7}</Project>
@@ -1205,6 +653,24 @@
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />

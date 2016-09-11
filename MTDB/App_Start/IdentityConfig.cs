@@ -6,24 +6,14 @@ using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
 using Microsoft.Owin.Security;
-using MTDB.Core.EntityFramework;
+using MTDB.Core.Services.Common;
+using MTDB.Data;
 
 namespace MTDB
 {
-    public class EmailService : IIdentityMessageService
-    {
-        public Task SendAsync(IdentityMessage message)
-        {
-
-            // Plug in your email service here to send an email.
-            return Task.FromResult(0);
-        }
-    }
-
-    // Configure the application user manager used in this application. UserManager is defined in ASP.NET Identity and is used by the application.
     public class ApplicationUserManager : UserManager<ApplicationUser>
     {
-        public ApplicationUserManager(IUserStore<ApplicationUser> store)
+        private ApplicationUserManager(IUserStore<ApplicationUser> store)
             : base(store)
         {
         }
@@ -31,14 +21,13 @@ namespace MTDB
         public static ApplicationUserManager Create(IdentityFactoryOptions<ApplicationUserManager> options, IOwinContext context)
         {
             var manager = new ApplicationUserManager(new UserStore<ApplicationUser>(context.Get<MtdbContext>()));
-            // Configure validation logic for usernames
+            
             manager.UserValidator = new UserValidator<ApplicationUser>(manager)
             {
                 AllowOnlyAlphanumericUserNames = true,
                 RequireUniqueEmail = true
             };
 
-            // Configure validation logic for passwords
             manager.PasswordValidator = new PasswordValidator
             {
                 RequiredLength = 6,
@@ -52,22 +41,8 @@ namespace MTDB
             manager.UserLockoutEnabledByDefault = true;
             manager.DefaultAccountLockoutTimeSpan = TimeSpan.FromMinutes(5);
             manager.MaxFailedAccessAttemptsBeforeLockout = 10;
-
-            // Register two factor authentication providers. This application uses Phone and Emails as a step of receiving a code for verifying the user
-            // You can write your own provider and plug it in here.
-            //manager.RegisterTwoFactorProvider("Phone Code", new PhoneNumberTokenProvider<ApplicationUser>
-            //{
-            //    MessageFormat = "Your security code is {0}"
-            //});
-            //manager.RegisterTwoFactorProvider("Email Code", new EmailTokenProvider<ApplicationUser>
-            //{
-            //    Subject = "Security Code",
-            //    BodyFormat = "Your security code is {0}"
-            //});
-            
             manager.EmailService = new SendGridMessageService();
 
-            // Set user-token provider
             var dataProtectionProvider = options.DataProtectionProvider;
             if (dataProtectionProvider != null)
             {
@@ -82,7 +57,7 @@ namespace MTDB
     // Configure the application sign-in manager which is used in this application.
     public class ApplicationSignInManager : SignInManager<ApplicationUser, string>
     {
-        public ApplicationSignInManager(ApplicationUserManager userManager, IAuthenticationManager authenticationManager)
+        private ApplicationSignInManager(ApplicationUserManager userManager, IAuthenticationManager authenticationManager)
             : base(userManager, authenticationManager)
         {
         }
