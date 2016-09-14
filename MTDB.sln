@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.25420.1
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MTDB", "Presentation\MTDB.Web\MTDB.csproj", "{5867FB00-EE60-485E-88F6-346D0A79BCF6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MTDB.Web", "Presentation\MTDB.Web\MTDB.Web.csproj", "{5867FB00-EE60-485E-88F6-346D0A79BCF6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MTDB.Data", "Libraries\MTDB.Data\MTDB.Data.csproj", "{9153DA50-BF3F-45E8-B472-48DE9598C88C}"
 EndProject
