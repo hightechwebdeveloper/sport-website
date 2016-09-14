@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using MTDB.Core.Services.Extensions;
 using MTDB.Core.ViewModels;
 using MTDB.Data;
-using MTDB.Data.Entities;
+using MTDB.Core.Domain;
 
 namespace MTDB.Core.Services.Common
 {
@@ -19,7 +19,7 @@ namespace MTDB.Core.Services.Common
             _dbContext = dbContext;
         }
         
-        public async Task<ProfileDto> GetProfileByUser(ApplicationUser user, CancellationToken cancellationToken)
+        public async Task<ProfileDto> GetProfileByUser(User user, CancellationToken cancellationToken)
         {
             var userId = user.Id;
             var cardpacks = await _dbContext.Set<CardPack>()

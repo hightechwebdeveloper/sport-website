@@ -2,8 +2,9 @@
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using MTDB.Core;
 using MTDB.Core.Services.Common;
-using MTDB.Data.Entities;
+using MTDB.Core.Domain;
 
 namespace MTDB.Controllers
 {
@@ -11,10 +12,13 @@ namespace MTDB.Controllers
     public class CommentsController : BaseController
     {
         private readonly CommentService _commentService;
+        private readonly IWorkContext _workContext;
 
-        public CommentsController(CommentService commentService)
+        public CommentsController(CommentService commentService,
+            IWorkContext workContext)
         {
-            _commentService = commentService;
+            this._commentService = commentService;
+            this._workContext = workContext;
         }
 
         [HttpGet]
@@ -31,14 +35,17 @@ namespace MTDB.Controllers
         [Route("")]
         public async Task<ActionResult> NewComment(int? parentId, string pageUrl, string text, CancellationToken cancellationToken)
         {
+            if (_workContext.CurrentUser == null)
+                return Redirect(Request.UrlReferrer?.ToString());
+
             if (!string.IsNullOrWhiteSpace(text) && !string.IsNullOrWhiteSpace(pageUrl))
             {
-                var dto = await _commentService.CreateComment(new Comment
+                await _commentService.CreateComment(new Comment
                 {
                     ParentId = parentId,
                     PageUrl = pageUrl,
                     Text = text,
-                    UserId = (await GetAuthenticatedUser()).Id,
+                    UserId = _workContext.CurrentUser.Id,
                 }, cancellationToken);
             }
 

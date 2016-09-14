@@ -9,11 +9,12 @@ using mvcForum.Web.Interfaces;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using MTDB.Data;
+using MTDB.Core.Domain;
 
 namespace MTDB.Forums.MVCForumIdentity {
 
 	public class IdentityUserProvider : IWebUserProvider {
-		private readonly UserManager<ApplicationUser> _userManager;
+		private readonly UserManager<Core.Domain.User> _userManager;
 		private readonly IRepository<ForumUser> _userRepo;
         private readonly MVCForumContext _forumContext;
         private bool _authenticated;
@@ -21,7 +22,7 @@ namespace MTDB.Forums.MVCForumIdentity {
         public IdentityUserProvider(IRepository<ForumUser> userRepo, IDbContext mtdbContext) {
             this._forumContext = new MVCForumContext("mvcForum.DataProvider.MainDB"); 
             this._userRepo = userRepo;
-			this._userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(mtdbContext as MtdbContext));
+			this._userManager = new UserManager<Core.Domain.User>(new UserStore<Core.Domain.User>(mtdbContext as MtdbContext));
 		}
 
 		protected ForumUser User;

@@ -642,6 +642,10 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Libraries\MTDB.Core\MTDB.Core.csproj">
+      <Project>{c57e048a-5406-40b8-9dd1-d7d55a9d08f6}</Project>
+      <Name>MTDB.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\..\Libraries\MTDB.Data\MTDB.Data.csproj">
       <Project>{9153da50-bf3f-45e8-b472-48de9598c88c}</Project>
       <Name>MTDB.Data</Name>

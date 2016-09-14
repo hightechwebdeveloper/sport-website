@@ -1,14 +1,11 @@
 ﻿using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
-using System.Security.Claims;
-using System.Threading.Tasks;
-using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
-using MTDB.Data.Entities;
+using MTDB.Core.Domain;
 
 namespace MTDB.Data
 {
-    public class MtdbContext : IdentityDbContext<ApplicationUser>, IDbContext
+    public class MtdbContext : IdentityDbContext<User>, IDbContext
     {
         public MtdbContext() : base("MTDBRepository", throwIfV1Schema: false)
         {
@@ -120,16 +117,4 @@ namespace MTDB.Data
             return this.Database.SqlQuery<TElement>(sql, parameters);
         }
     }
-
-    public class ApplicationUser : IdentityUser
-    {
-        public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager)
-        {
-            // Note the authenticationType must match the one defined in CookieAuthenticationOptions.AuthenticationType
-            var userIdentity = await manager.CreateIdentityAsync(this, DefaultAuthenticationTypes.ApplicationCookie);
-            // Add custom user claims here
-            return userIdentity;
-        }
-    }
-
 }

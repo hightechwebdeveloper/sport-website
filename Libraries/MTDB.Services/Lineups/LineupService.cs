@@ -8,7 +8,7 @@ using MTDB.Core.Services.Extensions;
 using MTDB.Core.ViewModels;
 using MTDB.Core.ViewModels.Lineups;
 using MTDB.Data;
-using MTDB.Data.Entities;
+using MTDB.Core.Domain;
 
 namespace MTDB.Core.Services.Lineups
 {
@@ -21,7 +21,7 @@ namespace MTDB.Core.Services.Lineups
             _dbContext = dbContext;
         }
         
-        public async Task<int> UpdateLineup(ApplicationUser user, CreateLineupDto dto, CancellationToken token)
+        public async Task<int> UpdateLineup(User user, CreateLineupDto dto, CancellationToken token)
         {
             var existingLineup = await _dbContext.Set<Lineup>().FirstOrDefaultAsync(x => x.Id == dto.Id, token);
 
@@ -101,7 +101,7 @@ namespace MTDB.Core.Services.Lineups
             }
         }
 
-        public async Task<int> CreateLineup(ApplicationUser user, CreateLineupDto dto, CancellationToken token)
+        public async Task<int> CreateLineup(User user, CreateLineupDto dto, CancellationToken token)
         {
             var lineup = new Lineup
             {

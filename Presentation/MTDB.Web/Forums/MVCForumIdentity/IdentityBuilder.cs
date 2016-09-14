@@ -22,8 +22,8 @@ namespace MTDB.Forums.MvcForumIdentity {
 			// TODO: Do this in some other way!!
 			new SpecificRepositoryConfiguration().Configure(container);
 
-			//container.RegisterGenericPerRequest(typeof(IUserStore<ApplicationUser>), typeof(UserStore<ApplicationUser>));
-			//container.RegisterGenericPerRequest(typeof(UserManager<ApplicationUser>), typeof(UserManager<ApplicationUser>));
+			//container.RegisterGenericPerRequest(typeof(IUserStore<User>), typeof(UserStore<User>));
+			//container.RegisterGenericPerRequest(typeof(UserManager<User>), typeof(UserManager<User>));
 			//container.RegisterGenericPerRequest(typeof(RoleManager<IdentityRole>), typeof(RoleManager<IdentityRole>));
 		}
 

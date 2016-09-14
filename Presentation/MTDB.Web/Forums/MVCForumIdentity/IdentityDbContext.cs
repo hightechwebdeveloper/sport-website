@@ -1,8 +1,8 @@
 using Microsoft.AspNet.Identity.EntityFramework;
-using MTDB.Forums.Models;
 using mvcForum.DataProvider.EntityFramework;
 using System;
 using System.Data.Entity;
+using MTDB.Core.Domain;
 
 namespace MTDB.Forums.MvcForumIdentity {
 
@@ -10,7 +10,7 @@ namespace MTDB.Forums.MvcForumIdentity {
 		public IdentityDbContext() : base("DefaultConnection") { }
 		public IdentityDbContext(String nameOrConnectionString) : base(nameOrConnectionString) { }
 
-		public DbSet<ApplicationUser> Users { get; set; }
+		public DbSet<User> Users { get; set; }
 		public DbSet<IdentityRole> Roles { get; set; }
 
 		protected override void OnModelCreating(DbModelBuilder modelBuilder) {

@@ -11,7 +11,7 @@ using MTDB.Core;
 using MTDB.Core.Services.Catalog;
 using MTDB.Core.Services.Extensions;
 using MTDB.Core.ViewModels;
-using MTDB.Data.Entities;
+using MTDB.Core.Domain;
 using MTDB.Helpers;
 using MTDB.Models.Player;
 using MTDB.Models.Shared;

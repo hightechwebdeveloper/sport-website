@@ -13,11 +13,12 @@ using mvcForum.Web.Interfaces;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using MTDB.Data;
+using MTDB.Core.Domain;
 
 namespace MTDB.Forums.MVCForumIdentity {
 
 	public class MembershipService : IMembershipService {
-		private readonly UserManager<ApplicationUser> _userManager;
+		private readonly UserManager<Core.Domain.User> _userManager;
 		private readonly RoleManager<IdentityRole> _roleManager;
 		private readonly IWebUserProvider _userProvider;
 		private readonly MVCForumContext _context;
@@ -29,8 +30,8 @@ namespace MTDB.Forums.MVCForumIdentity {
             //this.context = forumContext;
 			this._context = new MVCForumContext("mvcForum.DataProvider.MainDB");
             // TODO: Injection, somehow!!
-            this._userManager = new UserManager<ApplicationUser>(new UserStore<ApplicationUser>(mtdbContext as MtdbContext));
-			this._userManager.UserValidator = new UserValidator<ApplicationUser>(this._userManager) { AllowOnlyAlphanumericUserNames = false, RequireUniqueEmail = true };
+            this._userManager = new UserManager<Core.Domain.User>(new UserStore<Core.Domain.User>(mtdbContext as MtdbContext));
+			this._userManager.UserValidator = new UserValidator<Core.Domain.User>(this._userManager) { AllowOnlyAlphanumericUserNames = false, RequireUniqueEmail = true };
 			// TODO: Injection, somehow!!
 			this._roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(mtdbContext as MtdbContext));
 		}
@@ -52,7 +53,8 @@ namespace MTDB.Forums.MVCForumIdentity {
 				return false;
 			}
 
-			var result = this._userManager.Create(new ApplicationUser {
+			var result = this._userManager.Create(new Core.Domain.User
+            {
 				UserName = accountName,
 				Email = emailAddress,
 				AccessFailedCount = 0,
@@ -126,7 +128,7 @@ namespace MTDB.Forums.MVCForumIdentity {
 			return this.GetAccount(user);
 		}
 
-		private IAccount GetAccount(ApplicationUser user) {
+		private IAccount GetAccount(Core.Domain.User user) {
 			return new Account {
 				AccountName = user.UserName,
 				EmailAddress = user.Email,

@@ -10,7 +10,7 @@ using MTDB.Core.Services.Catalog;
 using MTDB.Core.Services.Extensions;
 using MTDB.Core.ViewModels;
 using MTDB.Data;
-using MTDB.Data.Entities;
+using MTDB.Core.Domain;
 
 namespace MTDB.Core.Services.Packs
 {
@@ -169,7 +169,7 @@ namespace MTDB.Core.Services.Packs
             return await generator.GeneratePack(cancellationToken);
         }
         
-        public async Task<bool> SaveMtdbPack(ApplicationUser user, MtdbCardPackDto pack, CancellationToken cancellationToken)
+        public async Task<bool> SaveMtdbPack(User user, MtdbCardPackDto pack, CancellationToken cancellationToken)
         {
             if (pack == null)
                 return false;
@@ -196,7 +196,7 @@ namespace MTDB.Core.Services.Packs
             return rowsChanged > 0;
         }
 
-        public async Task<bool> SaveDraftPack(ApplicationUser user, DraftResultsDto pack, CancellationToken cancellationToken)
+        public async Task<bool> SaveDraftPack(User user, DraftResultsDto pack, CancellationToken cancellationToken)
         {
             if (pack == null)
                 return false;

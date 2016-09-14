@@ -3,10 +3,11 @@ using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using MTDB.Core;
 using MTDB.Core.Services.Lineups;
 using MTDB.Core.ViewModels;
 using MTDB.Core.ViewModels.Lineups;
-using MTDB.Data.Entities;
+using MTDB.Core.Domain;
 using MTDB.Helpers;
 
 namespace MTDB.Controllers
@@ -14,17 +15,20 @@ namespace MTDB.Controllers
     public class LineupController : BaseController
     {
         private readonly LineupService _lineupService;
+        private readonly IWorkContext _workContext;
 
-        public LineupController(LineupService lineupLineupService)
+        public LineupController(LineupService lineupLineupService,
+            IWorkContext workContext)
         {
-            _lineupService = lineupLineupService;
+            this._lineupService = lineupLineupService;
+            this._workContext = workContext;
         }
 
         [Route("lineups")]
         [HttpGet]
         public async Task<ActionResult> Index(CancellationToken cancellationToken, string sortedBy = "dateAdded", SortOrder sortOrder = SortOrder.Descending, int page = 1, int pageSize = 25)
         {
-            var user = await GetAuthenticatedUser();
+            var user = _workContext.CurrentUser;
             var lineups = await _lineupService.SearchLineups((page - 1) * pageSize, pageSize, sortedBy, sortOrder, cancellationToken);
             var vm = new PagedResults<LineupSearchDto>(lineups.Records, page, pageSize, lineups.RecordCount, sortedBy, sortOrder);
             
@@ -52,7 +56,7 @@ namespace MTDB.Controllers
                 return View(createLineup);
             }
 
-            var user = await GetAuthenticatedUser();
+            var user = _workContext.CurrentUser;
 
             var lineupId = await _lineupService.CreateLineup(user, createLineup, cancellationToken);
 
@@ -71,7 +75,7 @@ namespace MTDB.Controllers
             var dto = await _lineupService.GetLineup(lineupId, cancellationToken);
             if (dto == null)
                 return HttpNotFound();
-            var user = await GetAuthenticatedUser();
+            var user = _workContext.CurrentUser;
             if (user.Id != dto.AuthorId)
                 return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
 
@@ -126,7 +130,7 @@ namespace MTDB.Controllers
             {
                 return HttpNotFound();
             }
-            var user = await GetAuthenticatedUser();
+            var user = _workContext.CurrentUser;
             if (user.Id != dto.AuthorId)
                 return new HttpStatusCodeResult(HttpStatusCode.Forbidden);
 
@@ -160,7 +164,7 @@ namespace MTDB.Controllers
             if (id == 0)
                 return RedirectToAction("Index");
 
-            var user = await GetAuthenticatedUser();
+            var user = _workContext.CurrentUser;
             var lineup = await _lineupService.GetLineup(id, cancellationToken);
             ViewData["AllowEdit"] = user != null && lineup.AuthorId == user.Id;
             ViewData["AllowDelete"] = user != null && ( lineup.AuthorId == user.Id || User.IsInRole("Admin"));

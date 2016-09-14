@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using MTDB.Core.Services.Catalog;
 using MTDB.Data;
 using MTDB.Core.ViewModels;
-using MTDB.Data.Entities;
+using MTDB.Core.Domain;
 
 namespace MTDB.Core.Services.Extensions
 {

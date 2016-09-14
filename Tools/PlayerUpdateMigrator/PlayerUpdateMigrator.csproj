@@ -90,6 +90,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Libraries\MTDB.Core\MTDB.Core.csproj">
+      <Project>{c57e048a-5406-40b8-9dd1-d7d55a9d08f6}</Project>
+      <Name>MTDB.Core</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Libraries\MTDB.Data\MTDB.Data.csproj">
       <Project>{9153DA50-BF3F-45E8-B472-48DE9598C88C}</Project>
       <Name>MTDB.Data</Name>

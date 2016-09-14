@@ -9,7 +9,7 @@ using MTDB.Core.Caching;
 using MTDB.Core.Services.Catalog;
 using MTDB.Core.Services.Extensions;
 using MTDB.Data;
-using MTDB.Data.Entities;
+using MTDB.Core.Domain;
 
 namespace PlayerUpdater
 {

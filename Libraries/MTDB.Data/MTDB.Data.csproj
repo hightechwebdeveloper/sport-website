@@ -80,41 +80,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Entities\BadgeGroup.cs" />
-    <Compile Include="Entities\PlayerTendency.cs" />
-    <Compile Include="Entities\PlayerBadge.cs" />
-    <Compile Include="Entities\Badge.cs" />
-    <Compile Include="Entities\CardPack.cs" />
-    <Compile Include="Entities\CardPackPlayer.cs" />
-    <Compile Include="Entities\Collection.cs" />
-    <Compile Include="Entities\Comment.cs" />
-    <Compile Include="Entities\Conference.cs" />
-    <Compile Include="Entities\Division.cs" />
-    <Compile Include="Entities\ISortable.cs" />
-    <Compile Include="Entities\Lineup.cs" />
-    <Compile Include="Entities\LineupPlayer.cs" />
-    <Compile Include="Entities\LineupPositionType.cs" />
-    <Compile Include="Entities\PlayerUpdate.cs" />
-    <Compile Include="Entities\PlayerUpdateChange.cs" />
-    <Compile Include="Entities\BadgeLevel.cs" />
-    <Compile Include="Entities\Team.cs" />
-    <Compile Include="Entities\Tendency.cs" />
-    <Compile Include="Entities\TendencyType.cs" />
-    <Compile Include="Entities\Theme.cs" />
-    <Compile Include="Entities\Tier.cs" />
     <Compile Include="IDbContext.cs" />
     <Compile Include="MtdbContext.cs" />
-    <Compile Include="Entities\EntityBase.cs" />
-    <Compile Include="Entities\Player.cs" />
-    <Compile Include="Entities\PlayerStat.cs" />
-    <Compile Include="Entities\Stat.cs" />
-    <Compile Include="Entities\StatCategory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RepositoryExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\MTDB.Core\MTDB.Core.csproj">
+      <Project>{c57e048a-5406-40b8-9dd1-d7d55a9d08f6}</Project>
+      <Name>MTDB.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

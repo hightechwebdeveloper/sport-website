@@ -5,9 +5,10 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using MTDB.Core;
 using MTDB.Core.Services.Packs;
 using MTDB.Core.ViewModels;
-using MTDB.Data.Entities;
+using MTDB.Core.Domain;
 using MTDB.Helpers;
 
 namespace MTDB.Controllers
@@ -15,10 +16,13 @@ namespace MTDB.Controllers
     public class PackController : BaseController
     {
         private readonly PackService _packService;
+        private readonly IWorkContext _workContext;
 
-        public PackController(PackService packPackService)
+        public PackController(PackService packPackService,
+            IWorkContext workContext)
         {
-            _packService = packPackService;
+            this._packService = packPackService;
+            this._workContext = workContext;
         }
 
         [Route("packs")]
@@ -69,7 +73,7 @@ namespace MTDB.Controllers
                 return View("CreateMTDB", tempDto);
             }
 
-            var user = await GetAuthenticatedUser();
+            var user = _workContext.CurrentUser;
 
             pack.Cards = tempDto.Cards;
 
@@ -190,7 +194,7 @@ namespace MTDB.Controllers
             results.Picked = draftResults.Picked;
             results.Points = draftResults.Points;
 
-            var user = await GetAuthenticatedUser();
+            var user = _workContext.CurrentUser;
 
             var saved = await _packService.SaveDraftPack(user, results, cancellationToken);
 

@@ -5,7 +5,7 @@ using System.IO;
 using System.Linq;
 using CsvHelper;
 using MTDB.Data;
-using MTDB.Data.Entities;
+using MTDB.Core.Domain;
 
 namespace _2KUpdateCode
 {

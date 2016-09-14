@@ -5,7 +5,7 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using MTDB.Data.Entities;
+using MTDB.Core.Domain;
 
 namespace MTDB.Data
 {
