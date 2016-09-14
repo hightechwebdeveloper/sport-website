@@ -168,9 +168,9 @@
       <Project>{9153da50-bf3f-45e8-b472-48de9598c88c}</Project>
       <Name>MTDB.Data</Name>
     </ProjectReference>
-    <ProjectReference Include="..\MTDB.Core.ViewModels\MTDB.Core.ViewModels.csproj">
+    <ProjectReference Include="..\MTDB.Core.ViewModels\MTDB.Core.ViewModelsObsolete.csproj">
       <Project>{9137af64-c67e-44f5-8930-e5bddba2d5c7}</Project>
-      <Name>MTDB.Core.ViewModels</Name>
+      <Name>MTDB.Core.ViewModelsObsolete</Name>
     </ProjectReference>
     <ProjectReference Include="..\MTDB.Core\MTDB.Core.csproj">
       <Project>{c57e048a-5406-40b8-9dd1-d7d55a9d08f6}</Project>

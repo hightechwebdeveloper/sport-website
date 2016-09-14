@@ -34,39 +34,6 @@ namespace MTDB.Data
             return obj;
         }
 
-        public static T Random<T>(this IEnumerable<T> enumerable)
-        {
-            if (enumerable == null)
-            {
-                throw new ArgumentNullException(nameof(enumerable));
-            }
-
-            // note: creating a Random instance each call may not be correct for you,
-            // consider a thread-safe static instance
-            var r = new Random();
-            var list = enumerable as IList<T> ?? enumerable.ToList();
-            return list.Count == 0 ? default(T) : list[r.Next(0, list.Count)];
-        }
-
-        public static IEnumerable<MTDBPackLeaderboard> GetMTDBLeaderboard(this MtdbContext repository, int count, string packType, DateTimeOffset? startDate)
-        {
-            var query = $"SELECT TOP({count}) * FROM vw_Leaderboard WHERE 1=1 ";
-            if (!string.IsNullOrWhiteSpace(packType))
-            {
-                query = query + $"AND Pack = '{packType}' ";
-            }
-            if (startDate.HasValue)
-            {
-                query = query + $"AND DateTime >= '{startDate}' ";
-            }
-
-            query = query + "ORDER BY Score DESC";
-
-            var values =
-                repository.Database.SqlQuery<MTDBPackLeaderboard>(query);
-            return values;
-        }
-
         public static IQueryable<T> Sort<T>(this IQueryable<T> source, string name, SortOrder sortOrder, string defaultColumn, int skip, int take, Dictionary<string, string> nameMap = null)
         {
             if (nameMap != null && nameMap.Any())
@@ -157,8 +124,7 @@ namespace MTDB.Data
             MethodCallExpression resultExp = Expression.Call(typeof(Queryable), "OrderByDescending", new Type[] { type, property.PropertyType }, source.Expression, Expression.Quote(orderByExp));
             return source.Provider.CreateQuery<T>(resultExp);
         }
-
-
+        
         public static PropertyInfo GetNestedProperty(this Type type, string name)
         {
             var property = type.GetProperty(name, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
@@ -184,17 +150,6 @@ namespace MTDB.Data
                 body = Expression.PropertyOrField(body, member);
             }
             return Expression.Lambda(body, param);
-        }
-
-
-        public class MTDBPackLeaderboard
-        {
-            public string Name { get; set; }
-            public string User { get; set; }
-            public DateTimeOffset DateTime { get; set; }
-            public CardPackType Pack { get; set; }
-            public int Score { get; set; }
-            public int Id { get; set; }
         }
     }
 }

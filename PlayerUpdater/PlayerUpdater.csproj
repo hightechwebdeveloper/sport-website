@@ -104,9 +104,9 @@
       <Project>{47e0c772-eb99-4a8c-816c-18f9358e02ab}</Project>
       <Name>MTDB.Services</Name>
     </ProjectReference>
-    <ProjectReference Include="..\MTDB.Core.ViewModels\MTDB.Core.ViewModels.csproj">
+    <ProjectReference Include="..\MTDB.Core.ViewModels\MTDB.Core.ViewModelsObsolete.csproj">
       <Project>{9137af64-c67e-44f5-8930-e5bddba2d5c7}</Project>
-      <Name>MTDB.Core.ViewModels</Name>
+      <Name>MTDB.Core.ViewModelsObsolete</Name>
     </ProjectReference>
     <ProjectReference Include="..\MTDB.Core\MTDB.Core.csproj">
       <Project>{c57e048a-5406-40b8-9dd1-d7d55a9d08f6}</Project>
