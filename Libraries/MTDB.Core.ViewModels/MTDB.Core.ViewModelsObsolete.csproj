@@ -4,13 +4,14 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{A026B4C1-456F-4AD1-BB35-1E731C2FBBB6}</ProjectGuid>
+    <ProjectGuid>{9137AF64-C67E-44F5-8930-E5BDDBA2D5C7}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>PagedList</RootNamespace>
-    <AssemblyName>PagedList</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <RootNamespace>MTDB.Core.ViewModels</RootNamespace>
+    <AssemblyName>MTDB.Core.ViewModels</AssemblyName>
+    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -49,62 +50,49 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+      <HintPath>..\..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Core" />
     <Reference Include="System.Web" />
-    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.Helpers.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Web.Mvc, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.3\lib\net45\System.Web.Mvc.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.3\lib\net45\System.Web.Razor.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Net.Http" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AsyncPagedList.cs" />
-    <Compile Include="AsyncPagedListExtensions.cs" />
-    <Compile Include="BasePagedList.cs" />
-    <Compile Include="GoToFormRenderOptions.cs" />
-    <Compile Include="HtmlHelper.cs" />
-    <Compile Include="IPagedList.cs" />
-    <Compile Include="PagedList.cs" />
-    <Compile Include="PagedListDisplayMode.cs" />
-    <Compile Include="PagedListExtensions.cs" />
-    <Compile Include="PagedListForEntityFramework .cs" />
-    <Compile Include="PagedListMetaData.cs" />
-    <Compile Include="PagedListRenderOptions.cs" />
-    <Compile Include="Paging.cs" />
+    <Compile Include="CardDto.cs" />
+    <Compile Include="IPagedAndSorted.cs" />
+    <Compile Include="CommentDto.cs" />
+    <Compile Include="MtdbCardPackDto.cs" />
+    <Compile Include="LineupDto.cs" />
+    <Compile Include="LineupPlayerDto.cs" />
+    <Compile Include="LineupSearchDto.cs" />
+    <Compile Include="Lineups\CreateLineupDto.cs" />
+    <Compile Include="PagedResults.cs" />
+    <Compile Include="PlayerUpdates\Paged.cs" />
+    <Compile Include="PlayerUpdates\PlayerFieldUpdateViewModel.cs" />
+    <Compile Include="PlayerUpdates\PlayerUpdateDetailsModel.cs" />
+    <Compile Include="PlayerUpdates\PlayerUpdatesViewModel.cs" />
+    <Compile Include="PlayerUpdates\PlayerUpdateModelType.cs" />
+    <Compile Include="PlayerUpdates\PlayerUpdateViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="StaticPagedList.cs" />
+    <Compile Include="PlayerFilter.cs" />
+    <Compile Include="StatFilter.cs" />
+    <Compile Include="GroupScoreDto.cs" />
+    <Compile Include="TierDto.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PagedList\PagedList.csproj">
+      <Project>{A026B4C1-456F-4AD1-BB35-1E731C2FBBB6}</Project>
+      <Name>PagedList</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
