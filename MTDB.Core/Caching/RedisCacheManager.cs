@@ -14,11 +14,12 @@ namespace MTDB.Core.Caching
     public partial class RedisCacheManager : ICacheManager
     {
         #region Fields
-
-        private readonly ConnectionMultiplexer _muxer;
-        private readonly IDatabase _db;
-        private readonly ICacheManager _perRequestCacheManager;
         
+        private readonly ICacheManager _perRequestCacheManager;
+        private readonly string _redisCachingConnectionString;
+        private ConnectionMultiplexer _muxer;
+        private IDatabase _db;
+
         #endregion
 
         #region Ctor
@@ -30,13 +31,21 @@ namespace MTDB.Core.Caching
                 throw new Exception("Redis connection string is empty");
 
             this._perRequestCacheManager = perRequestCacheManager;
-            this._muxer = ConnectionMultiplexer.Connect(redisCachingConnectionString);
-            this._db = _muxer.GetDatabase();
+            this._redisCachingConnectionString = redisCachingConnectionString;
         }
 
         #endregion
 
         #region Utilities
+
+        private void InitConnection()
+        {
+            if (_muxer != null)
+                return;
+
+            this._muxer = ConnectionMultiplexer.Connect(_redisCachingConnectionString);
+            this._db = _muxer.GetDatabase();
+        }
         
         protected virtual byte[] Serialize(object item)
         {
@@ -69,7 +78,9 @@ namespace MTDB.Core.Caching
             //this way we won't connect to Redis server 500 times per HTTP request (e.g. each time to load a locale or setting)
             if (_perRequestCacheManager.IsSet(key))
                 return _perRequestCacheManager.Get<T>(key);
-            
+
+            InitConnection();
+
             var rValue = _db.StringGet(key);
             if (!rValue.HasValue)
                 return default(T);
@@ -90,6 +101,8 @@ namespace MTDB.Core.Caching
             if (data == null)
                 return;
 
+            InitConnection();
+
             var entryBytes = Serialize(data);
             var expiresIn = TimeSpan.FromMinutes(cacheTime);
             
@@ -108,7 +121,9 @@ namespace MTDB.Core.Caching
             //this way we won't connect to Redis server 500 times per HTTP request (e.g. each time to load a locale or setting)
             if (_perRequestCacheManager.IsSet(key))
                 return true;
-            
+
+            InitConnection();
+
             return _db.KeyExists(key);
         }
 
@@ -118,6 +133,8 @@ namespace MTDB.Core.Caching
         /// <param name="key">/key</param>
         public virtual void Remove(string key)
         {
+            InitConnection();
+
             _db.KeyDelete(key);
         }
 
@@ -127,6 +144,8 @@ namespace MTDB.Core.Caching
         /// <param name="pattern">pattern</param>
         public virtual void RemoveByPattern(string pattern)
         {
+            InitConnection();
+
             foreach (var ep in _muxer.GetEndPoints())
             {
                 var server = _muxer.GetServer(ep);
@@ -141,6 +160,8 @@ namespace MTDB.Core.Caching
         /// </summary>
         public virtual void Clear()
         {
+            InitConnection();
+
             foreach (var ep in _muxer.GetEndPoints())
             {
                 var server = _muxer.GetServer(ep);

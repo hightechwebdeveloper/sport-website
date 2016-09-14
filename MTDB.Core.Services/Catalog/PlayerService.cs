@@ -41,8 +41,17 @@ namespace MTDB.Core.Services.Catalog
         /// {4} : terms
         /// {5} : showHidden
         /// </remarks>
-        private const string PLAYER_SEARCH =
-            "MTDB.player.search-{0}-{1}-{2}-{3}-{4}-{5}";
+        private const string PLAYER_SEARCH = "MTDB.player.search-{0}-{1}-{2}-{3}-{4}-{5}";
+        /// <summary>
+        /// Key for caching
+        /// </summary>
+        /// <remarks>
+        /// {0} : collectionId
+        /// {1} : teamId
+        /// {2} : themeId
+        /// </remarks>
+        private const string PLAYERS_AVERAGES = "MTDB.player.averages-{0}-{1}-{2}";
+        private const string PLAYERS_AVERAGES_PATTERN_KEY = "MTDB.player.averages";
         private const string PLAYERS_HEIGHTS = "MTDB.player.heights";
 
         #endregion
@@ -205,7 +214,6 @@ namespace MTDB.Core.Services.Catalog
         #endregion
 
         #region Methods
-            
         
         public async Task<IPagedList<Player>> SearchPlayers(int pageIndex, int pageSize,
             //Expression<Func<Player, object>> orderBy,
@@ -225,9 +233,12 @@ namespace MTDB.Core.Services.Catalog
             CancellationToken token = default (CancellationToken),
             bool showHidden = false)
         {
-            terms = terms
-                .Where(t => !string.IsNullOrWhiteSpace(t))
-                .ToArray();
+            if (terms != null)
+            {
+                terms = terms
+                    .Where(t => !string.IsNullOrWhiteSpace(t))
+                    .ToArray();
+            }
 
             var useCache = true;
 
@@ -302,7 +313,7 @@ namespace MTDB.Core.Services.Catalog
                 useCache = false;
             }
 
-            if (terms.HasItems())
+            if (terms != null && terms.HasItems())
             {
                 var termQuery = query
                     .Where(p => terms.All(term => p.Name.Contains(term)));
@@ -393,6 +404,7 @@ namespace MTDB.Core.Services.Catalog
 
             //clear caches
             _memoryCacheManager.RemoveByPattern(PLAYERS_HEIGHTS);
+            _memoryCacheManager.RemoveByPattern(PLAYERS_AVERAGES_PATTERN_KEY);
         }
 
         public async Task UpdatePlayer(Player player, CancellationToken token)
@@ -412,6 +424,7 @@ namespace MTDB.Core.Services.Catalog
             _memoryCacheManager.RemoveByPattern(keybyId);
             var keyByUri = string.Format(PLAYER_BY_URI, player.UriName);
             _memoryCacheManager.RemoveByPattern(keyByUri);
+            _memoryCacheManager.RemoveByPattern(PLAYERS_AVERAGES_PATTERN_KEY);
         }
 
         public async Task DeletePlayer(Player player, CancellationToken token)
@@ -445,6 +458,7 @@ namespace MTDB.Core.Services.Catalog
             _memoryCacheManager.RemoveByPattern(keybyId);
             var keyByUri = string.Format(PLAYER_BY_URI, player.UriName);
             _memoryCacheManager.RemoveByPattern(keyByUri);
+            _memoryCacheManager.RemoveByPattern(PLAYERS_AVERAGES_PATTERN_KEY);
 
             await _dbContext.SaveChangesAsync(token);
         }
@@ -456,59 +470,57 @@ namespace MTDB.Core.Services.Catalog
                     await _dbContext.Set<Player>().Select(p => p.Height).Distinct().ToListAsync(token));
             return heights.OrderBy(p => p, new HeightComparer());
         }
-        
-        //public async Task<List<SearchPlayerResultDto>> AutoCompleteSearch(string termString, CancellationToken token, bool showHidden = false)
-        //{
-        //    if (string.IsNullOrWhiteSpace(termString))
-        //        return new List<SearchPlayerResultDto>();
 
-        //    termString = new Regex("[ ]{2,}", RegexOptions.None)
-        //        .Replace(termString.Trim(), " ");
+        public async Task<AveragesResult> GetPlayersAverages(int? collectionId = null, 
+            int? teamId = null,
+            int? themeId = null,
+            CancellationToken token = default(CancellationToken))
+        {
+            if (collectionId == null)
+                collectionId = 0;
+            if (teamId == null)
+                teamId = 0;
+            if (themeId == null)
+                themeId = 0;
 
-        //    var terms = termString.Split(' ');
+            var key = string.Format(PLAYERS_AVERAGES, collectionId, teamId, themeId);
+            return await _redisCacheManager.GetAsync(key, int.MaxValue, async () =>
+            {
+                var query = _dbContext.Set<Player>()
+                    .Include(p => p.Tier)
+                    .Include(p => p.Collection)
+                    .AsQueryable();
 
-        //    var query = _repository.Players
-        //        .AsQueryable();
+                query = query.Where(p => !p.Private);
 
-        //    query = query
-        //        .Where(p => terms.All(term => p.Name.Contains(term)));
+                if (collectionId > 0)
+                    query = query.Where(p => p.CollectionId == collectionId);
+                if (teamId > 0)
+                    query = query.Where(p => p.TeamId == teamId);
+                if (themeId > 0)
+                    query = query.Where(p => p.ThemeId == themeId);
 
-        //    if (!showHidden)
-        //        query = query.Where(x => !x.Private);
+                var overall = await query.AverageAsync(p => p.Overall, token);
+                var outsideScoring = await query.AverageAsync(p => p.OutsideScoring, token);
+                var insideScoring = await query.AverageAsync(p => p.InsideScoring, token);
+                var playmaking = await query.AverageAsync(p => p.Playmaking, token);
+                var athleticism = await query.AverageAsync(p => p.Athleticism, token);
+                var defending = await query.AverageAsync(p => p.Defending, token);
+                var rebounding = await query.AverageAsync(p => p.Rebounding, token);
 
-        //    //performance optimization
-        //    var preFiltered = await query
-        //        .Select(x => new { x.Id, x.Name})
-        //        .ToListAsync(token);
-
-        //    var filtered = preFiltered
-        //        .Where(p => terms.All(term => p.Name.Split(' ').Any(pName => pName.StartsWith(term, StringComparison.InvariantCultureIgnoreCase))))
-        //        .Select(x => x.Id);
-
-        //    var players = await _repository.Players
-        //        .Include(p => p.Tier)
-        //        .Include(p => p.Collection)
-        //        .Where(p => filtered.Contains(p.Id))
-        //        .ToListAsync(token);
-
-        //    return players
-        //        .Select(x => x.ToSearchDto())
-        //        .OrderByDescending(x => x.Overall)
-        //        .ToList();
-        //}
-
-        //public async Task<ManageDto> GenerateManage(CancellationToken token)
-        //{
-        //    var manageDto = new ManageDto
-        //    {
-        //        Themes = await GetThemes(token),
-        //        Teams = await GetTeams(token),
-        //        Tiers = await GetTiers(token),
-        //        Collections = await GetCollectionsForDropDowns(token)
-        //    };
-
-        //    return manageDto;
-        //}
+                var result = new AveragesResult
+                {
+                    Overall = (int) overall,
+                    OutsideScoring = (int) outsideScoring,
+                    InsideScoring = (int) insideScoring,
+                    Playmaking = (int) playmaking,
+                    Athleticism = (int) athleticism,
+                    Defending = (int) defending,
+                    Rebounding = (int) rebounding,
+                };
+                return result;
+            });
+        }
 
         #endregion
     }

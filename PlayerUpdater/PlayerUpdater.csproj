@@ -108,6 +108,10 @@
       <Project>{9137af64-c67e-44f5-8930-e5bddba2d5c7}</Project>
       <Name>MTDB.Core.ViewModels</Name>
     </ProjectReference>
+    <ProjectReference Include="..\MTDB.Core\MTDB.Core.csproj">
+      <Project>{c57e048a-5406-40b8-9dd1-d7d55a9d08f6}</Project>
+      <Name>MTDB.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

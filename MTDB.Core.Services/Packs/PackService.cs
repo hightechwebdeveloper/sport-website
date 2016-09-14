@@ -102,10 +102,10 @@ namespace MTDB.Core.Services.Packs
                         PlayerUri = cardPackPlayer.Player.UriName,
                         PlayerImageUri = cardPackPlayer.Player.GetImageUri(ImageSize.Full),
                         Tier = cardPackPlayer.Player.Tier.ToDto(),
-                        Points = cardPackPlayer.Player.Points.GetValueOrDefault(0),
+                        Points = cardPackPlayer.Player.Points,
                     };
                 }),
-                Points = cardPack.Players.Sum(p => p.Player.Points.GetValueOrDefault(0))
+                Points = cardPack.Players.Sum(p => p.Player.Points)
             };
         }
 
@@ -136,19 +136,19 @@ namespace MTDB.Core.Services.Packs
 
                     return new DraftCardDto
                     {
-                        Athleticism = cardPackPlayer.Player.Athleticism.Value,
-                        Defending = cardPackPlayer.Player.Defending.Value,
+                        Athleticism = cardPackPlayer.Player.Athleticism,
+                        Defending = cardPackPlayer.Player.Defending,
                         Id = cardPackPlayer.Player.Id,
-                        InsideScoring = cardPackPlayer.Player.InsideScoring.Value,
-                        OutsideScoring = cardPackPlayer.Player.OutsideScoring.Value,
+                        InsideScoring = cardPackPlayer.Player.InsideScoring,
+                        OutsideScoring = cardPackPlayer.Player.OutsideScoring,
                         Overall = cardPackPlayer.Player.Overall,
                         PlayerImageUri = cardPackPlayer.Player.GetImageUri(ImageSize.Full),
                         PlayerName = cardPackPlayer.Player.Name,
                         PlayerUri = cardPackPlayer.Player.UriName,
-                        Playmaking = cardPackPlayer.Player.Playmaking.Value,
-                        Points = cardPackPlayer.Player.Points.Value,
+                        Playmaking = cardPackPlayer.Player.Playmaking,
+                        Points = cardPackPlayer.Player.Points,
                         Position = cardPackPlayer.Player.PrimaryPosition,
-                        Rebounding = cardPackPlayer.Player.Rebounding.Value,
+                        Rebounding = cardPackPlayer.Player.Rebounding,
                         Round = 0,
                         Tier = cardPackPlayer.Player.Tier.ToDto()
                     };
@@ -177,7 +177,7 @@ namespace MTDB.Core.Services.Packs
             var cardPack = new CardPack
             {
                 Name = pack.Name.ReplaceBlockedWordsWithMTDB(),
-                UserId = user.Id,
+                UserId = user?.Id,
                 CardPackType = CardPackType.Mtdb,
                 Points = pack.Cards.Sum(p => p.Points)
             };
@@ -204,7 +204,7 @@ namespace MTDB.Core.Services.Packs
             var cardPack = new CardPack
             {
                 Name = pack.Name.ReplaceBlockedWordsWithMTDB(),
-                UserId = user.Id,
+                UserId = user?.Id,
                 CardPackType = CardPackType.Draft,
                 Points = pack.Points,
             };

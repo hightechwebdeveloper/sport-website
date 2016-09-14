@@ -42,7 +42,7 @@ namespace MTDB.Core.Services.Catalog
         {
             var teams = await
                 _memoryCacheManager.GetAsync(TEAMS_All, int.MaxValue, async () =>
-                    (await _dbContext.Set<Team>().ToListAsync(token)).OrderBy(t => t.Name).ToList());
+                    (await _dbContext.Set<Team>().Include(t => t.Division.Conference).ToListAsync(token)).OrderBy(t => t.Name).ToList());
             return teams;
         }
 

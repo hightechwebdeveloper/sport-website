@@ -198,12 +198,12 @@ namespace MTDB.Controllers
             model.PC = player.PC;
             model.Height = player.Height;
             model.Overall = player.Overall;
-            model.OutsideScoring = player.OutsideScoring.Value;
-            model.InsideScoring = player.InsideScoring.Value;
-            model.Playmaking = player.Playmaking.Value;
-            model.Athleticism = player.Athleticism.Value;
-            model.Defending = player.Defending.Value;
-            model.Rebounding = player.Rebounding.Value;
+            model.OutsideScoring = player.OutsideScoring;
+            model.InsideScoring = player.InsideScoring;
+            model.Playmaking = player.Playmaking;
+            model.Athleticism = player.Athleticism;
+            model.Defending = player.Defending;
+            model.Rebounding = player.Rebounding;
             model.CreatedDate = player.CreatedDate;
             model.Prvate = player.Private;
         }

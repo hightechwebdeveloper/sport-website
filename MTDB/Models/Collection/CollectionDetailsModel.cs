@@ -3,7 +3,7 @@ using MTDB.Core.ViewModels;
 
 namespace MTDB.Models.Collection
 {
-    public class CollectionDetailsViewModel
+    public class CollectionDetailsModel
     {
         public string Name { get; set; }
         public int Overall { get; set; }

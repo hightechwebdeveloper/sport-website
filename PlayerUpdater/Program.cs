@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Threading;
 using CsvHelper;
+using MTDB.Core.Caching;
 using MTDB.Core.Services.Catalog;
 using MTDB.Core.Services.Extensions;
 using MTDB.Data;
@@ -29,7 +30,8 @@ namespace PlayerUpdater
             {
                 var positions = GetPositions();
                 var repo = new MtdbContext();
-                var statService = new StatService(repo);
+                var memoryCache = new MemoryCacheManager();
+                var statService = new StatService(repo, memoryCache);
 
                 var existingPlayers =
                     repo.Set<Player>().ToList();

@@ -74,12 +74,12 @@ namespace MTDB.Core.Services.Lineups
             if (lineup.Players.HasItems())
             {
                 lineup.Overall = (int)lineup.Players.Average(s => s.Player.Overall);
-                lineup.OutsideScoring = (int)lineup.Players.Average(s => s.Player.OutsideScoring.GetValueOrDefault(0));
-                lineup.InsideScoring = (int)lineup.Players.Average(s => s.Player.InsideScoring.GetValueOrDefault(0));
-                lineup.Playmaking = (int)lineup.Players.Average(s => s.Player.Playmaking.GetValueOrDefault(0));
-                lineup.Athleticism = (int)lineup.Players.Average(s => s.Player.Athleticism.GetValueOrDefault(0));
-                lineup.Defending = (int)lineup.Players.Average(s => s.Player.Defending.GetValueOrDefault(0));
-                lineup.Rebounding = (int)lineup.Players.Average(s => s.Player.Rebounding.GetValueOrDefault(0));
+                lineup.OutsideScoring = (int)lineup.Players.Average(s => s.Player.OutsideScoring);
+                lineup.InsideScoring = (int)lineup.Players.Average(s => s.Player.InsideScoring);
+                lineup.Playmaking = (int)lineup.Players.Average(s => s.Player.Playmaking);
+                lineup.Athleticism = (int)lineup.Players.Average(s => s.Player.Athleticism);
+                lineup.Defending = (int)lineup.Players.Average(s => s.Player.Defending);
+                lineup.Rebounding = (int)lineup.Players.Average(s => s.Player.Rebounding);
                 lineup.Xbox = lineup.Players.Sum(s => s.Player.Xbox.GetValueOrDefault(0));
                 lineup.PS4 = lineup.Players.Sum(s => s.Player.PS4.GetValueOrDefault(0));
                 lineup.PC = lineup.Players.Sum(s => s.Player.PC.GetValueOrDefault(0));

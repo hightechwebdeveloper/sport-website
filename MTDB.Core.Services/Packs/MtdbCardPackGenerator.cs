@@ -73,7 +73,7 @@ namespace MTDB.Core.Services.Packs
             return new MtdbCardPackDto
             {
                 Cards = PickedPlayersToCardDtos(players),
-                Points = players.Sum(p=>p.Points.GetValueOrDefault(0))
+                Points = players.Sum(p=>p.Points)
             };
         }
     }
@@ -168,20 +168,20 @@ namespace MTDB.Core.Services.Packs
                 yield return new DraftCardDto
                 {
                     Id = player.Id,
-                    Athleticism = player.Athleticism.Value,
-                    Defending = player.Defending.Value,
-                    InsideScoring = player.InsideScoring.Value,
-                    OutsideScoring = player.OutsideScoring.Value,
+                    Athleticism = player.Athleticism,
+                    Defending = player.Defending,
+                    InsideScoring = player.InsideScoring,
+                    OutsideScoring = player.OutsideScoring,
                     Overall = player.Overall,
                     PlayerImageUri = player.GetImageUri(ImageSize.Full),
                     PlayerName = player.Name,
                     PlayerUri = player.UriName,
-                    Playmaking = player.Playmaking.Value,
+                    Playmaking = player.Playmaking,
                     Round = round,
                     Tier = player.Tier.ToDto(),
-                    Rebounding = player.Rebounding.Value,
+                    Rebounding = player.Rebounding,
                     Position = player.PrimaryPosition,
-                    Points = player.Points.GetValueOrDefault(0)
+                    Points = player.Points
                 };
             }
         }

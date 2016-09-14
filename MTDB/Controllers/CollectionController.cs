@@ -1,4 +1,5 @@
-﻿using System.Data.SqlClient;
+﻿using System.Collections.Generic;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,14 +16,33 @@ namespace MTDB.Controllers
 {
     public class CollectionController : BaseController
     {
-        private readonly CollectionService _collectionService;
+        #region Fields
 
-        public CollectionController(CollectionService collectionService)
+        private readonly CollectionService _collectionService;
+        private readonly ThemeService _themeService;
+        private readonly TeamService _teamService;
+        private readonly PlayerService _playerService;
+
+        #endregion
+
+        #region ctor
+
+        public CollectionController(CollectionService collectionService,
+            ThemeService themeService,
+            TeamService teamService,
+            PlayerService playerService)
         {
             this._collectionService = collectionService;
+            this._themeService = themeService;
+            this._teamService = teamService;
+            this._playerService = playerService;
         }
 
-        private void PreparePlayerItemModel(CollectionDetailsViewModel.PlayerItemModel model, Player player)
+        #endregion
+
+        #region Utilities
+
+        private void PreparePlayerItemModel(CollectionDetailsModel.PlayerItemModel model, Player player)
         {
             var position = player.PrimaryPosition;
 
@@ -41,60 +61,121 @@ namespace MTDB.Controllers
             model.PC = player.PC;
             model.Height = player.Height;
             model.Overall = player.Overall;
-            model.OutsideScoring = player.OutsideScoring.Value;
-            model.InsideScoring = player.InsideScoring.Value;
-            model.Playmaking = player.Playmaking.Value;
-            model.Athleticism = player.Athleticism.Value;
-            model.Defending = player.Defending.Value;
-            model.Rebounding = player.Rebounding.Value;
+            model.OutsideScoring = player.OutsideScoring;
+            model.InsideScoring = player.InsideScoring;
+            model.Playmaking = player.Playmaking;
+            model.Athleticism = player.Athleticism;
+            model.Defending = player.Defending;
+            model.Rebounding = player.Rebounding;
             model.CreatedDate = player.CreatedDate;
             model.Prvate = player.Private;
         }
 
+        private IList<CollectionListModel.CollectionItemModel> MapCollectionToViewModel(IEnumerable<Collection> collections, string groupName = null)
+        {
+            return collections.Select((collection, index) => new CollectionListModel.CollectionItemModel
+            {
+                Name = collection.Name,
+                Group = groupName ?? collection.GroupName,
+                DisplayOrder = collection.DisplayOrder ?? index
+            })
+            .ToList();
+        }
+
+        #endregion
+
+        #region Methods
+
         [Route("collections")]
         public async Task<ActionResult> Index(CancellationToken token)
         {
-            var collections = await _collectionService.GetGroupedCollections(token);
-            return View(collections);
+            var collections = await _collectionService.GetCollections(token);
+            var teams = (await _teamService.GetTeams(token))
+                .Where(t => !t.Name.Contains("Free"))
+                .OrderBy(p => p.Division.Name)
+                .ThenBy(p => p.Name)
+                .Select((team, id) => new CollectionListModel.CollectionItemModel { Name = team.Name, Group = team.Division.Name, DisplayOrder = id })
+                .ToList();
+
+            var other = new[] {"Gems of The Game", "Rewards"}
+                .SelectMany(themeName => MapCollectionToViewModel(collections.Where(p => p.ThemeName == themeName), themeName))
+                .ToList();
+            var model = new CollectionListModel
+            {
+                Current = teams,
+                CurrentFreeAgents = MapCollectionToViewModel(collections.Where(p => p.ThemeName == "Current")),
+                Dynamic = teams,
+                DynamicFreeAgents = MapCollectionToViewModel(collections.Where(p => p.ThemeName == "Dynamic")),
+                Historic = MapCollectionToViewModel(collections.Where(p => p.ThemeName == "Historic")),
+                Other = other
+            };
+
+            return View(model);
         }
 
         [Route("collections/{groupName}/{name}")]
         public async Task<ActionResult> Details(string groupName, string name, CancellationToken token, string sortedBy = "overall", SortOrder sortOrder = SortOrder.Descending, int page = 1, int pageSize = 25)
         {
             if (!groupName.HasValue() || !name.HasValue())
+                return HttpNotFound();
+
+            // So we will receive a groupName and name with dashes instead of spaces.  Remove dashes and place spaces in.  
+            //groupName = groupName.Replace("-", " ");
+            //name = name.ToLower().Replace("-", " "); //not working o_O
+            var filterGroup = groupName.Replace("-", " ").ToLower();
+            var filterName = name.Replace("-", " ").ToLower();
+
+            Collection collection = null;
+            Theme theme = null;
+            Team team = null;
+
+            // If groupName == Dynamic or Current then we just filter by theme and team
+            if (filterGroup.EqualsAny("dynamic", "current") && !filterName.Contains("free"))
             {
-                return RedirectToAction("Index");
+                var themes = await _themeService.GetThemes(token);
+                var teams = await _teamService.GetTeams(token);
+
+                theme = themes.FirstOrDefault(t => t.Name.ToLower() == filterGroup);
+                team = teams.FirstOrDefault(p => p.Name.ToLower() == filterName);
+            }
+            else
+            {
+                var collections = await _collectionService.GetCollections(token);
+                collection = collections.FirstOrDefault(p => (p.GroupName?.ToLower() == filterGroup || p.ThemeName?.ToLower() == filterGroup) && p.Name.ToLower() == filterName);
             }
 
-            var collectionDetails = await _collectionService.GetPlayersForCollection((page - 1) * pageSize, pageSize, sortedBy, sortOrder, groupName, name, token, User.IsInRole("Admin"));
+            if (collection == null && (team == null || theme == null))
+                return HttpNotFound();
 
-            if (collectionDetails == null)
-                return RedirectToAction("Index");
+            var pagedPlayers =
+                    await _playerService.SearchPlayers(page, pageSize, sortedBy, sortOrder, teamId: team?.Id, themeId: theme?.Id, collectionId: collection?.Id,
+                        token: token);
+            var averages = await _playerService.GetPlayersAverages(collection?.Id, team?.Id, theme?.Id, token);
 
-            var playerItems = collectionDetails.Results
+            var playerItems = pagedPlayers
                 .Select(p =>
                 {
-                    var playerModel = new CollectionDetailsViewModel.PlayerItemModel();
+                    var playerModel = new CollectionDetailsModel.PlayerItemModel();
                     PreparePlayerItemModel(playerModel, p);
                     return playerModel;
                 });
 
-            var collectionViewModel = new CollectionDetailsViewModel
+            var model = new CollectionDetailsModel
             {
-                Name = collectionDetails.Name,
-                Athleticism = collectionDetails.Athleticism,
-                Defending = collectionDetails.Defending,
-                InsideScoring = collectionDetails.InsideScoring,
-                OutsideScoring = collectionDetails.OutsideScoring,
-                Overall = collectionDetails.Overall,
-                Playmaking = collectionDetails.Playmaking,
-                Players =
-                    new PagedResults<CollectionDetailsViewModel.PlayerItemModel>(playerItems, page, pageSize,
-                        collectionDetails.ResultCount, sortedBy, sortOrder),
-                Rebounding = collectionDetails.Rebounding,
+                Name = collection != null ? collection.Name : team.Name,
+                Athleticism = averages.Athleticism,
+                Defending = averages.Defending,
+                InsideScoring = averages.InsideScoring,
+                OutsideScoring = averages.OutsideScoring,
+                Overall = averages.Overall,
+                Playmaking = averages.Playmaking,
+                Rebounding = averages.Rebounding,
+                Players = new PagedResults<CollectionDetailsModel.PlayerItemModel>(playerItems, page, pageSize, pagedPlayers.TotalCount, sortedBy, sortOrder)
             };
 
-            return View(collectionViewModel);
+            return View(model);
         }
+
+        #endregion
     }
 }

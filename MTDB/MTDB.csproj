@@ -272,6 +272,7 @@
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\Collection\CollectionDetailsModel.cs" />
+    <Compile Include="Models\Collection\CollectionListModel.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
     <Compile Include="Models\Player\CreatePlayerModel.cs" />
     <Compile Include="Models\Player\ManageEditModel.cs" />

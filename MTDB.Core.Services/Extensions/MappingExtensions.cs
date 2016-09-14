@@ -122,12 +122,12 @@ namespace MTDB.Core.Services.Extensions
                 Uri = player.Player.UriName,
                 ImageUri = player.Player.GetImageUri(ImageSize.Full),
                 Overall = player.Player.Overall,
-                OutsideScoring = player.Player.OutsideScoring.Value,
-                InsideScoring = player.Player.InsideScoring.Value,
-                Playmaking = player.Player.Playmaking.Value,
-                Athleticism = player.Player.Athleticism.Value,
-                Defending = player.Player.Defending.Value,
-                Rebounding = player.Player.Rebounding.Value,
+                OutsideScoring = player.Player.OutsideScoring,
+                InsideScoring = player.Player.InsideScoring,
+                Playmaking = player.Player.Playmaking,
+                Athleticism = player.Player.Athleticism,
+                Defending = player.Player.Defending,
+                Rebounding = player.Player.Rebounding,
                 Private = player.Player.Private,
                 Id = player.Player.Id
             };

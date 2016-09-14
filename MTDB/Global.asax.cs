@@ -38,17 +38,18 @@ namespace MTDB
             builder.RegisterType<PerRequestCacheManager>().InstancePerLifetimeScope();
 
             builder.RegisterType<CollectionService>().InstancePerRequest();
-            builder.RegisterType<CommentService>().InstancePerRequest();
-            builder.RegisterType<DivisionService>().InstancePerRequest();
-            builder.RegisterType<LineupService>().InstancePerRequest();
-            builder.RegisterType<PackService>().InstancePerRequest();
             builder.RegisterType<PlayerService>().InstancePerRequest();
-            builder.RegisterType<PlayerUpdateService>().InstancePerRequest();
-            builder.RegisterType<ProfileService>().InstancePerRequest();
             builder.RegisterType<StatService>().InstancePerRequest();
             builder.RegisterType<TeamService>().InstancePerRequest();
             builder.RegisterType<ThemeService>().InstancePerRequest();
             builder.RegisterType<TierService>().InstancePerRequest();
+
+            builder.RegisterType<CommentService>().InstancePerRequest();
+            builder.RegisterType<DivisionService>().InstancePerRequest();
+            builder.RegisterType<LineupService>().InstancePerRequest();
+            builder.RegisterType<PackService>().InstancePerRequest();
+            builder.RegisterType<PlayerUpdateService>().InstancePerRequest();
+            builder.RegisterType<ProfileService>().InstancePerRequest();
 
             var container = builder.Build();
             DependencyResolver.SetResolver(new AutofacDependencyResolver(container));

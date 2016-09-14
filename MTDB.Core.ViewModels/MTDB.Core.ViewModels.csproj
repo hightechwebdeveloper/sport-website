@@ -65,7 +65,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CardDto.cs" />
-    <Compile Include="CollectionsViewModel.cs" />
     <Compile Include="IPagedAndSorted.cs" />
     <Compile Include="CommentDto.cs" />
     <Compile Include="MtdbCardPackDto.cs" />
