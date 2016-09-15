@@ -16,7 +16,7 @@
                 <i class="glyphicon glyphicon-align-justify"></i>
             </button>
             <!-- brand -->
-            <a href="~/" class="navbar-brand text-lt">
+            <a href="@Url.Action("List", "Player")" class="navbar-brand text-lt">
                 <img src="~/Content/Images/mtdb-v2.png" alt=".">
             </a>
             <!-- / brand -->
@@ -157,9 +157,11 @@
                 <!-- nav -->
                 <nav ui-nav class="navi clearfix">
                     <ul class="nav">
-                        <li class="hidden-folded padder m-t m-b-sm text-muted text-xs">
-                            <span>NBA 2K17</span>
-                        </li>
+@if (Request.IsAuthenticated && User.IsInRole("Admin"))
+{
+    <li class="hidden-folded padder m-t m-b-sm text-muted text-xs">
+        <span>NBA 2K17</span>
+    </li>
                         <li>
                             <a href="@Url.Action("List", "Player", new { area = "2K17" })">
                                 <i class="fa fa-user text-info-lter"></i>
@@ -196,6 +198,8 @@
                                 <span class="font-bold">Compare Players</span>
                             </a>
                         </li>
+}
+                       
                         <li class="hidden-folded padder m-t m-b-sm text-muted text-xs">
                             <span>NBA 2K16</span>
                         </li>

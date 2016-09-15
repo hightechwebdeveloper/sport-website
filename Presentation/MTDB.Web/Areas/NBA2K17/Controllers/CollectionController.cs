@@ -92,6 +92,7 @@ namespace MTDB.Areas.NBA2K17.Controllers
 
         #region Methods
 
+        [Route("collections")]
         public async Task<ActionResult> Index(CancellationToken token)
         {
             var collections = await _collectionService.GetCollections(token);
@@ -118,6 +119,7 @@ namespace MTDB.Areas.NBA2K17.Controllers
             return View("~/Areas/NBA2k17/Views/Collection/Index.cshtml", model);
         }
 
+        [Route("collections/{groupName}/{name}")]
         public async Task<ActionResult> Details(string groupName, string name, CancellationToken token, string sortedBy = "overall", SortOrder sortOrder = SortOrder.Descending, int page = 1, int pageSize = 25)
         {
             if (!groupName.HasValue() || !name.HasValue())

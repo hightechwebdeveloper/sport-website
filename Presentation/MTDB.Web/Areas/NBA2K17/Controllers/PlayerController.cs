@@ -334,15 +334,32 @@ namespace MTDB.Areas.NBA2K17.Controllers
                 })
                 .ToList();
 
-            model.AvailableThemeGroups = (await _collectionService.GetCollections(token))
-                .Select(gr => new
-                {
-                    ThemeName = gr.ThemeName,
-                    GroupName = gr.GroupName
-                })
-                .Distinct()
-                .Select(gr => new Tuple<string, string>(gr.ThemeName, gr.GroupName))
-                .ToList();
+
+            model.AvailableThemeGroups = new List<Tuple<string, string>>
+            {
+                new Tuple<string, string>("Rewards", null),
+                new Tuple<string, string>("Historic", "Atlantic"),
+                new Tuple<string, string>("Historic", "Central"),
+                new Tuple<string, string>("Historic", "Pacific"),
+                new Tuple<string, string>("Historic", "Southwest"),
+                new Tuple<string, string>("Historic", "Southeast"),
+                new Tuple<string, string>("Historic", "Northwest"),
+                new Tuple<string, string>("Current", "Atlantic"),
+                new Tuple<string, string>("Current", "Central"),
+                new Tuple<string, string>("Current", "Pacific"),
+                new Tuple<string, string>("Current", "Southwest"),
+                new Tuple<string, string>("Current", "Southeast"),
+                new Tuple<string, string>("Current", "Northwest")
+            };
+            //model.AvailableThemeGroups = (await _collectionService.GetCollections(token))
+            //    .Select(gr => new
+            //    {
+            //        ThemeName = gr.ThemeName,
+            //        GroupName = gr.GroupName
+            //    })
+            //    .Distinct()
+            //    .Select(gr => new Tuple<string, string>(gr.ThemeName, gr.GroupName))
+            //    .ToList();
 
             if (!excludeProperties && id.HasValue)
             {

@@ -22,8 +22,15 @@
                 Player Form
             </div>
             <div class="panel-body">
+                
                 <div class="line line-dashed b-b line-lg pull-in"></div>
+                <div class="form-group">
+                    <div class="checkbox">
+                        <label>@Html.CheckBoxFor(p => p.Private) Private</label>
+                    </div>
+                </div>
 
+                <div class="line line-dashed b-b line-lg pull-in"></div>
                 <div class="form-group">
                     <label class="control-label">Upload Player Image</label>
                     @Html.UploadFileFor(p => p.Image)
@@ -31,7 +38,6 @@
                 </div>
 
                 <div class="line line-dashed b-b line-lg pull-in"></div>
-
                 <div class="form-group">
                     <label>2K Id</label>
                     @Html.TextBoxFor(p => p.NBA2K_Id, "form-control", "Enter NBA 2K ID")
@@ -39,15 +45,13 @@
                 </div>
 
                 <div class="line line-dashed b-b line-lg pull-in"></div>
-
                 <div class="form-group">
                     <label>Player Name</label>
                     @Html.TextBoxFor(p => p.Name, "form-control", "Enter Player Name")
                     @Html.ThemedValidationMessageFor(m => m.Name)
-                </div>
-
+                </div>                
+                
                 <div class="line line-dashed b-b line-lg pull-in"></div>
-
                 <div class="form-group">
                     <label>Overall</label>
                     @Html.UpDownFor(p => p.Overall)
@@ -57,7 +61,6 @@
                 @for (var i = 0; i < Model.Attributes.Count; i++)
                 {
                     <div class="line line-dashed b-b line-lg pull-in"></div>
-
                     <div class="form-group">
                         <label>@Model.Attributes[i].Name</label>
                         @Html.HiddenFor(m => m.Attributes[i].Id)
@@ -66,7 +69,6 @@
                 }
 
                 <div class="line line-dashed b-b line-lg pull-in"></div>
-                
                 <div class="form-group">
                     <label>Age</label>
                     @Html.UpDownFor(p => p.Age)
@@ -74,7 +76,6 @@
                 </div>
 
                 <div class="line line-dashed b-b line-lg pull-in"></div>
-
                 <div class="form-group">
                     <label>Height</label>
                     @Html.ChosenDropBoxFor(p => p.Height, SelectLists.HeightSelectList, placeHolder: "Height")
@@ -82,7 +83,6 @@
                 </div>
 
                 <div class="line line-dashed b-b line-lg pull-in"></div>
-
                 <div class="form-group">
                     <label>Weight</label>
                     @Html.UpDownFor(p => p.Weight, "form-control", 0, 400)
@@ -90,7 +90,6 @@
                 </div>
 
                 <div class="line line-dashed b-b line-lg pull-in"></div>
-
                 <div class="form-group">
                     <label>Primary Position</label>
                     @Html.ChosenDropBoxFor(p => p.PrimaryPosition, SelectLists.PositionsSelectList, placeHolder: "Primary Position")
@@ -98,15 +97,12 @@
                 </div>
 
                 <div class="line line-dashed b-b line-lg pull-in"></div>
-
                 <div class="form-group">
                     <label>Secondary Position</label>
                     @Html.ChosenDropBoxFor(p => p.SecondaryPosition, SelectLists.PositionsSelectList, placeHolder: "Secondary Position")
                 </div>
 
-                <div class="line line-dashed b-b line-lg pull-in">
-                </div>
-
+                <div class="line line-dashed b-b line-lg pull-in"></div>
                 <div class="form-group">
                     <label>Xbox</label>
                     @Html.UpDownFor(p => p.Xbox, "form-control", 0, 999999999)
@@ -114,7 +110,6 @@
                 </div>
 
                 <div class="line line-dashed b-b line-lg pull-in"></div>
-
                 <div class="form-group">
                     <label>PS4</label>
                     @Html.UpDownFor(p => p.PS4, "form-control", 0, 999999999)
@@ -122,11 +117,16 @@
                 </div>
 
                 <div class="line line-dashed b-b line-lg pull-in"></div>
-
                 <div class="form-group">
                     <label>PC</label>
                     @Html.UpDownFor(p => p.PC, "form-control", 0, 999999999)
                     @Html.ThemedValidationMessageFor(m => m.PC)
+                </div>
+
+                <div class="line line-dashed b-b line-lg pull-in"></div>
+                <div class="form-group">
+                    <label>Publish Date</label>
+                    @Html.TextBoxFor(p => p.PublishDate, "{0:MM/dd/yyyy}", new { data_provide = "datepicker" })
                 </div>
 
                 <div class="line line-dashed b-b line-lg pull-in"></div>
@@ -164,6 +164,7 @@
                     </div>
                     @Html.ThemedValidationMessageFor(m => m.TierId)
                 </div>
+
                 <div class="line line-dashed b-b line-lg pull-in"></div>
                 <div class="form-group">
                     <label>Collection</label>
@@ -176,20 +177,6 @@
                 </div>
 
                 <div class="line line-dashed b-b line-lg pull-in"></div>
-                <div class="form-group">
-                    <div class="checkbox">
-                        <label>@Html.CheckBoxFor(p => p.Private) Private</label>
-                    </div>
-                </div>
-
-                <div class="line line-dashed b-b line-lg pull-in"></div>
-                <div class="form-group">
-                    <label>Publish Date</label>
-                    @Html.TextBoxFor(p => p.PublishDate, "{0:MM/dd/yyyy}", new { data_provide = "datepicker" })
-                </div>
-
-                <div class="line line-dashed b-b line-lg pull-in"></div>
-
                 <div class="form-group">
                     <button type="submit" class="btn btn-primary">Submit Player</button>
                     @Html.ActionLink("Cancel", "Index", null, new { @class = "btn btn-default" })
