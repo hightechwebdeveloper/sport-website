@@ -8,10 +8,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using MTDB.Core;
+using MTDB.Core.Caching;
 using MTDB.Core.Services.Catalog;
 using MTDB.Core.Services.Extensions;
 using MTDB.Core.ViewModels;
 using MTDB.Core.Domain;
+using MTDB.Core.Services.Common;
 using MTDB.Helpers;
 using MTDB.Models.Player;
 using MTDB.Models.Shared;
@@ -29,6 +31,7 @@ namespace MTDB.Controllers
         private readonly CollectionService _collectionService;
         private readonly StatService _statService;
         private readonly DivisionService _divisionService;
+        private readonly CdnSettings _cdnSettings;
 
         #endregion
 
@@ -41,7 +44,8 @@ namespace MTDB.Controllers
             TeamService teamService,
             CollectionService collectionService,
             StatService statService,
-            DivisionService divisionService)
+            DivisionService divisionService,
+            CdnSettings cdnSettings)
         {
             this._playerService = playerService;
             this._tierService = tierService;
@@ -50,6 +54,7 @@ namespace MTDB.Controllers
             this._collectionService = collectionService;
             this._statService = statService;
             this._divisionService = divisionService;
+            this._cdnSettings = cdnSettings;
         }
 
         #endregion
@@ -77,7 +82,7 @@ namespace MTDB.Controllers
 
             model.Id = player.Id;
             model.Name = player.Name;
-            model.ImageUri = player.GetImageUri(ImageSize.Full);
+            model.ImageUri = player.GetImageUri(_cdnSettings, ImageSize.Full);
             model.Age = player.Age;
             model.UriName = player.UriName;
             model.PrimaryPosition = player.PrimaryPosition;
@@ -189,7 +194,7 @@ namespace MTDB.Controllers
             model.Id = player.Id;
             model.Name = player.Name;
             model.UriName = player.UriName;
-            model.ImageUri = player.GetImageUri(ImageSize.PlayerSearch);
+            model.ImageUri = player.GetImageUri(_cdnSettings, ImageSize.PlayerSearch);
             model.Position = position;
             model.Tier = player.Tier.Name;
             model.Collection = player.Collection?.Name;
@@ -283,7 +288,7 @@ namespace MTDB.Controllers
                     })
                     .ToList();
                 model.Image = null;
-                model.ImageUri = player.GetImageUri(ImageSize.Full);
+                model.ImageUri = player.GetImageUri(_cdnSettings, ImageSize.Full);
             }
 
             //themes

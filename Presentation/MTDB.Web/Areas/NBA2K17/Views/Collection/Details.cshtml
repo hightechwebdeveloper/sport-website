@@ -1,0 +1,188 @@
+﻿@using MTDB.Helpers
+@model MTDB.Models.Collection.CollectionDetailsModel
+
+<section class="playerHero">
+    <div class="blackCover">
+        <div class="wrapper-lg">
+            <div class="row">
+                <div class="col-md-12">
+                    <h1 class="entry-title">@Model.Name</h1>
+                    <hr style="margin: 15px 0; border-top: 1px solid #ccc;">
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <table class="table unstyled text-center playerO">
+                        <tr>
+                            <td class="playerOText"><h4>Overall</h4></td>
+                        </tr>
+                        <tr>
+                            <td class="statNum playerONum playerOvAv" style="display: block;">@Model.Overall</td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="col-md-7">
+                    <div class="row">
+                        <h4 class="text-center">Averages</h4>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <table class="table table-condensed text-right" style="margin: 0;">
+                                <tbody>
+                                <tr>
+                                    <th>Outside Scoring</th>
+                                    <td><span class="statNum playerOutAv">@Model.OutsideScoring</span></td>
+                                </tr>
+                                <tr>
+                                    <th>Inside Scoring</th>
+                                    <td><span class="statNum playerInAv">@Model.InsideScoring</span></td>
+                                </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-md-4">
+                            <table class="table table-condensed text-right statsTable">
+                                <tbody>
+                                <tr>
+                                    <th>Playmaking</th>
+                                    <td><span class="statNum playerPlAv">@Model.Playmaking</span></td>
+                                </tr>
+                                <tr>
+                                    <th>Athleticism</th>
+                                    <td><span class="statNum playerAtAv">@Model.Athleticism</span></td>
+                                </tr>
+
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-md-4">
+                            <table class="table table-condensed text-right statsTable">
+                                <tbody>
+                                <tr>
+                                    <th>Defending</th>
+
+                                    <td><span class="statNum playerDeAv">@Model.Defending</span></td>
+                                </tr>
+                                <tr>
+                                    <th>Rebounding</th>
+                                    <td><span class="statNum playerReAv">@Model.Rebounding</span></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<div class="wrapper-md">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            Results
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table id="results" class="table table-striped b-t b-light playerList">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th style="text-align: left;">@Html.SortingHeader("NAME", "Details", "Collection", "name", Model.Players.SortedBy, Model.Players.SortOrder)</th>
+                    <th>@Html.SortingHeader("POSITION", "Details", "Collection", "position", Model.Players.SortedBy, Model.Players.SortOrder)</th>
+                    <th>@Html.SortingHeader("OVR", "Details", "Collection", "overall", Model.Players.SortedBy, Model.Players.SortOrder)</th>
+                    <th>@Html.SortingHeader("OUT", "Details", "Collection", "outsideScoring", Model.Players.SortedBy, Model.Players.SortOrder)</th>
+                    <th>@Html.SortingHeader("INS", "Details", "Collection", "insideScoring", Model.Players.SortedBy, Model.Players.SortOrder)</th>
+                    <th>@Html.SortingHeader("PLA", "Details", "Collection", "playmaking", Model.Players.SortedBy, Model.Players.SortOrder)</th>
+                    <th>@Html.SortingHeader("ATH", "Details", "Collection", "athleticism", Model.Players.SortedBy, Model.Players.SortOrder)</th>
+                    <th>@Html.SortingHeader("DEF", "Details", "Collection", "defending", Model.Players.SortedBy, Model.Players.SortOrder)</th>
+                    <th>@Html.SortingHeader("REB", "Details", "Collection", "rebounding", Model.Players.SortedBy, Model.Players.SortOrder)</th>
+                    <th>@Html.SortingHeader("XBOX", "Details", "Collection", "xbox", Model.Players.SortedBy, Model.Players.SortOrder)</th>
+                    <th>@Html.SortingHeader("PS4", "Details", "Collection", "ps4", Model.Players.SortedBy, Model.Players.SortOrder)</th>
+                    <th>@Html.SortingHeader("PC", "Details", "Collection", "pc", Model.Players.SortedBy, Model.Players.SortOrder)</th>
+                </tr>
+            </thead>
+            <tbody class="facetwp-template">
+                @if (Model != null && Model.Players != null)
+                {
+                    foreach (var player in Model.Players.Results)
+                    {
+                        <tr @(player.Prvate ? Html.Raw(" class='private-player'") : null)>
+                            <td style="text-align: left;">
+                                <img src="@player.ImageUri">
+                            </td>
+                            <td>
+                                <h5>
+                                    <a href="@Url.Action("Details", "Player", new { playerUri = player.UriName})">@player.Name</a>
+                                </h5>
+                            </td>
+                            <td>
+                                @player.Position
+                            </td>
+                            <td>
+                                <span class="statNum">@player.Overall</span>
+                            </td>
+                            <td>
+                                <span class="statNum">@player.OutsideScoring</span>
+                            </td>
+                            <td>
+                                <span class="statNum">@player.InsideScoring</span>
+                            </td>
+                            <td>
+                                <span class="statNum">@player.Playmaking</span>
+                            </td>
+                            <td>
+                                <span class="statNum">@player.Athleticism</span>
+                            </td>
+                            <td>
+                                <span class="statNum">@player.Defending</span>
+                            </td>
+                            <td>
+                                <span class="statNum">@player.Rebounding</span>
+                            </td>
+                            <td>
+                                @player.Xbox
+                            </td>
+                            <td>
+                                @player.PS4
+                            </td>
+                            <td>
+                                @player.PC
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+    <footer class="panel-footer">
+        <div class="row">
+            <div class="col-sm-8 text-left">
+                <small class="text-muted inline m-t-sm m-b-sm">Showing @Model.Players.Results.FirstItemOnPage-@Model.Players.Results.LastItemOnPage of @Model.Players.Results.TotalItemCount items</small>
+            </div>
+            @Html.ThemedPager(Model.Players.Results, page => Url.Action("Details", new {page = page, sortedBy = Model.Players.SortedBy, sortOrder = Model.Players.SortOrder}), "results")
+        </div>
+    </footer>
+</div>
+
+@section scripts{
+    <!-- color of stats -->
+    <script type="text/javascript">
+        var cell = $('.statNum');
+        cell.each(function () {
+            var cell_value = $(this).html();
+            if ((cell_value >= 0) && (cell_value <= 59)) {
+                $(this).css({ 'background': '#A52A2A' });
+            } else if ((cell_value >= 60) && (cell_value <= 69)) {
+                $(this).css({ 'background': '#D2691E' });
+            } else if ((cell_value >= 70) && (cell_value <= 79)) {
+                $(this).css({ 'background': '#DAA520' });
+            } else if ((cell_value >= 80) && (cell_value <= 89)) {
+                $(this).css({ 'background': '#008000' });
+            } else if (cell_value >= 90) {
+                $(this).css({ 'background': '#32CD32' });
+            }
+        });
+    </script>
+    <!-- / color of stats -->
+}

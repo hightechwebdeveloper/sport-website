@@ -13,7 +13,6 @@ using mvcForum.Web.Interfaces;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using MTDB.Data;
-using MTDB.Core.Domain;
 
 namespace MTDB.Forums.MVCForumIdentity {
 
@@ -30,10 +29,10 @@ namespace MTDB.Forums.MVCForumIdentity {
             //this.context = forumContext;
 			this._context = new MVCForumContext("mvcForum.DataProvider.MainDB");
             // TODO: Injection, somehow!!
-            this._userManager = new UserManager<Core.Domain.User>(new UserStore<Core.Domain.User>(mtdbContext as MtdbContext));
+            this._userManager = new UserManager<Core.Domain.User>(new UserStore<Core.Domain.User>(mtdbContext as K17DbContext));
 			this._userManager.UserValidator = new UserValidator<Core.Domain.User>(this._userManager) { AllowOnlyAlphanumericUserNames = false, RequireUniqueEmail = true };
 			// TODO: Injection, somehow!!
-			this._roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(mtdbContext as MtdbContext));
+			this._roleManager = new RoleManager<IdentityRole>(new RoleStore<IdentityRole>(mtdbContext as K17DbContext));
 		}
 
 		public void AddAccountToRoles(String accountName, String[] roles) {

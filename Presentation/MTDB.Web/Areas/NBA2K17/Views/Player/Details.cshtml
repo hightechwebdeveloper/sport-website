@@ -1,0 +1,261 @@
+﻿@using MTDB.Core
+@model MTDB.Models.Player.PlayerModel
+<!-- player hero -->
+
+<section class="playerHero">
+    <div class="blackCover">
+        <div class="wrapper-lg">
+            <div class="row">
+                @Header()
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- / player hero -->
+<div class="wrapper-lg">
+    <!-- player stats -->
+    <div class="row">
+        <div class="col-md-12">
+            @Html.ActionLink("Compare Players", "Compare", new {player1 = Model.UriName}, new {@class = "btn btn-primary btn-sm"})
+
+            @if (Request.IsAuthenticated && User.IsInRole("Admin"))
+            {
+                @Html.ActionLink("Edit Player", "Edit", new { playerUri = @Model.UriName }, new { @class = "btn btn-success btn-sm" })
+            }
+            @if (Request.IsAuthenticated && User.IsInRole("Admin"))
+            {
+                using (@Html.BeginForm("Delete", "Player", FormMethod.Post, new {style = "display: inline;"}))
+                {
+                    <button name="playerUri" value="@Model.UriName" class="btn btn-danger btn-sm" onclick="return confirm('Are you sure you want to delete this player?');">Delete Player</button>
+                }
+            }
+        </div>
+    </div>
+    <hr/>
+    <div class="row">
+        <div class="col-md-12">
+            <ul class="nav nav-tabs">
+                <li class="active"><a data-toggle="tab" href="#attributes">Attributes</a></li>
+                <li><a data-toggle="tab" href="#badges">Badges & Tendencies</a></li>
+            </ul>
+
+            <div class="tab-content">
+                <div id="attributes" class="tab-pane fade in active">
+                    @TabAttributes()
+                </div>
+                <div id="badges" class="tab-pane fade">
+                    @TabBadges()
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <!-- / player stats -->
+
+    @Html.Partial("~/Areas/NBA2K17/Views/Shared/Comments.cshtml", (string)ViewBag.CommentsPageUrl)
+
+</div>
+
+@helper Header ()
+{
+    <div class="col-md-2">
+        <img src="@Model.ImageUri" class="img-responsive center-block">
+    </div>
+    <div class="col-md-10">
+        <div class="row">
+            <div class="col-md-7">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h1 class="entry-title">@Model.Name 
+                            @if (Model.Private)
+                            {
+                                <span class="private">(Private)</span>
+                            }
+                        </h1>
+                        <p>
+                            <strong>@Model.PrimaryPosition</strong> @*/ @Model.SecondaryPosition*@ / @Html.ActionLink(Model.CollectionName, "Details", new { controller = "collection", groupName = Model.GroupName.ToUri(), name = Model.CollectionName.ToUri() }) / @Model.Age yrs / @Model.Weight lbs / @Model.Height
+                        </p>
+                        <hr style="margin: 15px 0;border-top: 1px solid #ccc;">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <table class="table unstyled text-center playerO">
+                            <tr>
+                                <td class="playerOText"><h4>Overall</h4></td>
+                            </tr>
+                            <tr>
+                                <td class="statNum playerONum" style="display: block;">@Model.Overall</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="row">
+                            <div class="col-xs-6">
+                                <h4 class="text-center">Badges</h4>
+                                <table class="table table-condensed text-right" style="margin:0;">
+                                    <tbody>
+                                        <tr>
+                                            <th><i class="fa fa-shield" style="color:#FFD700;"></i> Gold</th>
+                                            <td>@Model.GoldBadges</td>
+                                        </tr>
+                                        <tr>
+                                            <th><i class="fa fa-shield" style="color:#C0C0C0"></i> Silver</th>
+                                            <td>@Model.SilverBadges</td>
+                                        </tr>
+                                        <tr>
+                                            <th><i class="fa fa-shield" style="color:#D2691E"></i> Bronze</th>
+                                            <td>@Model.BronzeBadges</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="col-xs-6">
+                                <h4 class="text-center">Price</h4>
+                                <table class="table table-condensed text-right statsTable">
+                                    <tbody>
+                                        <tr>
+                                            <th>XBOX</th>
+                                            <td>@Model.Xbox</td>
+                                        </tr>
+                                        <tr>
+                                            <th>PS4</th>
+                                            <td>@Model.PS4</td>
+                                        </tr>
+                                        <tr>
+                                            <th>PC</th>
+                                            <td>@Model.PC</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-5 hidden-xs m-t">
+                <canvas id="playerChart"></canvas>
+            </div>
+        </div>
+    </div>
+}
+
+@helper TabAttributes()
+{
+    var counter = 0;
+    foreach (var category in Model.GroupAverages)
+    {
+        if (counter % 2 == 0)
+        {
+            @Html.Raw("<div class='col-md-4'>")
+        }
+        <h4><span class="statNum">@category.Average</span> @category.Name</h4>
+        <ul class="statList">
+            @foreach (var attribute in Model.Attributes.Where(t => t.CategoryId == category.Id))
+            {
+                <li><span class="statNum" style="">@attribute.Value</span> @attribute.Name</li>
+            }
+        </ul>
+        if (++counter % 2 == 0)
+        {
+            @Html.Raw("</div>")
+        }
+    }
+}
+
+@helper TabBadges()
+{
+    <div class="row">
+        <div class="col-lg-6">
+            <h2>Badges</h2>
+            @foreach (var badge in Model.PlayerBadges)
+            {
+                <div class="badge player-badge">
+                    <div class="left">
+                        <img src="@badge.IconUri" height="50"/>
+                    </div>
+                    <div class="right">
+                        <span class="name">@badge.Name</span>
+                        @badge.Description
+                    </div>
+                </div>
+            }
+            <hr/>
+            <h2>Defensive Tendencies</h2>
+            <ul class="tendency-list">
+                @foreach (var attribute in Model.DefensiveTendencies)
+                {
+                    <li><span class="value">@attribute.Value</span> @attribute.Name</li>
+                }
+            </ul>
+            <hr />
+        </div>
+        
+        <div class="col-lg-6">
+            <h2>Offensive Tendencies</h2>
+            <ul class="tendency-list">
+                @foreach (var attribute in Model.OffensiveTendencies)
+                {
+                    <li><span class="value">@attribute.Value</span> @attribute.Name</li>
+                }
+            </ul>
+        </div>
+    </div>
+}
+
+@section scripts {
+
+    <!-- color of stats -->
+    <script type="text/javascript">
+        var cell = $('.statNum');
+        cell.each(function () {
+            var cell_value = $(this).html();
+            if ((cell_value >= 0) && (cell_value <= 59)) {
+                $(this).css({ 'background': '#A52A2A' });
+            } else if ((cell_value >= 60) && (cell_value <= 69)) {
+                $(this).css({ 'background': '#D2691E' });
+            } else if ((cell_value >= 70) && (cell_value <= 79)) {
+                $(this).css({ 'background': '#DAA520' });
+            } else if ((cell_value >= 80) && (cell_value <= 89)) {
+                $(this).css({ 'background': '#008000' });
+            } else if (cell_value >= 90) {
+                $(this).css({ 'background': '#32CD32' });
+            }
+        });
+    </script>
+    <!-- / color of stats -->
+    <!-- player stats chart -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js"></script>
+    <script type="text/javascript">
+
+        var labels = [];
+        var data = [];
+
+        @foreach (var group in Model.GroupAverages)
+        {
+            @:labels.push("@group.Name");
+            @:data.push(@group.Average);
+        }
+
+        var buyerData = {
+            labels: labels,
+            datasets: [
+                {
+                    fillColor: "rgba(172,194,132,0.4)",
+                    strokeColor: "#ACC26D",
+                    pointColor: "#fff",
+                    pointStrokeColor: "#9DB86D",
+                    data: data,
+                }
+            ]
+        }
+
+        var buyers = document.getElementById('playerChart').getContext('2d');
+        new Chart(buyers).Radar(buyerData, { pointLabelFontColor: "#ffffff", angleLineColor: "rgba(255,255,255,.1)" });
+    </script>
+    <!-- / player stats chart -->
+
+
+
+}

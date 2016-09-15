@@ -12,7 +12,7 @@ namespace MTDB.Core.Domain
 
         public string UserId { get; set; }
 
-        public virtual User User { get; set; }
+        public string UserName { get; set; }
 
         public virtual ICollection<CardPackPlayer> Players
         {

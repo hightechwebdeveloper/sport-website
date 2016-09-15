@@ -8,10 +8,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using CsvHelper;
+using MTDB.Core.Caching;
 using MTDB.Core.Services.Extensions;
 using MTDB.Core.ViewModels.PlayerUpdates;
 using MTDB.Data;
 using MTDB.Core.Domain;
+using MTDB.Core.Services.Common;
 
 namespace MTDB.Core.Services.Catalog
 {
@@ -22,6 +24,7 @@ namespace MTDB.Core.Services.Catalog
         private readonly IDbContext _dbContext;
         private readonly TierService _tierService;
         private readonly StatService _statService;
+        private readonly CdnSettings _cdnSettings;
 
         #endregion
 
@@ -29,11 +32,13 @@ namespace MTDB.Core.Services.Catalog
 
         public PlayerUpdateService(IDbContext dbContext,
             TierService tierService,
-            StatService statService)
+            StatService statService,
+            CdnSettings cdnSettings)
         {
-            _dbContext = dbContext;
-            _tierService = tierService;
-            _statService = statService;
+            this._dbContext = dbContext;
+            this._tierService = tierService;
+            this._statService = statService;
+            this._cdnSettings = cdnSettings;
         }
         
         #endregion
@@ -454,7 +459,7 @@ namespace MTDB.Core.Services.Catalog
                     new PlayerUpdateViewModel
                     {
                         UriName = gr.Key.UriName,
-                        ImageUri = ServiceExtensions.GetImageUri(gr.Key.UriName, ImageSize.Full),
+                        ImageUri = ServiceExtensions.GetImageUri(_cdnSettings, gr.Key.UriName, ImageSize.Full),
                         UpdateType = gr.Key.UpdateType,
                         FieldUpdates = gr.Select(u => new PlayerFieldUpdateViewModel
                         {
@@ -496,7 +501,7 @@ namespace MTDB.Core.Services.Catalog
                     new PlayerUpdateViewModel
                     {
                         UriName = gr.Key.UriName,
-                        ImageUri = ServiceExtensions.GetImageUri(gr.Key.UriName, ImageSize.Full),
+                        ImageUri = ServiceExtensions.GetImageUri(_cdnSettings, gr.Key.UriName, ImageSize.Full),
                         UpdateType = gr.Key.UpdateType
                     })
                 .ToList();

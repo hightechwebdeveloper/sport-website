@@ -262,6 +262,13 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\IdentityConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Areas\NBA2K17\Controllers\CollectionController.cs" />
+    <Compile Include="Areas\NBA2K17\Controllers\CommentsController.cs" />
+    <Compile Include="Areas\NBA2K17\Controllers\LineupController.cs" />
+    <Compile Include="Areas\NBA2K17\Controllers\PackController.cs" />
+    <Compile Include="Areas\NBA2K17\Controllers\PlayerController.cs" />
+    <Compile Include="Areas\NBA2K17\Controllers\PlayerUpdateController.cs" />
+    <Compile Include="Areas\NBA2K17\K17AreaRegistration.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\CollectionController.cs" />
     <Compile Include="Controllers\CommentsController.cs" />
@@ -547,6 +554,33 @@
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <Content Include="Areas\NBA2K17\Views\web.config" />
+    <Content Include="Areas\NBA2K17\Views\Collection\Details.cshtml" />
+    <Content Include="Areas\NBA2K17\Views\Collection\Index.cshtml" />
+    <Content Include="Areas\NBA2K17\Views\Lineup\Create.cshtml" />
+    <Content Include="Areas\NBA2K17\Views\Lineup\Details.cshtml" />
+    <Content Include="Areas\NBA2K17\Views\Lineup\Edit.cshtml" />
+    <Content Include="Areas\NBA2K17\Views\Lineup\Index.cshtml" />
+    <Content Include="Areas\NBA2K17\Views\Pack\CreateDraft.cshtml" />
+    <Content Include="Areas\NBA2K17\Views\Pack\CreateMTDB.cshtml" />
+    <Content Include="Areas\NBA2K17\Views\Pack\DraftDetails.cshtml" />
+    <Content Include="Areas\NBA2K17\Views\Pack\DraftResults.cshtml" />
+    <Content Include="Areas\NBA2K17\Views\Pack\Index.cshtml" />
+    <Content Include="Areas\NBA2K17\Views\Pack\Leaderboard.cshtml" />
+    <Content Include="Areas\NBA2K17\Views\Pack\MtdbDetails.cshtml" />
+    <Content Include="Areas\NBA2K17\Views\Player\Compare.cshtml" />
+    <Content Include="Areas\NBA2K17\Views\Player\Create.cshtml" />
+    <Content Include="Areas\NBA2K17\Views\Player\Details.cshtml" />
+    <Content Include="Areas\NBA2K17\Views\Player\Edit.cshtml" />
+    <Content Include="Areas\NBA2K17\Views\Player\List.cshtml" />
+    <Content Include="Areas\NBA2K17\Views\Player\Manage.cshtml" />
+    <Content Include="Areas\NBA2K17\Views\Player\ManageCreatePopup.cshtml" />
+    <Content Include="Areas\NBA2K17\Views\Player\ManageEditPopup.cshtml" />
+    <Content Include="Areas\NBA2K17\Views\PlayerUpdate\Details.cshtml" />
+    <Content Include="Areas\NBA2K17\Views\PlayerUpdate\Index.cshtml" />
+    <Content Include="Areas\NBA2K17\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\NBA2K17\Views\Comments\Index.cshtml" />
+    <Content Include="Areas\NBA2K17\Views\Shared\Comments.cshtml" />
     <None Include="Properties\PublishProfiles\deploy directory.pubxml" />
     <None Include="Properties\PublishProfiles\mtdb - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\mtdb - Web Deploy.pubxml" />
@@ -591,6 +625,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Areas\NBA2K17\Models\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

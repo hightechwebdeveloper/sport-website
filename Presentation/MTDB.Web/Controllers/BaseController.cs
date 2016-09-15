@@ -11,10 +11,13 @@ namespace MTDB.Controllers
         {
             var routeData = this.ControllerContext.RouteData.Values;
 
+            var area = this.ControllerContext.RouteData.DataTokens["area"]?.ToString().ToLower();
             var controller = routeData["controller"].ToString().ToLower();
             var action = routeData["action"].ToString().ToLower();
 
-            ViewBag.CommentsPageUrl = $@"{controller}\{action}\{id}";
+            ViewBag.CommentsPageUrl = !string.IsNullOrWhiteSpace(area) ? 
+                $@"{area}\{controller}\{action}\{id}" : 
+                $@"{controller}\{action}\{id}";
         }
     }
 }

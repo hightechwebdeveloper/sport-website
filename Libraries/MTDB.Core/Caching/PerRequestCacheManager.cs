@@ -8,10 +8,12 @@ namespace MTDB.Core.Caching
 {
     public partial class PerRequestCacheManager : ICacheManager
     {
+        private readonly string _predicat;
         private readonly HttpContext _context;
         
-        public PerRequestCacheManager()
+        public PerRequestCacheManager(string predicat)
         {
+            this._predicat = predicat;
             this._context = HttpContext.Current;
         }
 
@@ -28,8 +30,8 @@ namespace MTDB.Core.Caching
             var items = GetItems();
             if (items == null)
                 return default(T);
-
-            return (T)items[key];
+            var predicatedKey = !key.StartsWith(_predicat) ? $"{_predicat}{key}" : key;
+            return (T)items[predicatedKey];
         }
         
         public virtual void Set(string key, object data, int cacheTime)
@@ -37,13 +39,13 @@ namespace MTDB.Core.Caching
             var items = GetItems();
             if (items == null)
                 return;
-
+            var predicatedKey = !key.StartsWith(_predicat) ? $"{_predicat}{key}" : key;
             if (data != null)
             {
-                if (items.Contains(key))
-                    items[key] = data;
+                if (items.Contains(predicatedKey))
+                    items[predicatedKey] = data;
                 else
-                    items.Add(key, data);
+                    items.Add(predicatedKey, data);
             }
         }
 
@@ -52,8 +54,8 @@ namespace MTDB.Core.Caching
             var items = GetItems();
             if (items == null)
                 return false;
-
-            return (items[key] != null);
+            var predicatedKey = !key.StartsWith(_predicat) ? $"{_predicat}{key}" : key;
+            return (items[predicatedKey] != null);
         }
         
         public virtual void Remove(string key)
@@ -61,8 +63,8 @@ namespace MTDB.Core.Caching
             var items = GetItems();
             if (items == null)
                 return;
-
-            items.Remove(key);
+            var predicatedKey = !key.StartsWith(_predicat) ? $"{_predicat}{key}" : key;
+            items.Remove(predicatedKey);
         }
         
         public virtual void RemoveByPattern(string pattern)
@@ -72,7 +74,8 @@ namespace MTDB.Core.Caching
                 return;
 
             var enumerator = items.GetEnumerator();
-            var regex = new Regex(pattern, RegexOptions.Singleline | RegexOptions.Compiled | RegexOptions.IgnoreCase);
+            var predicatedKey = !pattern.StartsWith(_predicat) ? $"{_predicat}{pattern}" : pattern;
+            var regex = new Regex(predicatedKey, RegexOptions.Singleline | RegexOptions.Compiled | RegexOptions.IgnoreCase);
             var keysToRemove = new List<String>();
             while (enumerator.MoveNext())
             {

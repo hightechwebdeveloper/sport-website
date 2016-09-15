@@ -2,8 +2,6 @@
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
 using MTDB.Core;
-using MTDB.Data;
-using MTDB.Helpers;
 using MTDB.Models;
 using reCAPTCHA.MVC;
 using System.ComponentModel.DataAnnotations;

@@ -16,6 +16,7 @@ namespace MTDB.Core.Caching
         #region Fields
         
         private readonly ICacheManager _perRequestCacheManager;
+        private readonly string _predicat;
         private readonly string _redisCachingConnectionString;
         private ConnectionMultiplexer _muxer;
         private IDatabase _db;
@@ -24,13 +25,14 @@ namespace MTDB.Core.Caching
 
         #region Ctor
 
-        public RedisCacheManager(PerRequestCacheManager perRequestCacheManager)
+        public RedisCacheManager(PerRequestCacheManager perRequestCacheManager, string predicat)
         {
             var redisCachingConnectionString = ConfigurationManager.AppSettings["RedisCachingConnectionString"];
             if (string.IsNullOrEmpty(redisCachingConnectionString))
                 throw new Exception("Redis connection string is empty");
 
             this._perRequestCacheManager = perRequestCacheManager;
+            this._predicat = predicat;
             this._redisCachingConnectionString = redisCachingConnectionString;
         }
 
@@ -76,17 +78,18 @@ namespace MTDB.Core.Caching
             //little performance workaround here:
             //we use "PerRequestCacheManager" to cache a loaded object in memory for the current HTTP request.
             //this way we won't connect to Redis server 500 times per HTTP request (e.g. each time to load a locale or setting)
-            if (_perRequestCacheManager.IsSet(key))
-                return _perRequestCacheManager.Get<T>(key);
+            var predicatedKey = !key.StartsWith(_predicat) ? $"{_predicat}{key}" : key;
+            if (_perRequestCacheManager.IsSet(predicatedKey))
+                return _perRequestCacheManager.Get<T>(predicatedKey);
 
             InitConnection();
 
-            var rValue = _db.StringGet(key);
+            var rValue = _db.StringGet(predicatedKey);
             if (!rValue.HasValue)
                 return default(T);
             var result = Deserialize<T>(rValue);
 
-            _perRequestCacheManager.Set(key, result, 0);
+            _perRequestCacheManager.Set(predicatedKey, result, 0);
             return result;
         }
 
@@ -105,8 +108,9 @@ namespace MTDB.Core.Caching
 
             var entryBytes = Serialize(data);
             var expiresIn = TimeSpan.FromMinutes(cacheTime);
-            
-            _db.StringSet(key, entryBytes, expiresIn);
+            var predicatedKey = !key.StartsWith(_predicat) ? $"{_predicat}{key}" : key;
+
+            _db.StringSet(predicatedKey, entryBytes, expiresIn);
         }
 
         /// <summary>
@@ -119,12 +123,13 @@ namespace MTDB.Core.Caching
             //little performance workaround here:
             //we use "PerRequestCacheManager" to cache a loaded object in memory for the current HTTP request.
             //this way we won't connect to Redis server 500 times per HTTP request (e.g. each time to load a locale or setting)
-            if (_perRequestCacheManager.IsSet(key))
+            var predicatedKey = !key.StartsWith(_predicat) ? $"{_predicat}{key}" : key;
+            if (_perRequestCacheManager.IsSet(predicatedKey))
                 return true;
 
             InitConnection();
 
-            return _db.KeyExists(key);
+            return _db.KeyExists(predicatedKey);
         }
 
         /// <summary>
@@ -134,8 +139,8 @@ namespace MTDB.Core.Caching
         public virtual void Remove(string key)
         {
             InitConnection();
-
-            _db.KeyDelete(key);
+            var predicatedKey = !key.StartsWith(_predicat) ? $"{_predicat}{key}" : key;
+            _db.KeyDelete(predicatedKey);
         }
 
         /// <summary>
@@ -145,11 +150,11 @@ namespace MTDB.Core.Caching
         public virtual void RemoveByPattern(string pattern)
         {
             InitConnection();
-
+            var predicatedKey = !pattern.StartsWith(_predicat) ? $"{_predicat}{pattern}" : pattern;
             foreach (var ep in _muxer.GetEndPoints())
             {
                 var server = _muxer.GetServer(ep);
-                var keys = server.Keys(pattern: "*" + pattern + "*");
+                var keys = server.Keys(pattern: "*" + predicatedKey + "*");
                 foreach (var key in keys)
                     _db.KeyDelete(key);
             }

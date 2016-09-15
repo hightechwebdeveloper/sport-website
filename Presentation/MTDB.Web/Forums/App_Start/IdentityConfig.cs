@@ -31,7 +31,7 @@ namespace MTDB.Forums
 
         public static UserManager Create(IdentityFactoryOptions<UserManager> options, IOwinContext context)
         {
-            var manager = new UserManager(new UserStore<User>(context.Get<MtdbContext>()));
+            var manager = new UserManager(new UserStore<User>(context.Get<K17DbContext>()));
             // Configure validation logic for usernames
             manager.UserValidator = new UserValidator<User>(manager)
             {

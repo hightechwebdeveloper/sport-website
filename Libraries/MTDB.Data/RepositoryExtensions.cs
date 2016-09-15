@@ -9,6 +9,7 @@ using MTDB.Core.Domain;
 
 namespace MTDB.Data
 {
+    [Obsolete]
     public static class RepositoryExtensions
     {
         public static IQueryable<T> FilterByCreatedDate<T>(this IQueryable<T> query, DateTimeOffset date) where T : EntityBase

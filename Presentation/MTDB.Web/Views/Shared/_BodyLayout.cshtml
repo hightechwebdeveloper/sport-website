@@ -158,46 +158,79 @@
                 <nav ui-nav class="navi clearfix">
                     <ul class="nav">
                         <li class="hidden-folded padder m-t m-b-sm text-muted text-xs">
-                            <span>NBA 2K16</span>
+                            <span>NBA 2K17</span>
                         </li>
                         <li>
-                            <a href="@Url.Action("List", "Player")">
+                            <a href="@Url.Action("List", "Player", new { area = "2K17" })">
                                 <i class="fa fa-user text-info-lter"></i>
                                 <span class="font-bold">Players</span>
                             </a>
                         </li>
-                        @*@if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))*@
-                        @*  {*@
                         <li>
-                            <a href="@Url.Action("Index", "Collection")">
+                            <a href="@Url.Action("Index", "Collection", new { area = "2K17" })">
                                 <i class="fa fa-list-ul text-info-lter"></i>
                                 <span class="font-bold">Collections</span>
                             </a>
                         </li>
-                        @*  {*@
                         <li>
-                            <a href="@Url.Action("Index", "Lineup")/">
+                            <a href="@Url.Action("Index", "Lineup", new { area = "2K17" })/">
                                 <i class="fa fa-users text-info-lter"></i>
                                 <span class="font-bold">Lineups</span>
                             </a>
                         </li>
                         <li>
-                            <a href="@Url.Action("Index", "Pack")/">
+                            <a href="@Url.Action("Index", "Pack", new { area = "2K17" })/">
                                 <i class="fa fa-gamepad text-info-lter"></i>
                                 <span class="font-bold">Pack Simulator</span>
                             </a>
                         </li>
-                        @*@if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))*@
-                        @*  {*@
                         <li>
-                            <a href="@Url.Action("Index", "PlayerUpdate")">
+                            <a href="@Url.Action("Index", "PlayerUpdate", new { area = "2K17" })">
                                 <i class="fa fa-bell text-info-lter"></i>
                                 <span class="font-bold">Player Updates</span>
                             </a>
                         </li>
-                        @* }*@
                         <li>
-                            <a href="@Url.Action("Compare", "Player")/">
+                            <a href="@Url.Action("Compare", "Player", new { area = "2K17" })/">
+                                <i class="glyphicon glyphicon-signal text-info-lter"></i>
+                                <span class="font-bold">Compare Players</span>
+                            </a>
+                        </li>
+                        <li class="hidden-folded padder m-t m-b-sm text-muted text-xs">
+                            <span>NBA 2K16</span>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("List", "Player", new { area = "" })">
+                                <i class="fa fa-user text-info-lter"></i>
+                                <span class="font-bold">Players</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("Index", "Collection", new { area = "" })">
+                                <i class="fa fa-list-ul text-info-lter"></i>
+                                <span class="font-bold">Collections</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("Index", "Lineup", new { area = "" })/">
+                                <i class="fa fa-users text-info-lter"></i>
+                                <span class="font-bold">Lineups</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("Index", "Pack", new { area = "" })/">
+                                <i class="fa fa-gamepad text-info-lter"></i>
+                                <span class="font-bold">Pack Simulator</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("Index", "PlayerUpdate", new { area = "" })">
+                                <i class="fa fa-bell text-info-lter"></i>
+                                <span class="font-bold">Player Updates</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="@Url.Action("Compare", "Player", new { area = "" })/">
                                 <i class="glyphicon glyphicon-signal text-info-lter"></i>
                                 <span class="font-bold">Compare Players</span>
                             </a>

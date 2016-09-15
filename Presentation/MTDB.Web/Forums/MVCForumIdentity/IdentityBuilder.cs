@@ -15,7 +15,7 @@ namespace MTDB.Forums.MvcForumIdentity {
 
 			container.RegisterPerRequest<IContext, Context>();
 			container.RegisterPerRequest<DbContext, MVCForumContext>(new Dictionary<string, object> { { "nameOrConnectionString", ConfigurationManager.ConnectionStrings["mvcForum.DataProvider.MainDB"].ConnectionString } });
-            container.RegisterPerRequest<IDbContext, MtdbContext>();
+            container.RegisterPerRequest<IDbContext, K17DbContext>();
 
             container.RegisterGeneric(typeof(IRepository<>), typeof(Repository<>));
 

@@ -151,7 +151,9 @@
     <Compile Include="Domain\Tier.cs" />
     <Compile Include="HelperExtensions.cs" />
     <Compile Include="IPagedList.cs" />
+    <Compile Include="ILocationContext.cs" />
     <Compile Include="IWorkContext.cs" />
+    <Compile Include="Location.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

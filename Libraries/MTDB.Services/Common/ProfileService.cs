@@ -24,7 +24,7 @@ namespace MTDB.Core.Services.Common
             var userId = user.Id;
             var cardpacks = await _dbContext.Set<CardPack>()
                 .Include(cp => cp.Players.Select(p => p.Player))
-                .Where(p => p.User.Id == userId)
+                .Where(p => p.UserId == userId)
                 .OrderByDescending(p => p.CreatedDate)
                 .Select(pack => new
                 {
@@ -51,8 +51,7 @@ namespace MTDB.Core.Services.Common
 
 
             var lineups = await _dbContext.Set<Lineup>()
-                .Include(l => l.User)
-                .Where(p => p.User.Id == userId)
+                .Where(p => p.UserId == userId)
                 .OrderByDescending(p => p.CreatedDate)
                 .ToListAsync(cancellationToken);
 

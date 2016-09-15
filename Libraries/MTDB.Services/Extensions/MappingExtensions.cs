@@ -1,17 +1,20 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
+using MTDB.Core.Caching;
 using MTDB.Core.ViewModels;
 using MTDB.Core.Domain;
+using MTDB.Core.Services.Common;
 
 namespace MTDB.Core.Services.Extensions
 {
+    [Obsolete]
     public static class MappingExtensions
     {
         static MappingExtensions()
         {
             Mapper.CreateMap<Comment, CommentDto>()
-                .ForMember(dest => dest.UserName, opt => opt.MapFrom(src => src.User.UserName))
                 .ForMember(dest => dest.TimeAgo, opt => opt.MapFrom(src => src.CreatedDate.ToTimeAgo()));
         }
 
@@ -60,7 +63,7 @@ namespace MTDB.Core.Services.Extensions
             return new TierDto { Id = tier.Id, Name = tier.Name };
         }
         
-        public static LineupDto ToDto(this Lineup lineup)
+        public static LineupDto ToDto(this Lineup lineup, CdnSettings cdnSettings)
         {
             var overall = 0;
             var outsideScoring = 0;
@@ -86,8 +89,8 @@ namespace MTDB.Core.Services.Extensions
             {
                 Id = lineup.Id,
                 Name = lineup.Name,
-                AuthorId = lineup.User?.Id,
-                Author = lineup.User != null ? lineup.User.UserName : "Guest",
+                AuthorId = lineup.UserId,
+                Author = lineup.UserId != null ? lineup.UserName : "Guest",
                 Overall = overall,
                 OutsideScoring = outsideScoring,
                 InsideScoring = insideScoring,
@@ -95,23 +98,23 @@ namespace MTDB.Core.Services.Extensions
                 Athleticism = athleticism,
                 Defending = defending,
                 Rebounding = rebounding,
-                PointGuard = lineup.Players.FirstOrDefault(p => p.LineupPosition == LineupPositionType.PointGuard).ToLineupPlayerDto(),
-                ShootingGuard = lineup.Players.FirstOrDefault(p => p.LineupPosition == LineupPositionType.ShootingGuard).ToLineupPlayerDto(),
-                SmallForward = lineup.Players.FirstOrDefault(p => p.LineupPosition == LineupPositionType.SmallForward).ToLineupPlayerDto(),
-                PowerForward = lineup.Players.FirstOrDefault(p => p.LineupPosition == LineupPositionType.PowerForward).ToLineupPlayerDto(),
-                Center = lineup.Players.FirstOrDefault(p => p.LineupPosition == LineupPositionType.Center).ToLineupPlayerDto(),
-                Bench1 = lineup.Players.FirstOrDefault(p => p.LineupPosition == LineupPositionType.Bench1).ToLineupPlayerDto(),
-                Bench2 = lineup.Players.FirstOrDefault(p => p.LineupPosition == LineupPositionType.Bench2).ToLineupPlayerDto(),
-                Bench3 = lineup.Players.FirstOrDefault(p => p.LineupPosition == LineupPositionType.Bench3).ToLineupPlayerDto(),
-                Bench4 = lineup.Players.FirstOrDefault(p => p.LineupPosition == LineupPositionType.Bench4).ToLineupPlayerDto(),
-                Bench5 = lineup.Players.FirstOrDefault(p => p.LineupPosition == LineupPositionType.Bench5).ToLineupPlayerDto(),
-                Bench6 = lineup.Players.FirstOrDefault(p => p.LineupPosition == LineupPositionType.Bench6).ToLineupPlayerDto(),
-                Bench7 = lineup.Players.FirstOrDefault(p => p.LineupPosition == LineupPositionType.Bench7).ToLineupPlayerDto(),
-                Bench8 = lineup.Players.FirstOrDefault(p => p.LineupPosition == LineupPositionType.Bench8).ToLineupPlayerDto(),
+                PointGuard = lineup.Players.FirstOrDefault(p => p.LineupPosition == LineupPositionType.PointGuard).ToLineupPlayerDto(cdnSettings),
+                ShootingGuard = lineup.Players.FirstOrDefault(p => p.LineupPosition == LineupPositionType.ShootingGuard).ToLineupPlayerDto(cdnSettings),
+                SmallForward = lineup.Players.FirstOrDefault(p => p.LineupPosition == LineupPositionType.SmallForward).ToLineupPlayerDto(cdnSettings),
+                PowerForward = lineup.Players.FirstOrDefault(p => p.LineupPosition == LineupPositionType.PowerForward).ToLineupPlayerDto(cdnSettings),
+                Center = lineup.Players.FirstOrDefault(p => p.LineupPosition == LineupPositionType.Center).ToLineupPlayerDto(cdnSettings),
+                Bench1 = lineup.Players.FirstOrDefault(p => p.LineupPosition == LineupPositionType.Bench1).ToLineupPlayerDto(cdnSettings),
+                Bench2 = lineup.Players.FirstOrDefault(p => p.LineupPosition == LineupPositionType.Bench2).ToLineupPlayerDto(cdnSettings),
+                Bench3 = lineup.Players.FirstOrDefault(p => p.LineupPosition == LineupPositionType.Bench3).ToLineupPlayerDto(cdnSettings),
+                Bench4 = lineup.Players.FirstOrDefault(p => p.LineupPosition == LineupPositionType.Bench4).ToLineupPlayerDto(cdnSettings),
+                Bench5 = lineup.Players.FirstOrDefault(p => p.LineupPosition == LineupPositionType.Bench5).ToLineupPlayerDto(cdnSettings),
+                Bench6 = lineup.Players.FirstOrDefault(p => p.LineupPosition == LineupPositionType.Bench6).ToLineupPlayerDto(cdnSettings),
+                Bench7 = lineup.Players.FirstOrDefault(p => p.LineupPosition == LineupPositionType.Bench7).ToLineupPlayerDto(cdnSettings),
+                Bench8 = lineup.Players.FirstOrDefault(p => p.LineupPosition == LineupPositionType.Bench8).ToLineupPlayerDto(cdnSettings),
             };
         }
 
-        public static LineupPlayerDto ToLineupPlayerDto(this LineupPlayer player)
+        public static LineupPlayerDto ToLineupPlayerDto(this LineupPlayer player, CdnSettings cdnSettings)
         {
             if (player?.Player == null)
                 return null;
@@ -120,7 +123,7 @@ namespace MTDB.Core.Services.Extensions
             {
                 Name = player.Player.Name,
                 Uri = player.Player.UriName,
-                ImageUri = player.Player.GetImageUri(ImageSize.Full),
+                ImageUri = player.Player.GetImageUri(cdnSettings, ImageSize.Full),
                 Overall = player.Player.Overall,
                 OutsideScoring = player.Player.OutsideScoring,
                 InsideScoring = player.Player.InsideScoring,
@@ -162,7 +165,7 @@ namespace MTDB.Core.Services.Extensions
                     Xbox = lineup.Xbox,
                     PS4 = lineup.PS4,
                     PC = lineup.PC,
-                    Author = lineup.User == null ? "Guest" : lineup.User.UserName,
+                    Author = lineup.UserId == null ? "Guest" : lineup.UserName,
                     CreatedDateString = lineup.CreatedDate.ToString("G")
                 });
             }

@@ -29,8 +29,8 @@ namespace PlayerUpdater
             try
             {
                 var positions = GetPositions();
-                var repo = new MtdbContext();
-                var memoryCache = new MemoryCacheManager();
+                var repo = new K17DbContext();
+                var memoryCache = new MemoryCacheManager("");
                 var statService = new StatService(repo, memoryCache);
 
                 var existingPlayers =

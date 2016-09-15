@@ -8,7 +8,6 @@ using System.Web.Mvc;
 using MTDB.Core.Services.Catalog;
 using MTDB.Core.ViewModels;
 using MTDB.Core.ViewModels.PlayerUpdates;
-using MTDB.Helpers;
 
 namespace MTDB.Controllers
 {

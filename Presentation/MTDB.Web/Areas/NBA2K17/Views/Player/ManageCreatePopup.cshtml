@@ -1,0 +1,117 @@
+﻿@using MTDB.Helpers
+@using MTDB.Models.Player
+@model MTDB.Models.Player.ManageEditModel
+@{
+    Layout = "~/Views/Shared/_PopupLayout.cshtml";
+
+    //the author of project created fucking bad structure. That's why I must write this code here...
+    var availableDivisions = (from divisionGroup in Model.AvailableDivisions.GroupBy(d => d.Conference)
+        let @group = new SelectListGroup
+        {
+            Name = divisionGroup.Key
+        }
+        from divisionDto in divisionGroup
+        select new SelectListItem
+        {
+            Value = divisionDto.Id.ToString(), Text = divisionDto.Name, Group = @group
+        }).ToList();
+
+    var themes = Model.AvailableThemeGroups.GroupBy(t => t.Item1).OrderByDescending(x => x.All(t => !string.IsNullOrWhiteSpace(t.Item2)));
+    var availableGroups = new List<SelectListItem>();
+    foreach (var theme in themes)
+    {
+        if (theme.All(t => !string.IsNullOrWhiteSpace(t.Item2)))
+        {
+            var group = new SelectListGroup
+            {
+                Name = theme.Key
+            };
+            availableGroups.AddRange(theme.Select(gr => new SelectListItem
+            {
+                Value = string.Format("{0}_{1}", gr.Item1, gr.Item2), Text = gr.Item2, Group = @group
+            }));
+        }
+        else
+        {
+            var item = new SelectListItem
+            {
+                Value = string.Format("{0}_", theme.Key),
+                Text = theme.Key,
+            };
+            availableGroups.Add(item);
+        }
+    }
+}
+
+@if (ViewBag.RefreshPage == true)
+{
+    <script type="text/javascript">
+        try {
+            window.opener.document.getElementById("@(ViewBag.btnId)").click();
+        }
+        catch (e){}
+        window.close();
+    </script>
+}
+
+<script>
+    $(function() {
+        $('#@Html.IdFor(model => model.Type)').change(toogleManage);
+    });
+
+    function toogleManage() {
+        var type = $('#@Html.IdFor(model => model.Type)').val();
+        $('#team').hide();
+        $('#tier').hide();
+        $('#collection').hide();
+        if (type == '@((int) ManageType.Team)') {
+            $('#team').show();
+        } else if (type == '@((int)ManageType.Tier)') {
+            $('#tier').show();
+        } else if (type == '@((int)ManageType.Collection)') {
+            $('#collection').show();
+        }
+    }
+</script>
+@*@Html.ValidationSummary(false)*@
+@using (Html.BeginForm())
+{
+    <div class="form-group">
+        <label for="@Html.IdFor(model => model.Type)" class="control-label">Type</label>
+        @Html.DropDownListFor(model => model.Type, new SelectList(Model.AvailableTypes, "Key", "Value"), new {@class = "form-control"})
+    </div>
+    <div class="form-group">
+        <label for="@Html.IdFor(model => model.Name)" class="control-label">Name</label>
+        @Html.TextBoxFor(model => model.Name, new { @class = "form-control" })
+        <span class="help-block">@Html.ValidationMessageFor(model => model.Name)</span>
+    </div>
+    <div id="team" @(Model.Type != ManageType.Team ? Html.Raw("style='display: none'") : null)>
+        <div class="form-group">
+            <label for="@Html.IdFor(model => model.DivisionId)" class="control-label">Division</label>
+            @Html.DropDownListFor(model => model.DivisionId, availableDivisions, new { @class = "form-control" })
+            <span class="help-block">@Html.ValidationMessageFor(model => model.DivisionId)</span>
+        </div>
+    </div>
+    <div id="tier" @(Model.Type != ManageType.Tier ? Html.Raw("style='display: none'") : null)>
+        <div class="form-group">
+            <label for="@Html.IdFor(model => model.DrawChance)" class="control-label">Draw chance</label>
+            @Html.TextBoxFor(model => model.DrawChance, new { @class = "form-control" })
+        </div>
+        <div class="form-group">
+            <label for="@Html.IdFor(model => model.SortOrder)" class="control-label">Sort order</label>
+            @Html.UpDownFor(p => p.SortOrder, "form-control", -999999999, 999999999)
+        </div>  
+    </div>
+    <div id="collection" @(Model.Type != ManageType.Collection ? Html.Raw("style='display: none'") : null)>
+        <div class="form-group">
+            <label for="@Html.IdFor(model => model.ThemeGroupName)" class="control-label">Group name</label>
+            @Html.DropDownListFor(model => model.ThemeGroupName, availableGroups, new { @class = "form-control" })
+        </div>
+        <div class="form-group">
+            <label for="@Html.IdFor(model => model.DisplayOrder)" class="control-label">Display order</label>
+            @Html.UpDownFor(p => p.DisplayOrder, "form-control", -999999999, 999999999)
+        </div>
+    </div>
+    
+    <input type="submit" value="Create" class="btn btn-primary" />
+}

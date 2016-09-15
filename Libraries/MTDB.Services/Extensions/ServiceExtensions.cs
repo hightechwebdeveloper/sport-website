@@ -5,10 +5,12 @@ using System.Data.Entity;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using MTDB.Core.Caching;
 using MTDB.Core.Services.Catalog;
 using MTDB.Data;
 using MTDB.Core.ViewModels;
 using MTDB.Core.Domain;
+using MTDB.Core.Services.Common;
 
 namespace MTDB.Core.Services.Extensions
 {
@@ -136,17 +138,17 @@ namespace MTDB.Core.Services.Extensions
             return value >= minValue && value <= maxValue;
         }
 
-        public static string GetImageUri(this Player player, ImageSize imageSize)
+        public static string GetImageUri(this Player player, CdnSettings cdnSettings, ImageSize imageSize)
         {
-            return GetImageUri(player.UriName, imageSize);
+            return GetImageUri(cdnSettings, player.UriName, imageSize);
         }
 
-        public static string GetImageUri(string playerUri, ImageSize imageSize)
+        public static string GetImageUri(CdnSettings cdnSettings, string playerUri, ImageSize imageSize)
         {
             var baseUrl = ConfigurationManager.AppSettings["cdn:ImageUrl"];
             return imageSize == ImageSize.Full 
-                ? $"{baseUrl}{playerUri}.png" 
-                : $"{baseUrl}{playerUri}-40x56.png";
+                ? $"{baseUrl}{cdnSettings.Subdir}{playerUri}.png" 
+                : $"{baseUrl}{cdnSettings.Subdir}{playerUri}-40x56.png";
         }
     }
 

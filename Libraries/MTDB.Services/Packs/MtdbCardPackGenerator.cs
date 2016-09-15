@@ -4,11 +4,13 @@ using System.Data.Entity;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using MTDB.Core.Caching;
 using MTDB.Core.Services.Catalog;
 using MTDB.Core.Services.Extensions;
 using MTDB.Core.ViewModels;
 using MTDB.Data;
 using MTDB.Core.Domain;
+using MTDB.Core.Services.Common;
 
 namespace MTDB.Core.Services.Packs
 {
@@ -17,12 +19,13 @@ namespace MTDB.Core.Services.Packs
         private readonly TierService _tierService;
 
         public MtdbCardPackGenerator(IDbContext dbContext,
-            TierService tierService) 
-            : base(dbContext)
+            TierService tierService,
+            CdnSettings cdnSettings) 
+            : base(dbContext, cdnSettings)
         {
             this._tierService = tierService;
         }
-        
+
         public override async Task<MtdbCardPackDto> GeneratePack(CancellationToken cancellationToken)
         {
             var playersPerRound = 5;
@@ -81,11 +84,14 @@ namespace MTDB.Core.Services.Packs
     public class FantasyDraftPackGenerator : BaseCardPackGenerator<FantasyDraftPackDto>
     {
         private readonly TierService _tierService;
+        private readonly CdnSettings _cdnSettings;
 
         public FantasyDraftPackGenerator(IDbContext dbContext,
-            TierService tierService) : base(dbContext)
+            TierService tierService,
+            CdnSettings cdnSettings) : base(dbContext, cdnSettings)
         {
             this._tierService = tierService;
+            this._cdnSettings = cdnSettings;
         }
 
         public override async Task<FantasyDraftPackDto> GeneratePack(CancellationToken cancellationToken)
@@ -173,7 +179,7 @@ namespace MTDB.Core.Services.Packs
                     InsideScoring = player.InsideScoring,
                     OutsideScoring = player.OutsideScoring,
                     Overall = player.Overall,
-                    PlayerImageUri = player.GetImageUri(ImageSize.Full),
+                    PlayerImageUri = player.GetImageUri(_cdnSettings, ImageSize.Full),
                     PlayerName = player.Name,
                     PlayerUri = player.UriName,
                     Playmaking = player.Playmaking,
@@ -194,11 +200,14 @@ namespace MTDB.Core.Services.Packs
 
     public abstract class BaseCardPackGenerator<T>
     {
+        private readonly CdnSettings _cdnSettings;
         protected IDbContext _dbContext { get; private set; }
 
-        protected BaseCardPackGenerator(IDbContext dbContext)
+        protected BaseCardPackGenerator(IDbContext dbContext,
+            CdnSettings cdnSettings)
         {
-            _dbContext = dbContext;
+            this._cdnSettings = cdnSettings;
+            this._dbContext = dbContext;
         }
 
         protected IEnumerable<CardDto> PickedPlayersToCardDtos(IEnumerable<Player> players)
@@ -208,7 +217,7 @@ namespace MTDB.Core.Services.Packs
                     new CardDto
                     {
                         Id = p.Id,
-                        PlayerImageUri = p.GetImageUri(ImageSize.Full),
+                        PlayerImageUri = p.GetImageUri(_cdnSettings, ImageSize.Full),
                         PlayerName = p.Name,
                         PlayerUri = p.UriName,
                         Tier = p.Tier.ToDto(),

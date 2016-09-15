@@ -1,5 +1,4 @@
-﻿using MTDB.Helpers;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using MTDB.Core;
@@ -35,9 +34,6 @@ namespace MTDB.Controllers
         [Route("")]
         public async Task<ActionResult> NewComment(int? parentId, string pageUrl, string text, CancellationToken cancellationToken)
         {
-            if (_workContext.CurrentUser == null)
-                return Redirect(Request.UrlReferrer?.ToString());
-
             if (!string.IsNullOrWhiteSpace(text) && !string.IsNullOrWhiteSpace(pageUrl))
             {
                 await _commentService.CreateComment(new Comment

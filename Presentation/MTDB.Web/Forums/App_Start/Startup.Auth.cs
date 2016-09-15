@@ -11,7 +11,7 @@ namespace MTDB.Forums
         // For more information on configuring authentication, please visit http://go.microsoft.com/fwlink/?LinkId=301864
         public void ConfigureAuth(IAppBuilder app)
         {
-            app.CreatePerOwinContext(MtdbContext.Create);
+            app.CreatePerOwinContext(() => new K17DbContext());
             app.CreatePerOwinContext<UserManager>(UserManager.Create);
             app.CreatePerOwinContext<ApplicationSignInManager>(ApplicationSignInManager.Create);
 

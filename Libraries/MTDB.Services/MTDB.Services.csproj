@@ -145,6 +145,7 @@
   <ItemGroup>
     <Compile Include="Catalog\AveragesResult.cs" />
     <Compile Include="Catalog\CollectionService.cs" />
+    <Compile Include="Common\CdnSettings.cs" />
     <Compile Include="Common\CommentService.cs" />
     <Compile Include="Catalog\DivisionService.cs" />
     <Compile Include="Packs\MtdbCardPackGenerator.cs" />

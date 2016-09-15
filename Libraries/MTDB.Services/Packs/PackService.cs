@@ -11,6 +11,7 @@ using MTDB.Core.Services.Extensions;
 using MTDB.Core.ViewModels;
 using MTDB.Data;
 using MTDB.Core.Domain;
+using MTDB.Core.Services.Common;
 
 namespace MTDB.Core.Services.Packs
 {
@@ -35,6 +36,7 @@ namespace MTDB.Core.Services.Packs
         private readonly IDbContext _dbContext;
         private readonly TierService _tierService;
         private readonly ICacheManager _memoryCacheManager;
+        private readonly CdnSettings _cdnSettings;
 
         #endregion
 
@@ -42,11 +44,13 @@ namespace MTDB.Core.Services.Packs
 
         public PackService(IDbContext dbContext,
             TierService tierService,
-            MemoryCacheManager memoryCacheManager)
+            MemoryCacheManager memoryCacheManager,
+            CdnSettings cdnSettings)
         {
-            _dbContext = dbContext;
-            _tierService = tierService;
-            _memoryCacheManager = memoryCacheManager;
+            this._dbContext = dbContext;
+            this._tierService = tierService;
+            this._memoryCacheManager = memoryCacheManager;
+            this._cdnSettings = cdnSettings;
         }
         
         #endregion
@@ -100,7 +104,7 @@ namespace MTDB.Core.Services.Packs
                         Id = cardPackPlayer.Id,
                         PlayerName = cardPackPlayer.Player.Name,
                         PlayerUri = cardPackPlayer.Player.UriName,
-                        PlayerImageUri = cardPackPlayer.Player.GetImageUri(ImageSize.Full),
+                        PlayerImageUri = cardPackPlayer.Player.GetImageUri(_cdnSettings, ImageSize.Full),
                         Tier = cardPackPlayer.Player.Tier.ToDto(),
                         Points = cardPackPlayer.Player.Points,
                     };
@@ -142,7 +146,7 @@ namespace MTDB.Core.Services.Packs
                         InsideScoring = cardPackPlayer.Player.InsideScoring,
                         OutsideScoring = cardPackPlayer.Player.OutsideScoring,
                         Overall = cardPackPlayer.Player.Overall,
-                        PlayerImageUri = cardPackPlayer.Player.GetImageUri(ImageSize.Full),
+                        PlayerImageUri = cardPackPlayer.Player.GetImageUri(_cdnSettings, ImageSize.Full),
                         PlayerName = cardPackPlayer.Player.Name,
                         PlayerUri = cardPackPlayer.Player.UriName,
                         Playmaking = cardPackPlayer.Player.Playmaking,
@@ -158,13 +162,13 @@ namespace MTDB.Core.Services.Packs
 
         public async Task<MtdbCardPackDto> CreateMtdbCardPack(CancellationToken cancellationToken)
         {
-            var generator = new MtdbCardPackGenerator(_dbContext, _tierService);
+            var generator = new MtdbCardPackGenerator(_dbContext, _tierService, _cdnSettings);
             return await generator.GeneratePack(cancellationToken);
         }
         
         public async Task<FantasyDraftPackDto> CreateFantasyDraftPack(CancellationToken cancellationToken)
         {
-            var generator = new FantasyDraftPackGenerator(_dbContext, _tierService);
+            var generator = new FantasyDraftPackGenerator(_dbContext, _tierService, _cdnSettings);
 
             return await generator.GeneratePack(cancellationToken);
         }
@@ -261,7 +265,7 @@ namespace MTDB.Core.Services.Packs
                     Id = cardPack.Id,
                     Name = cardPack.Name,
                     CreatedDate = cardPack.CreatedDate,
-                    User = cardPack.User != null ? cardPack.User.UserName : null,
+                    User = cardPack.UserId != null ? cardPack.UserName : null,
                     PackId = cardPack.CardPackTypeId,
                     Points = cardPack.Points
                 })

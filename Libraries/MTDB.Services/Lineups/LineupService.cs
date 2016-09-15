@@ -4,23 +4,28 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using MTDB.Core.Caching;
 using MTDB.Core.Services.Extensions;
 using MTDB.Core.ViewModels;
 using MTDB.Core.ViewModels.Lineups;
 using MTDB.Data;
 using MTDB.Core.Domain;
+using MTDB.Core.Services.Common;
 
 namespace MTDB.Core.Services.Lineups
 {
     public class LineupService
     {
         private readonly IDbContext _dbContext;
+        private readonly CdnSettings _cdnSettings;
 
-        public LineupService(IDbContext dbContext)
+        public LineupService(IDbContext dbContext,
+            CdnSettings cdnSettings)
         {
-            _dbContext = dbContext;
+            this._dbContext = dbContext;
+            this._cdnSettings = cdnSettings;
         }
-        
+
         public async Task<int> UpdateLineup(User user, CreateLineupDto dto, CancellationToken token)
         {
             var existingLineup = await _dbContext.Set<Lineup>().FirstOrDefaultAsync(x => x.Id == dto.Id, token);
@@ -30,7 +35,7 @@ namespace MTDB.Core.Services.Lineups
                 return -1;
             }
 
-            if (existingLineup.User.Id != user.Id)
+            if (existingLineup.UserId != user.Id)
             {
                 return -1;
             }
@@ -136,11 +141,10 @@ namespace MTDB.Core.Services.Lineups
         public async Task<LineupDto> GetLineup(int id, CancellationToken cancellationToken)
         {
             var lineup = await _dbContext.Set<Lineup>()
-                .Include(l => l.User)
                 .Include(l => l.Players.Select(p => p.Player))
                 .FirstOrDefaultAsync(l => l.Id == id, cancellationToken);
 
-            return lineup.ToDto();
+            return lineup.ToDto(_cdnSettings);
         }
 
         public async Task DeleteLineup(int id, CancellationToken cancellationToken)
@@ -167,7 +171,6 @@ namespace MTDB.Core.Services.Lineups
             };
 
             var lineups = await _dbContext.Set<Lineup>()
-                .Include(l => l.User)
                 .Sort(sortByColumn, sortOrder, "CreatedDate", skip, take, map)
                 .ToListAsync(cancellationToken);
 
@@ -183,7 +186,7 @@ namespace MTDB.Core.Services.Lineups
             var player = await _dbContext.Set<LineupPlayer>()
                 .SingleOrDefaultAsync(lp => lp.Id == lineupId && lp.Player.Id == playerId && lp.LineupPosition == position, token);
 
-            return player.ToLineupPlayerDto();
+            return player.ToLineupPlayerDto(_cdnSettings);
         }
     }
 

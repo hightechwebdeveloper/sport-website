@@ -5,15 +5,12 @@ using MTDB.Core.Domain;
 
 namespace MTDB.Data
 {
-    public class MtdbContext : IdentityDbContext<User>, IDbContext
+    public class K17DbContext : IdentityDbContext<User>, IDbContext
     {
-        public MtdbContext() : base("MTDBRepository", throwIfV1Schema: false)
+        public K17DbContext() 
+            : base("MTDB2K17Connection", throwIfV1Schema: false)
         {
             this.Database.CommandTimeout = int.MaxValue;
-        }
-        public static MtdbContext Create()
-        {
-            return new MtdbContext();
         }
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)

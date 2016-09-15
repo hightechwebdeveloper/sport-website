@@ -1,0 +1,505 @@
+﻿@using MTDB.Core
+@using MTDB.Helpers
+@model MTDB.Models.Player.PlayerSearchModel
+
+<div class="bg-light lter b-b wrapper-md">
+    <div class="row">
+        <div class="col-sm-6 col-xs-12">
+            <h1 class="m-n font-thin h3 text-black">NBA 2K16 Players</h1>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <!-- filter -->
+    <div class="wrapper-md">
+        <div class="panel panel-default">
+            <div class="panel-heading hidden-xs">
+                Filter
+            </div>
+            <p class="visible-xs">
+                <a class="btn btn-default btn-block" role="button" data-toggle="collapse" href="#collapseExample" aria-expanded="false" aria-controls="collapseExample">
+                    <i class="fa fa-filter"></i> Filter Players
+                </a>
+            </p>
+            <form id="searchForm">
+                <div class="collapse mcollapsefix wrapper" id="collapseExample">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Name</label>
+                            <div class="col-sm-10">
+                                @Html.TextBoxFor(m => m.Name, new { @class = "form-control m-b" })
+                            </div>
+                        </div>
+                        <div class="line line-dashed b-b line-lg pull-in"></div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Tier</label>
+                            <div class="col-sm-10">
+                                @Html.DropDownListFor(m => m.TierId, Model.AvailableTiers, new { @class = "form-control m-b" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Theme</label>
+                            <div class="col-sm-10">
+                                @Html.DropDownListFor(m => m.ThemeId, Model.AvailableThemes, new { @class = "form-control m-b" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Position</label>
+                            <div class="col-sm-10">
+                                @Html.DropDownListFor(m => m.Position, Model.AvailablePositions, new { @class = "form-control m-b" })
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Height</label>
+                            <div class="col-sm-10">
+                                @Html.DropDownListFor(m => m.Height, Model.AvailableHeights, new { @class = "form-control m-b" })
+                            </div>
+                        </div>
+                        <div class="line line-dashed b-b line-lg pull-in"></div>
+
+                        <div class="form-group">
+                            <label class="col-sm-2 control-label">Price</label>
+                            <div class="col-sm-10">
+                                <label class="radio-inline">
+                                    <input type="radio" name="platform" value="PS4"> PS4
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="platform" value="XBOX"> XBOX
+                                </label>
+                                <label class="radio-inline">
+                                    <input type="radio" name="platform" value="PC"> PC
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-sm-10">
+                            <div class="form-group">
+                                @Html.TextBoxFor(p => p.PriceMin, new { @class = "form-control", placeholder = "Min" })
+                            </div>
+                            <div class="form-group">
+                                @Html.TextBoxFor(p => p.PriceMax, new { @class = "form-control", placeholder = "Max" })
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="panel-group 16form" id="accordion" role="tablist" aria-multiselectable="true">
+                            <div class="panel panel-default">
+                                <div class="panel-heading" role="tab" id="headingTwo">
+                                    <h4 class="panel-title">
+                                        <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                            Outside Scoring
+                                        </a>
+                                    </h4>
+                                </div>
+                                <div id="collapseTwo" class="panel-collapse collapse in" role="tabpanel" aria-labelledby="headingTwo">
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <p>Standing Shot Mid</p>
+                                                @Html.SliderFor(m => m.Standing_Shot_Mid)
+                                                <p>Standing Shot 3pt</p>
+                                                @Html.SliderFor(m => m.Standing_Shot_3pt)
+                                                <p>Moving Shot Mid</p>
+                                                @Html.SliderFor(m => m.Moving_Shot_Mid)
+                                            </div>
+                                            <div class="col-md-4">
+                                                <p>Moving Shot 3pt</p>
+                                                @Html.SliderFor(m => m.Moving_Shot_3pt)
+                                                <p>Shot IQ</p>
+                                                @Html.SliderFor(m => m.Shot_IQ)
+
+                                            </div>
+                                            <div class="col-md-4">
+                                                <p>Free Throw</p>
+                                                @Html.SliderFor(m => m.Free_Throw)
+                                                <p>Offensive Consistency</p>
+                                                @Html.SliderFor(m => m.Offensive_Consistency)
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="panel panel-default">
+                                <div class="panel-heading" role="tab" id="headingThree">
+                                    <h4 class="panel-title">
+                                        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                                            Inside Scoring
+                                        </a>
+                                    </h4>
+                                </div>
+                                <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <p>Standing Shot Close</p>
+                                                @Html.SliderFor(m => m.Standing_Shot_Close)
+                                                <p>Moving Shot Close</p>
+                                                @Html.SliderFor(m => m.Moving_Shot_Close)
+                                                <p>Standing Layup</p>
+                                                @Html.SliderFor(m => m.Standing_Layup)
+                                                <p>Driving Layup</p>
+                                                @Html.SliderFor(m => m.Driving_Layup)
+                                            </div>
+                                            <div class="col-md-4">
+                                                <p>Standing Dunk</p>
+                                                @Html.SliderFor(m => m.Standing_Dunk)
+                                                <p>Driving Dunk</p>
+                                                @Html.SliderFor(m => m.Driving_Dunk)
+                                                <p>Contact Dunk</p>
+                                                @Html.SliderFor(m => m.Contact_Dunk)
+                                                <p>Draw Foul</p>
+                                                @Html.SliderFor(m => m.Draw_Foul)
+                                            </div>
+                                            <div class="col-md-4">
+                                                <p>Post Control</p>
+                                                @Html.SliderFor(m => m.Post_Control)
+                                                <p>Post Hook</p>
+                                                @Html.SliderFor(m => m.Post_Hook)
+                                                <p>Post Fadeaway</p>
+                                                @Html.SliderFor(m => m.Post_Fadeaway)
+                                                <p>Hands</p>
+                                                @Html.SliderFor(m => m.Hands)
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel panel-default">
+                                <div class="panel-heading" role="tab" id="headingFour">
+                                    <h4 class="panel-title">
+                                        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
+                                            Playmaking
+                                        </a>
+                                    </h4>
+                                </div>
+                                <div id="collapseFour" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFour">
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <p>Ball Control</p>
+                                                @Html.SliderFor(m => m.Ball_Control)
+                                                <p>Passing Accuracy</p>
+                                                @Html.SliderFor(m => m.Passing_Accuracy)
+                                            </div>
+                                            <div class="col-md-4">
+                                                <p>Passing Vision</p>
+                                                @Html.SliderFor(m => m.Passing_Vision)
+                                            </div>
+                                            <div class="col-md-4">
+                                                <p>Passing IQ</p>
+                                                @Html.SliderFor(m => m.Passing_IQ)
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel panel-default">
+                                <div class="panel-heading" role="tab" id="headingFive">
+                                    <h4 class="panel-title">
+                                        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseFive" aria-expanded="false" aria-controls="collapseFive">
+                                            Athleticism
+                                        </a>
+                                    </h4>
+                                </div>
+                                <div id="collapseFive" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingFive">
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <p>Speed</p>
+                                                @Html.SliderFor(m => m.Player_Speed)
+                                                <p>Acceleration</p>
+                                                @Html.SliderFor(m => m.Acceleration)
+                                                <p>Vertical</p>
+                                                @Html.SliderFor(m => m.Vertical)
+                                            </div>
+                                            <div class="col-md-4">
+                                                <p>Strength</p>
+                                                @Html.SliderFor(m => m.Player_Strength)
+                                                <p>Stamina</p>
+                                                @Html.SliderFor(m => m.Stamina)
+                                            </div>
+                                            <div class="col-md-4">
+                                                <p>Hustle</p>
+                                                @Html.SliderFor(m => m.Hustle)
+                                                <p>Misc Durability</p>
+                                                @Html.SliderFor(m => m.Misc_Durability)
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel panel-default">
+                                <div class="panel-heading" role="tab" id="headingSix">
+                                    <h4 class="panel-title">
+                                        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseSix" aria-expanded="false" aria-controls="collapseSix">
+                                            Defending
+                                        </a>
+                                    </h4>
+                                </div>
+                                <div id="collapseSix" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingSix">
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <p>On-Ball Defense IQ</p>
+                                                @Html.SliderFor(m => m.On_Ball_Defense_IQ)
+                                                <p>Low Post Defense IQ</p>
+                                                @Html.SliderFor(m => m.Low_Post_Defense_IQ)
+                                                <p>Pick and Roll Defense IQ</p>
+                                                @Html.SliderFor(m => m.Pick_And_Roll_Defense_IQ)
+                                                <p>Help Defense IQ</p>
+                                                @Html.SliderFor(m => m.Help_Defense_IQ)
+                                            </div>
+                                            <div class="col-md-4">
+                                                <p>Lateral Quickness</p>
+                                                @Html.SliderFor(m => m.Lateral_Quickness)
+                                                <p>Pass Perception</p>
+                                                @Html.SliderFor(m => m.Pass_Perception)
+                                                <p>Steal</p>
+                                                @Html.SliderFor(m => m.Steal)
+                                                <p>Block</p>
+                                                @Html.SliderFor(m => m.Player_Block)
+                                            </div>
+                                            <div class="col-md-4">
+                                                <p>Shot Contest</p>
+                                                @Html.SliderFor(m => m.Shot_Contest)
+                                                <p>Defensive Consistency</p>
+                                                @Html.SliderFor(m => m.Defensive_Consistency)
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="panel panel-default">
+                                <div class="panel-heading" role="tab" id="headingSeven">
+                                    <h4 class="panel-title">
+                                        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseSeven" aria-expanded="false" aria-controls="collapseSeven">
+                                            Rebounding
+                                        </a>
+                                    </h4>
+                                </div>
+                                <div id="collapseSeven" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingSeven">
+                                    <div class="panel-body">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <p>Offensive Rebound</p>
+                                                @Html.SliderFor(m => m.Offensive_Rebound)
+                                            </div>
+                                            <div class="col-md-4">
+                                                <p>Defensive Rebound</p>
+                                                @Html.SliderFor(m => m.Defensive_Rebound)
+                                            </div>
+                                            <div class="col-md-4">
+                                                <p>Boxout</p>
+                                                @Html.SliderFor(m => m.Boxout)
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <br>
+                            <button type="submit" id="searchSubmit" class="btn btn-primary">Apply Filters</button> @Html.ActionLink("Reset", "Index", new { controller = "Player" }, new { @class = "btn btn-default" })
+                            @if (Request.IsAuthenticated && User.IsInRole("Admin"))
+                            {
+                                @Html.ActionLink("Create Player", "Create", "Player", null, new { @class = "btn btn-success" })
+                            }
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- / filter -->
+    <!-- players -->
+    <div class="wrapper-md">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                Player Search Results
+            </div>
+            <div class="table-responsive">
+                <table id="results" class="table table-striped b-t b-light playerList">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th style="text-align: left;">@Html.SortingHeader("NAME", "List", "Player", "name", Model.SearchResults.SortedBy, Model.SearchResults.SortOrder)</th>
+                            <th>@Html.SortingHeader("POSITION", "List", "Player", "position", Model.SearchResults.SortedBy, Model.SearchResults.SortOrder)</th>
+                            <th>@Html.SortingHeader("OVR", "List", "Player", "overall", Model.SearchResults.SortedBy, Model.SearchResults.SortOrder)</th>
+                            <th>@Html.SortingHeader("OUT", "List", "Player", "outsideScoring", Model.SearchResults.SortedBy, Model.SearchResults.SortOrder)</th>
+                            <th>@Html.SortingHeader("INS", "List", "Player", "insideScoring", Model.SearchResults.SortedBy, Model.SearchResults.SortOrder)</th>
+                            <th>@Html.SortingHeader("PLA", "List", "Player", "playmaking", Model.SearchResults.SortedBy, Model.SearchResults.SortOrder)</th>
+                            <th>@Html.SortingHeader("ATH", "List", "Player", "athleticism", Model.SearchResults.SortedBy, Model.SearchResults.SortOrder)</th>
+                            <th>@Html.SortingHeader("DEF", "List", "Player", "defending", Model.SearchResults.SortedBy, Model.SearchResults.SortOrder)</th>
+                            <th>@Html.SortingHeader("REB", "List", "Player", "rebounding", Model.SearchResults.SortedBy, Model.SearchResults.SortOrder)</th>
+                            <th>@Html.SortingHeader("XBOX", "List", "Player", "xbox", Model.SearchResults.SortedBy, Model.SearchResults.SortOrder)</th>
+                            <th>@Html.SortingHeader("PS4", "List", "Player", "ps4", Model.SearchResults.SortedBy, Model.SearchResults.SortOrder)</th>
+                            <th>@Html.SortingHeader("PC", "List", "Player", "pc", Model.SearchResults.SortedBy, Model.SearchResults.SortOrder)</th>
+                        </tr>
+                    </thead>
+                    <tbody class="facetwp-template">
+                        @if (Model != null && Model.SearchResults != null && Model.SearchResults.Results.HasItems())
+                        {
+                            foreach (var player in Model.SearchResults.Results)
+                            {
+                                <tr @(player.Prvate ? Html.Raw(" class='private-player'") : null)>
+                                    <td style="text-align: left;">
+                                        <img src="@player.ImageUri">
+                                    </td>
+                                    <td>
+                                        <h5>
+                                            <a href="@Url.Action("Details", "Player", new { playerUri = player.UriName})">@player.Name</a>                                            
+                                        </h5>
+                                    </td>
+                                    <td>
+                                        @player.Position
+                                    </td>
+                                    <td>
+                                        <span class="statNum">@player.Overall</span>
+                                    </td>
+                                    <td>
+                                        <span class="statNum">@player.OutsideScoring</span>
+                                    </td>
+                                    <td>
+                                        <span class="statNum">@player.InsideScoring</span>
+                                    </td>
+                                    <td>
+                                        <span class="statNum">@player.Playmaking</span>
+                                    </td>
+                                    <td>
+                                        <span class="statNum">@player.Athleticism</span>
+                                    </td>
+                                    <td>
+                                        <span class="statNum">@player.Defending</span>
+                                    </td>
+                                    <td>
+                                        <span class="statNum">@player.Rebounding</span>
+                                    </td>
+                                    <td>
+                                        @player.Xbox
+                                    </td>
+                                    <td>
+                                        @player.PS4
+                                    </td>
+                                    <td>
+                                        @player.PC
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <footer class="panel-footer">
+                <div class="row">
+                    <div class="col-sm-8 text-left">
+                        <small class="text-muted inline m-t-sm m-b-sm">Showing @Model.SearchResults.Results.FirstItemOnPage-@Model.SearchResults.Results.LastItemOnPage of @Model.SearchResults.Results.TotalItemCount items</small>
+                    </div>
+                    @Html.ThemedPager(Model.SearchResults.Results, page => Url.Action("Index", new { page = page, sortedBy = Model.SearchResults.SortedBy, sortOrder = Model.SearchResults.SortOrder }), "results")
+                </div>
+            </footer>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <!-- color of stats -->
+    <script src="~/libs/jquery/datatables/media/js/jquery.dataTables.min.js"></script>
+    <script src="~/libs/jquery/plugins/integration/bootstrap/3/dataTables.bootstrap.min.js"></script>
+    <script type="text/javascript">
+        $("#searchForm").on("submit", function (event) {
+            event.preventDefault();
+            var values = $("#searchForm :input").filter(function (index, element) {
+                var val = $(element).val();
+                return val != "" && val != 0 && val != "0";
+            }).serialize();
+            var url = "@Html.Raw(Url.Action("List", new {sortedBy = Model.SearchResults.SortedBy, sortOrder = Model.SearchResults.SortOrder}))" + "&" + values;
+            window.location.href = url;
+        });
+
+        $("a.results").each(function () {
+            var href = this.href;
+            var values = $("#searchForm :input").filter(function (index, element) {
+                var val = $(element).val();
+                return val != "" && val != 0 && val != "0";
+            }).serialize();
+
+            if (href.indexOf('?') != -1) {
+                href = href + '&' + values;
+            }
+            else {
+                href = href + '?' + values;
+            }
+            $(this).attr('href', href);
+        })
+    </script>
+
+    <!-- color of stats -->
+    <script type="text/javascript">
+        var cell = $('.statNum');
+        cell.each(function() {
+            var cell_value = $(this).html();
+            if ((cell_value >= 0) && (cell_value <= 59)) {
+                $(this).css({ 'background': '#A52A2A' });
+            } else if ((cell_value >= 60) && (cell_value <= 69)) {
+                $(this).css({ 'background': '#D2691E' });
+            } else if ((cell_value >= 70) && (cell_value <= 79)) {
+                $(this).css({ 'background': '#DAA520' });
+            } else if ((cell_value >= 80) && (cell_value <= 89)) {
+                $(this).css({ 'background': '#008000' });
+            } else if (cell_value >= 90) {
+                $(this).css({ 'background': '#32CD32' });
+            }
+        });
+    </script>
+
+    <script type="text/javascript">
+        var thing = $('#searchForm #@Html.IdFor(model => model.Name)').autocomplete({
+            source: '@Url.Action("Autocomplete", "Player")',
+            messages: {
+                noResults: '',
+                results: function () { }
+            },
+            minLength: 3,
+            select: function (event, ui) {
+                window.location = '@Url.Action("Details", "Player", new { playerUri = "__" })'.replace("__", "") + ui.item.UriName;
+                return false;
+            }
+        });
+        thing.autocomplete("instance")._renderItem = function (ul, item) {
+            var container = $("<div>", {
+                'data-href': '@Url.Action("Details", "Player", new { playerUri = "__" })'.replace("__", "") + item.UriName,
+                'class': 'autocomplete-container ' + item.Tier.toLowerCase()
+            });
+            var info = $("<div>",
+            {
+                'class': 'info'
+            });
+            info.append($("<img>",
+            {
+                src: item.ImageUri
+            }));
+            var inforContainer = $('<div>', {
+                'class': 'info-container'
+            });
+            inforContainer.append($('<span>', {
+                'class': 'name'
+            }).html(item.Name));
+
+            inforContainer.append($('<span>', {
+                'class': 'collestion'
+            }).html(item.Collection));
+            info.append(inforContainer);
+            container.append(info);
+
+            container.append($('<div>', {
+                'class': 'overhaul'
+            }).html(item.Position + ' ' + item.Overall));
+
+            var li = $("<li>").append(container);
+            return li.appendTo(ul);
+        };
+    </script>
+}
+

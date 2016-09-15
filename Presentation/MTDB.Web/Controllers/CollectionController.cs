@@ -5,11 +5,12 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using MTDB.Core;
+using MTDB.Core.Caching;
 using MTDB.Core.Services.Catalog;
 using MTDB.Core.Services.Extensions;
 using MTDB.Core.ViewModels;
 using MTDB.Core.Domain;
-using MTDB.Helpers;
+using MTDB.Core.Services.Common;
 using MTDB.Models.Collection;
 
 namespace MTDB.Controllers
@@ -22,6 +23,7 @@ namespace MTDB.Controllers
         private readonly ThemeService _themeService;
         private readonly TeamService _teamService;
         private readonly PlayerService _playerService;
+        private readonly CdnSettings _cdnSettings;
 
         #endregion
 
@@ -30,12 +32,14 @@ namespace MTDB.Controllers
         public CollectionController(CollectionService collectionService,
             ThemeService themeService,
             TeamService teamService,
-            PlayerService playerService)
+            PlayerService playerService,
+            CdnSettings cdnSettings)
         {
             this._collectionService = collectionService;
             this._themeService = themeService;
             this._teamService = teamService;
             this._playerService = playerService;
+            this._cdnSettings = cdnSettings;
         }
 
         #endregion
@@ -52,7 +56,7 @@ namespace MTDB.Controllers
             model.Id = player.Id;
             model.Name = player.Name;
             model.UriName = player.UriName;
-            model.ImageUri = player.GetImageUri(ImageSize.PlayerSearch);
+            model.ImageUri = player.GetImageUri(_cdnSettings, ImageSize.PlayerSearch);
             model.Position = position;
             model.Tier = player.Tier.Name;
             model.Collection = player.Collection?.Name;

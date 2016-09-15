@@ -14,19 +14,13 @@ using MTDB.Core.Services.Extensions;
 using MTDB.Core.ViewModels;
 using MTDB.Data;
 using MTDB.Core.Domain;
+using MTDB.Core.Services.Common;
 
 namespace MTDB.Core.Services.Catalog
 {
     public class PlayerService
     {
         #region Contants
-
-        private const string CDN77USERNAME = "user_mgoh0250";
-        private const string CDN77HOST = "push-20.cdn77.com";
-        private const string CDN77PASS = "lF9SKUp2d0M332IbHdeF";
-        //private const int CDN77_CDNID = 62905;
-        //private const string CDN77_APIUSER = "chris@chrissmoove.com";
-        //private const string CDN77_APIPASSWORD = "FwTKGp9Cv1bPntcNHELWMhA2IQjR63Bg";
 
         private const string PLAYER_BY_ID = "MTDB.player.id-{0}";
         private const string PLAYER_BY_URI = "MTDB.player.uri-{0}";
@@ -62,6 +56,7 @@ namespace MTDB.Core.Services.Catalog
         private readonly ICacheManager _memoryCacheManager;
         private readonly PlayerUpdateService _playerUpdateService;
         private readonly RedisCacheManager _redisCacheManager;
+        private readonly CdnSettings _cdnSettings;
 
         #endregion
 
@@ -70,13 +65,15 @@ namespace MTDB.Core.Services.Catalog
         public PlayerService(IDbContext dbContext,
             PlayerUpdateService playerUpdateService,
             MemoryCacheManager memoryCacheManager,
-            RedisCacheManager redisCacheManager)
+            RedisCacheManager redisCacheManager,
+            CdnSettings cdnSettings)
         {
             this._dbContext = dbContext;
             this._playerUpdateService = playerUpdateService;
 
             this._memoryCacheManager = memoryCacheManager;
             this._redisCacheManager = redisCacheManager;
+            this._cdnSettings = cdnSettings;
         }
         
         #endregion
@@ -146,10 +143,10 @@ namespace MTDB.Core.Services.Catalog
         {
             using (var client = new WebClient())
             {
-                client.Credentials = new NetworkCredential(CDN77USERNAME, CDN77PASS);
+                client.Credentials = new NetworkCredential(_cdnSettings.Username, _cdnSettings.Password);
                 foreach (var file in files)
                 {
-                    var uri = string.Format(@"ftp://{0}@{1}/www/{2}", CDN77USERNAME, CDN77HOST, Path.GetFileName(file));
+                    var uri = $@"ftp://{_cdnSettings.Username}@{_cdnSettings.Host}/www/{_cdnSettings.Subdir}{Path.GetFileName(file)}";
                     await client.UploadFileTaskAsync(uri, "STOR", file);
                     //await Prefetch(file);
                 }

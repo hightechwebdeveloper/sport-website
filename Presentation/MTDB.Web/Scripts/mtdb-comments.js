@@ -46,7 +46,7 @@
         if (MTDB.comments.pageUrl) {
             $.ajax({
                 type: 'GET',
-                url: "/comments?pageUrl=" + encodeURIComponent(MTDB.comments.pageUrl),
+                url: '/' + MTDB.comments.prefix + "comments?pageUrl=" + encodeURIComponent(MTDB.comments.pageUrl),
                 dataType: 'html',
                 success: function (result) {
                     //Create a Div around the Partial View and fill the result

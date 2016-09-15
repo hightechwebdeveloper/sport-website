@@ -23,7 +23,6 @@ namespace MTDB.Core.Services.Common
         public async Task<CommentsViewModel> GetComments(string pageUrl, CancellationToken token)
         {
             var result  = await _dbContext.Set<Comment>()
-                                    .Include(c => c.User)
                                     .Where(x => x.PageUrl == pageUrl)
                                     .OrderBy(x => x.CreatedDate)
                                     .ToListAsync(token);
@@ -51,7 +50,7 @@ namespace MTDB.Core.Services.Common
             };
         }
 
-        public async Task<long> CreateComment(Comment comment, CancellationToken token)
+        public async Task CreateComment(Comment comment, CancellationToken token)
         {
             if (comment.Id != 0)
             {
@@ -60,14 +59,9 @@ namespace MTDB.Core.Services.Common
 
             comment.Text = comment.Text.ReplaceBlockedWordsWithMTDB();
 
-            if (!comment.Text.HasValue())
-                return 0;
-
             _dbContext.Set<Comment>().Add(comment);
 
             await _dbContext.SaveChangesAsync(token);
-
-            return comment.Id;
         }
     }
 

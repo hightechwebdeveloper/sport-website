@@ -43,7 +43,6 @@ namespace MTDB.Core.Domain
         public virtual Tier Tier { get; set; }
         public virtual Theme Theme { get; set; }
         public virtual Team Team { get; set; }
-        public virtual User User { get; set; }
         public virtual Collection Collection { get; set; }
 
         public virtual ICollection<PlayerStat> PlayerStats

@@ -12,20 +12,20 @@
 
 <script type="text/javascript">
     var thing = $('#topSearch').autocomplete({
-        source: '/players/autocomplete',
+        source: '@Url.Action("Autocomplete", "Player")',
         messages: {
             noResults: '',
             results: function() {}
         },
         minLength: 3,
         select: function(event, ui) {
-            window.location = "/players/" + ui.item.UriName;
+            window.location = '@Url.Action("Details", "Player", new { playerUri = "__" })'.replace("__", "") + ui.item.UriName;
             return false;
         }
     });
     thing.autocomplete("instance")._renderItem = function (ul, item) {
         var container = $("<div>", {
-            'data-href': '/players/' + item.UriName,
+            'data-href': '@Url.Action("Details", "Player", new { playerUri = "__" })'.replace("__", "") + item.UriName,
             'class': 'autocomplete-container ' + item.Tier.toLowerCase()
         });
         var info = $("<div>",

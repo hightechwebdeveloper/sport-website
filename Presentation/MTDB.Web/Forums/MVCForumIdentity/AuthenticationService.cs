@@ -18,7 +18,7 @@ namespace MTDB.Forums.MVCForumIdentity {
 		}
 
 		public void SignIn(IAccount account, Boolean createPersistentCookie) {
-			var manager = new UserManager<User>(new UserStore<User>(this._mtdbContext as MtdbContext));
+			var manager = new UserManager<User>(new UserStore<User>(this._mtdbContext as K17DbContext));
 			var user = manager.FindByName(account.AccountName);
 
 			this._authenticationManager.SignOut(DefaultAuthenticationTypes.ExternalCookie);

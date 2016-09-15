@@ -18,7 +18,7 @@ namespace _2KUpdateCode
 
             var withUrls = gamePlayers.Where(p => p["URL"] != null).Select(p => new { Url = GetUrl(p), Player = p });
             
-            var repository = new MtdbContext();
+            var repository = new K17DbContext();
             var players = repository.Set<Player>().Where(p => withUrls.Select(pu => pu.Url).ToArray().Contains(p.UriName)).ToList();
 
             foreach (var playerUri in withUrls)

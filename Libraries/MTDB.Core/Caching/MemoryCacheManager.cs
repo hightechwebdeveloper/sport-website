@@ -10,6 +10,13 @@ namespace MTDB.Core.Caching
     /// </summary>
     public partial class MemoryCacheManager : ICacheManager
     {
+        private readonly string _predicat;
+
+        public MemoryCacheManager(string predicat)
+        {
+            _predicat = predicat;
+        }
+
         /// <summary>
         /// Cache object
         /// </summary>
@@ -29,7 +36,8 @@ namespace MTDB.Core.Caching
         /// <returns>The value associated with the specified key.</returns>
         public virtual T Get<T>(string key)
         {
-            return (T)Cache[key];
+            var predicatedKey = !key.StartsWith(_predicat) ? $"{_predicat}{key}" : key;
+            return (T)Cache[predicatedKey];
         }
 
         /// <summary>
@@ -45,7 +53,8 @@ namespace MTDB.Core.Caching
 
             var policy = new CacheItemPolicy();
             policy.AbsoluteExpiration = DateTime.Now + TimeSpan.FromMinutes(cacheTime);
-            Cache.Add(new CacheItem(key, data), policy);
+            var predicatedKey = !key.StartsWith(_predicat) ? $"{_predicat}{key}" : key;
+            Cache.Add(new CacheItem(predicatedKey, data), policy);
         }
 
         /// <summary>
@@ -55,7 +64,8 @@ namespace MTDB.Core.Caching
         /// <returns>Result</returns>
         public virtual bool IsSet(string key)
         {
-            return (Cache.Contains(key));
+            var predicatedKey = !key.StartsWith(_predicat) ? $"{_predicat}{key}" : key;
+            return (Cache.Contains(predicatedKey));
         }
 
         /// <summary>
@@ -64,7 +74,8 @@ namespace MTDB.Core.Caching
         /// <param name="key">/key</param>
         public virtual void Remove(string key)
         {
-            Cache.Remove(key);
+            var predicatedKey = !key.StartsWith(_predicat) ? $"{_predicat}{key}" : key;
+            Cache.Remove(predicatedKey);
         }
 
         /// <summary>
@@ -73,7 +84,8 @@ namespace MTDB.Core.Caching
         /// <param name="pattern">pattern</param>
         public virtual void RemoveByPattern(string pattern)
         {
-            var regex = new Regex(pattern, RegexOptions.Singleline | RegexOptions.Compiled | RegexOptions.IgnoreCase);
+            var predicatedKey = !pattern.StartsWith(_predicat) ? $"{_predicat}{pattern}" : pattern;
+            var regex = new Regex(predicatedKey, RegexOptions.Singleline | RegexOptions.Compiled | RegexOptions.IgnoreCase);
             var keysToRemove = new List<String>();
 
             foreach (var item in Cache)

@@ -51,9 +51,16 @@ namespace MTDB
 
         private static void RegisterComponents(ContainerBuilder builder, IAppBuilder app)
         {
-            builder.Register<IDbContext>(c => new MtdbContext()).InstancePerLifetimeScope();
+            builder.RegisterType<WebLocationContext>().As<ILocationContext>().InstancePerLifetimeScope();
 
-            builder.RegisterType<MtdbContext>().As<DbContext>().InstancePerRequest();
+            builder.Register(c => 
+                c.Resolve<ILocationContext>().CurrentLocation == Location.K17 ?
+                new K17DbContext() as IDbContext :
+                new K16DbContext() as IDbContext)
+               .As<IDbContext>()
+               .InstancePerLifetimeScope();
+
+            builder.RegisterType<K17DbContext>().As<DbContext>().InstancePerRequest(); //SignInManager
             builder.RegisterType<ApplicationSignInManager>().As<SignInManager<User, string>>().InstancePerRequest();
             builder.RegisterType<UserStore<User>>().As<IUserStore<User>>().InstancePerRequest();
             builder.Register<IAuthenticationManager>((c, p) => c.Resolve<IOwinContext>().Authentication).InstancePerRequest();
@@ -72,9 +79,30 @@ namespace MTDB
             //builder.RegisterType<PlayerUpdateController>().InstancePerRequest();
             //builder.RegisterControllers(typeof(MvcApplication).Assembly);
 
-            builder.RegisterType<RedisCacheManager>().InstancePerLifetimeScope();
-            builder.RegisterType<MemoryCacheManager>().SingleInstance();
             builder.RegisterType<PerRequestCacheManager>().InstancePerLifetimeScope();
+            builder.Register(c =>
+            {
+                var predicat = c.Resolve<ILocationContext>().CurrentLocation == Location.K17
+                    ? "2k17"
+                    : string.Empty;
+                var perRequestCache = c.Resolve<PerRequestCacheManager>(new NamedParameter("predicat", predicat));
+                return new RedisCacheManager(perRequestCache, predicat);
+            })
+            .InstancePerLifetimeScope();
+            //builder.RegisterType<MemoryCacheManager>().SingleInstance();
+            builder.Register(c =>
+            {
+                var predicat = c.Resolve<ILocationContext>().CurrentLocation == Location.K17
+                    ? "2k17"
+                    : string.Empty;
+                return new MemoryCacheManager(predicat);
+            })
+            .InstancePerLifetimeScope();
+
+            builder.Register(c => c.Resolve<ILocationContext>().CurrentLocation == Location.K17
+                ? new CdnSettings("push-20.cdn77.com", "user_mgoh0250", "lF9SKUp2d0M332IbHdeF", "/nba2k17/")
+                : new CdnSettings("push-20.cdn77.com", "user_mgoh0250", "lF9SKUp2d0M332IbHdeF"))
+            .InstancePerLifetimeScope();
 
             builder.RegisterType<CollectionService>().InstancePerRequest();
             builder.RegisterType<PlayerService>().InstancePerRequest();

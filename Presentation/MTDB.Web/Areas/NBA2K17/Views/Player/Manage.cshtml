@@ -1,0 +1,89 @@
+﻿@using MTDB.Models.Player
+@model MTDB.Models.Player.ManageModel
+
+@{
+    ViewBag.Title = "Manage";
+}
+
+<script>
+    $(function() {
+        $('#updateInput').click(function () {
+            window.location.reload();
+        });
+    })
+</script>
+
+<div class="bg-light lter b-b wrapper-md">
+    <div class="row">
+        <div class="col-sm-6 col-xs-12">
+            <h1 class="m-n font-thin h3 text-black">Manage</h1>
+        </div>
+    </div>
+</div>
+
+<div class="wrapper-md">
+    <!-- stats -->
+    <div class="panel panel-default">
+        <div class="panel-heading font-bold">
+            Manage Form
+        </div>
+        <div class="panel-body">
+            
+                <ul class="list-unstyled">
+                    <li>
+                        <a href="#" data-toggle="collapse" data-target="#theme"><i class="fa fa-plus-square-o"></i> Theme</a>
+                        @using (Html.BeginForm("DeleteTheme", "Player", FormMethod.Post))
+                        {
+                            <ul id="theme" class="list-unstyled collapse">
+                                @foreach (var item in Model.Themes)
+                                {
+                                    <li><a onclick="javascript:OpenWindow('@(Url.Action("ManageEditPopup", "Player", new { type = ManageType.Theme, id = item.Key, btnId = "updateInput" }))', 450, 500, true); return false;">@item.Value</a> <button name="id" value="@item.Key" class="btn btn-link btn-xs" onclick="return confirm('Are you sure you want to delete this item?')"><i class="fa fa-times"></i></button></li>
+                                }
+                            </ul>
+                        }
+                    </li>
+                    <li>
+                        <a href="#" data-toggle="collapse" data-target="#team"><i class="fa fa-plus-square-o"></i> Team</a>
+                        @using (Html.BeginForm("DeleteTeam", "Player", FormMethod.Post))
+                        {
+                            <ul id="team" class="list-unstyled collapse">
+                                @foreach (var item in Model.Teams)
+                                {
+                                    <li><a onclick="javascript:OpenWindow('@(Url.Action("ManageEditPopup", "Player", new { type = ManageType.Team, id = item.Key, btnId = "updateInput" }))', 450, 500, true); return false;">@item.Value</a> <button name="id" value="@item.Key" class="btn btn-link btn-xs" onclick="return confirm('Are you sure you want to delete this item?')"><i class="fa fa-times"></i></button></li>
+                                }
+                            </ul>
+                        }
+                    </li>
+                    <li>
+                        <a href="#" data-toggle="collapse" data-target="#tier"><i class="fa fa-plus-square-o"></i> Tier</a>
+                        @using (Html.BeginForm("DeleteTier", "Player", FormMethod.Post))
+                        {
+                            <ul id="tier" class="list-unstyled collapse">
+                                @foreach (var item in Model.Tiers)
+                                {
+                                    <li><a onclick="javascript:OpenWindow('@(Url.Action("ManageEditPopup", "Player", new { type = ManageType.Tier, id = item.Key, btnId = "updateInput" }))', 450, 500, true); return false;">@item.Value</a> <button name="id" value="@item.Key" class="btn btn-link btn-xs" onclick="return confirm('Are you sure you want to delete this item?')"><i class="fa fa-times"></i></button></li>
+                                }
+                            </ul>
+                        }
+                    </li>
+                    <li>
+                        <a href="#" data-toggle="collapse" data-target="#collection"><i class="fa fa-plus-square-o"></i> Collection</a>
+                        @using (Html.BeginForm("DeleteCollection", "Player", FormMethod.Post))
+                        {
+                            <ul id="collection" class="list-unstyled collapse">
+                                @foreach (var item in Model.Collections)
+                                {
+                                    <li><a onclick="javascript:OpenWindow('@(Url.Action("ManageEditPopup", "Player", new { type = ManageType.Collection, id = item.Key, btnId = "updateInput" }))', 450, 500, true); return false;">@item.Value</a> <button name="id" value="@item.Key" class="btn btn-link btn-xs" onclick="return confirm('Are you sure you want to delete this item?')"><i class="fa fa-times"></i></button></li>
+                                }
+                            </ul>
+                        }
+                    </li>
+                </ul>
+            
+            <div class="line line-dashed b-b line-lg pull-in"></div>
+            <input type="submit" value="Create" onclick="javascript:OpenWindow('@(Url.Action("ManageCreatePopup", "Player", new { btnId = "updateInput" }))', 450, 500, true); return false;" class="btn btn-primary"/>
+            @*@Html.ActionLink("Cancel", "Index", null, new { @class = "btn btn-default" })*@
+            <input id="updateInput" type="submit" style="display: none" />
+        </div>
+    </div>
+</div>

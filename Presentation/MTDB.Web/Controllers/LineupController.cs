@@ -8,7 +8,6 @@ using MTDB.Core.Services.Lineups;
 using MTDB.Core.ViewModels;
 using MTDB.Core.ViewModels.Lineups;
 using MTDB.Core.Domain;
-using MTDB.Helpers;
 
 namespace MTDB.Controllers
 {

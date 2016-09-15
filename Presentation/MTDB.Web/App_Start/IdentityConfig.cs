@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin.Security;
-using MTDB.Data;
 using MTDB.Core.Domain;
 
 namespace MTDB
