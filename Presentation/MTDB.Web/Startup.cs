@@ -11,6 +11,13 @@ namespace MTDB
         public void Configuration(IAppBuilder app)
         {
             DependencyRegistrar.ConfigureDependencyInjection(app);
+            
+            app.UseCookieAuthentication(new CookieAuthenticationOptions
+            {
+                AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie,
+                LoginPath = new PathString("/account/login"),
+                CookieName = "authentication",
+            });
 
             //redirect www to non-www
             app.Use(async (context, next) =>
@@ -23,13 +30,6 @@ namespace MTDB
                     context.Response.Headers.Set("Location", context.Request.Uri.AbsoluteUri.Replace(host, host.Substring(4)));
                 }
                 await next();
-            });
-
-            app.UseCookieAuthentication(new CookieAuthenticationOptions
-            {
-                AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie,
-                LoginPath = new PathString("/account/login"),
-                CookieName = "authentication"
             });
         }
     }

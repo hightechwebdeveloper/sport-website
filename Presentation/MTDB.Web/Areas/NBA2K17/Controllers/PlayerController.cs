@@ -442,7 +442,7 @@ namespace MTDB.Areas.NBA2K17.Controllers
 
         [HttpGet]
         [Route("players/{playerId:int}")]
-        public async Task<JsonResult> DetailsById(int playerId, CancellationToken cancellationToken)
+        public async Task<JsonResult> Details(int playerId, CancellationToken cancellationToken)
         {
             var player = await _playerService.GetPlayer(playerId, cancellationToken);
 
@@ -549,7 +549,7 @@ namespace MTDB.Areas.NBA2K17.Controllers
             player.Points = player.Score();
 
             await _playerService.CreatePlayer(player, cancellationToken);
-            await _playerService.SaveImage(Server.MapPath("~/Content/Temp"), player.UriName, model.Image.InputStream);
+            _playerService.SaveImage(Server.MapPath("~/Content/Temp"), player.UriName, model.Image.InputStream);
 
             return RedirectToAction("Details", new { playerUri = player.UriName });
         }
@@ -630,7 +630,7 @@ namespace MTDB.Areas.NBA2K17.Controllers
             
             if (model.Image != null && model.Image.ContentLength > 0)
             {
-                await _playerService.SaveImage(Server.MapPath("~/Content/Temp"), player.UriName, model.Image.InputStream);
+                _playerService.SaveImage(Server.MapPath("~/Content/Temp"), player.UriName, model.Image.InputStream);
             }
 
             return RedirectToAction("Details", new { playerUri = player.UriName });

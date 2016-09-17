@@ -179,7 +179,7 @@ namespace MTDB.Areas.NBA2K17.Controllers
                 Players = new PagedResults<CollectionDetailsModel.PlayerItemModel>(playerItems, page, pageSize, pagedPlayers.TotalCount, sortedBy, sortOrder)
             };
 
-            return View("~/Areas/NBA2k17/Views/Collection/Index.cshtml", model);
+            return View("~/Areas/NBA2k17/Views/Collection/Details.cshtml", model);
         }
 
         #endregion

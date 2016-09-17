@@ -174,7 +174,7 @@ namespace MTDB.Areas.NBA2K17.Controllers
 
             if (roundNumber == 13)
             {
-                return RedirectToAction("~/Areas/NBA2k17/Views/Pack/DraftResults.cshtml");
+                return RedirectToAction("DraftResults");
             }
 
             return View("~/Areas/NBA2k17/Views/Pack/CreateDraft.cshtml", CreateDraftPackDto(roundNumber + 1, tracker));

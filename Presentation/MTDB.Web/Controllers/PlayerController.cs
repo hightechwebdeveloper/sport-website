@@ -531,7 +531,7 @@ namespace MTDB.Controllers
             player.Points = player.Score();
 
             await _playerService.CreatePlayer(player, cancellationToken);
-            await _playerService.SaveImage(Server.MapPath("~/Content/Temp"), player.UriName, model.Image.InputStream);
+            _playerService.SaveImage(Server.MapPath("~/Content/Temp"), player.UriName, model.Image.InputStream);
 
             return RedirectToAction("Details", new { playerUri = player.UriName });
         }
@@ -612,7 +612,7 @@ namespace MTDB.Controllers
             
             if (model.Image != null && model.Image.ContentLength > 0)
             {
-                await _playerService.SaveImage(Server.MapPath("~/Content/Temp"), player.UriName, model.Image.InputStream);
+                _playerService.SaveImage(Server.MapPath("~/Content/Temp"), player.UriName, model.Image.InputStream);
             }
 
             return RedirectToAction("Details", new { playerUri = player.UriName });

@@ -112,7 +112,7 @@ namespace MTDB.Core.Services.Catalog
             return name;
         }
 
-        public async Task SaveImage(string tempPath, string name, Stream stream)
+        public void SaveImage(string tempPath, string name, Stream stream)
         {
             if (!Directory.Exists(tempPath))
                 Directory.CreateDirectory(tempPath);
@@ -136,10 +136,10 @@ namespace MTDB.Core.Services.Catalog
                 }
             }
 
-            await SaveToCDN77(normalSize, smallSize);
+            SaveToCDN77(normalSize, smallSize);
         }
 
-        private async Task SaveToCDN77(params string[] files)
+        private void SaveToCDN77(params string[] files)
         {
             using (var client = new WebClient())
             {
@@ -147,7 +147,7 @@ namespace MTDB.Core.Services.Catalog
                 foreach (var file in files)
                 {
                     var uri = $@"ftp://{_cdnSettings.Username}@{_cdnSettings.Host}/www/{_cdnSettings.Subdir}{Path.GetFileName(file)}";
-                    await client.UploadFileTaskAsync(uri, "STOR", file);
+                    client.UploadFile(uri, "STOR", file);
                     //await Prefetch(file);
                 }
             }

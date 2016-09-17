@@ -122,7 +122,7 @@
                     select: function (event, ui) {
                         container.find('input[type=hidden]').val(ui.item.Id);
                         container.find('input[type=text]').val('');
-                        $.get('@Url.Action("Details", "Player", new { id = 0 })'.replace("/0", "/") + ui.item.Id, function (data) {
+                        $.get('@Url.Action("Details", "Player", new { playerId = 0 })'.replace("/0", "/") + ui.item.Id, function (data) {
                             container.addClass('chosen');
 
                             container.find('.details .picture img').attr("src", data.ImageUri);

@@ -396,7 +396,7 @@
                     <div class="col-sm-8 text-left">
                         <small class="text-muted inline m-t-sm m-b-sm">Showing @Model.SearchResults.Results.FirstItemOnPage-@Model.SearchResults.Results.LastItemOnPage of @Model.SearchResults.Results.TotalItemCount items</small>
                     </div>
-                    @Html.ThemedPager(Model.SearchResults.Results, page => Url.Action("Index", new { page = page, sortedBy = Model.SearchResults.SortedBy, sortOrder = Model.SearchResults.SortOrder }), "results")
+                    @Html.ThemedPager(Model.SearchResults.Results, page => Url.Action("List", new { page = page, sortedBy = Model.SearchResults.SortedBy, sortOrder = Model.SearchResults.SortOrder }), "results")
                 </div>
             </footer>
         </div>

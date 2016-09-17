@@ -473,8 +473,8 @@ namespace MTDB.Core.Services.Catalog
                     });
             var model = new PlayerUpdateDetailsModel
             {
-                Title = update.Name,
-                Visible = update.Visible,
+                Title = update?.Name,
+                Visible = update?.Visible ?? false,
                 Results = playerUpdates,
                 TotalCount = count
             };

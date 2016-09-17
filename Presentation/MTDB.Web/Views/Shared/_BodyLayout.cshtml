@@ -106,27 +106,27 @@
                         <li>
                             @if (User.Identity.IsAuthenticated)
                             {
-                                @Html.ActionLink("Profile", "Profile", "Account")
+                                @Html.ActionLink("Profile", "Profile", "Account", new { area = "" }, new{})
                             }
                             else
                             {
-                                @Html.ActionLink("Login", "Login", "Account")
+                                @Html.ActionLink("Login", "Login", "Account", new { area = "" }, new{})
                             }
                         </li>
                         @if (User.Identity.IsAuthenticated)
                         {
                             <li>
-                                @Html.ActionLink("Change Password", "ChangePassword", "Account")
+                                @Html.ActionLink("Change Password", "ChangePassword", "Account", new { area = "" }, new{})
                             </li>
                         }
                         @if (!User.Identity.IsAuthenticated)
                         {
                             <li>
-                                @Html.ActionLink("Register", "Register", "Account")
+                                @Html.ActionLink("Register", "Register", "Account", new { area = "" }, new{})
                             </li>
                         }
                         <li>
-                            @Html.ActionLink("Legal", "Legal", "Misc")
+                            @Html.ActionLink("Legal", "Legal", "Misc", new { area = "" }, new{})
                         </li>
                         <!-- <li>
                             <a ui-sref="app.docs">
@@ -138,7 +138,7 @@
                         {
                             <li class="divider"></li>
                                 <li>
-                                    @Html.ActionLink("Logout", "LogOff", "Account")
+                                    @Html.ActionLink("Logout", "LogOff", "Account", new { area = "" }, new{})
                                 </li>
                         }
                     </ul>
@@ -157,11 +157,10 @@
                 <!-- nav -->
                 <nav ui-nav class="navi clearfix">
                     <ul class="nav">
-@if (Request.IsAuthenticated && User.IsInRole("Admin"))
-{
-    <li class="hidden-folded padder m-t m-b-sm text-muted text-xs">
-        <span>NBA 2K17</span>
-    </li>
+
+						<li class="hidden-folded padder m-t m-b-sm text-muted text-xs">
+							<span>NBA 2K17</span>
+						</li>
                         <li>
                             <a href="@Url.Action("List", "Player", new { area = "2K17" })">
                                 <i class="fa fa-user text-info-lter"></i>
@@ -198,7 +197,6 @@
                                 <span class="font-bold">Compare Players</span>
                             </a>
                         </li>
-}
                        
                         <li class="hidden-folded padder m-t m-b-sm text-muted text-xs">
                             <span>NBA 2K16</span>

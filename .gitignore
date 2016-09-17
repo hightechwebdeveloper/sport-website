@@ -4,3 +4,4 @@ packages/*
 *.suo
 *.user
 .vs/config/applicationhost.config
+/Presentation/MTDB.Web/Forums/app_data/Indexes
