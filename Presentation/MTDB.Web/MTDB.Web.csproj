@@ -269,6 +269,7 @@
     <Compile Include="Areas\NBA2K17\Controllers\PlayerController.cs" />
     <Compile Include="Areas\NBA2K17\Controllers\PlayerUpdateController.cs" />
     <Compile Include="Areas\NBA2K17\K17AreaRegistration.cs" />
+    <Compile Include="Areas\NBA2K17\Models\Player\PlayerSearchModel.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\CollectionController.cs" />
     <Compile Include="Controllers\CommentsController.cs" />
@@ -625,7 +626,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Areas\NBA2K17\Models\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

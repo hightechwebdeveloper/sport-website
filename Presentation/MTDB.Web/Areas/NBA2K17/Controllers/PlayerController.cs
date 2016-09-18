@@ -160,7 +160,7 @@ namespace MTDB.Areas.NBA2K17.Controllers
                 .ToList();
         }
 
-        private async Task PreparePlayerSearchModel(PlayerSearchModel model, CancellationToken cancellationToken)
+        private async Task PreparePlayerSearchModel(Models.Player.PlayerSearchModel model, CancellationToken cancellationToken)
         {
             //tiers
             model.AvailableTiers.Add(new SelectListItem { Text = string.Empty, Value = "0" });
@@ -187,7 +187,7 @@ namespace MTDB.Areas.NBA2K17.Controllers
                 model.AvailablePositions.Add(new SelectListItem { Text = i, Value = i });
         }
 
-        private void PreparePlayerItemModel(PlayerSearchModel.PlayerItemModel model, Player player)
+        private void PreparePlayerItemModel(Models.Player.PlayerSearchModel.PlayerItemModel model, Player player)
         {
             var position = player.PrimaryPosition;
 
@@ -403,10 +403,10 @@ namespace MTDB.Areas.NBA2K17.Controllers
         [HttpGet]
         [Route("players/")]
         [Route("")]
-        public async Task<ActionResult> List(CancellationToken cancellationToken, PlayerSearchModel model, string sortedBy = "overall", SortOrder sortOrder = SortOrder.Descending, int page = 1, int pageSize = 25)
+        public async Task<ActionResult> List(CancellationToken cancellationToken, Models.Player.PlayerSearchModel model, string sortedBy = "overall", SortOrder sortOrder = SortOrder.Descending, int page = 1, int pageSize = 25)
         {
             if (model == null)
-                model = new PlayerSearchModel();
+                model = new Models.Player.PlayerSearchModel();
             await PreparePlayerSearchModel(model, cancellationToken);
             
             //Expression<Func<Player, object>> orderBy = null;
@@ -431,11 +431,11 @@ namespace MTDB.Areas.NBA2K17.Controllers
             var players = pagedResult.
                 Select(p =>
                 {
-                    var playerModel = new PlayerSearchModel.PlayerItemModel();
+                    var playerModel = new Models.Player.PlayerSearchModel.PlayerItemModel();
                     PreparePlayerItemModel(playerModel, p);
                     return playerModel;
                 });
-            model.SearchResults = new PagedResults<PlayerSearchModel.PlayerItemModel>(players, pagedResult.PageIndex, pagedResult.PageSize, pagedResult.TotalCount, sortedBy, sortOrder);
+            model.SearchResults = new PagedResults<Models.Player.PlayerSearchModel.PlayerItemModel>(players, pagedResult.PageIndex, pagedResult.PageSize, pagedResult.TotalCount, sortedBy, sortOrder);
 
             return View("~/Areas/NBA2k17/Views/Player/List.cshtml", model);
         }
@@ -676,7 +676,7 @@ namespace MTDB.Areas.NBA2K17.Controllers
             var players = filtered
                 .Select(player =>
                 {
-                    var model = new PlayerSearchModel.PlayerItemModel();
+                    var model = new Models.Player.PlayerSearchModel.PlayerItemModel();
                     PreparePlayerItemModel(model, player);
                     return model;
                 })

@@ -1,6 +1,6 @@
 ﻿@using MTDB.Core
 @using MTDB.Helpers
-@model MTDB.Models.Player.PlayerSearchModel
+@model MTDB.Areas.NBA2K17.Models.Player.PlayerSearchModel
 
 <div class="bg-light lter b-b wrapper-md">
     <div class="row">
@@ -304,7 +304,7 @@
                     <div class="row">
                         <div class="col-md-12">
                             <br>
-                            <button type="submit" id="searchSubmit" class="btn btn-primary">Apply Filters</button> @Html.ActionLink("Reset", "Index", new { controller = "Player" }, new { @class = "btn btn-default" })
+                            <button type="submit" id="searchSubmit" class="btn btn-primary">Apply Filters</button> @Html.ActionLink("Reset", "List", new { controller = "Player" }, new { @class = "btn btn-default" })
                             @if (Request.IsAuthenticated && User.IsInRole("Admin"))
                             {
                                 @Html.ActionLink("Create Player", "Create", "Player", null, new { @class = "btn btn-success" })
