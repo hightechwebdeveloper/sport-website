@@ -94,21 +94,24 @@
                                     <div class="panel-body">
                                         <div class="row">
                                             <div class="col-md-4">
-                                                <p>Standing Shot Mid</p>
-                                                @Html.SliderFor(m => m.Standing_Shot_Mid)
-                                                <p>Standing Shot 3pt</p>
-                                                @Html.SliderFor(m => m.Standing_Shot_3pt)
-                                                <p>Moving Shot Mid</p>
-                                                @Html.SliderFor(m => m.Moving_Shot_Mid)
+                                                <p>Open Shot Mid</p>
+                                                @Html.SliderFor(m => m.Open_Shot_Mid)
+                                                <p>Off Dribble Shot Mid</p>
+                                                @Html.SliderFor(m => m.Off_Dribble_Shot_Mid)
+                                                <p>Contested Shot Mid</p>
+                                                @Html.SliderFor(m => m.Contested_Shot_Mid)
                                             </div>
                                             <div class="col-md-4">
-                                                <p>Moving Shot 3pt</p>
-                                                @Html.SliderFor(m => m.Moving_Shot_3pt)
+                                                <p>Open Shot 3pt</p>
+                                                @Html.SliderFor(m => m.Open_Shot_3PT)
+                                                <p>Off Dribble Shot 3pt</p>
+                                                @Html.SliderFor(m => m.Off_Dribble_Shot_3PT)
+                                                <p>Contested Shot 3pt</p>
+                                                @Html.SliderFor(m => m.Contested_Shot_3PT)
+                                            </div>
+                                            <div class="col-md-4">
                                                 <p>Shot IQ</p>
                                                 @Html.SliderFor(m => m.Shot_IQ)
-
-                                            </div>
-                                            <div class="col-md-4">
                                                 <p>Free Throw</p>
                                                 @Html.SliderFor(m => m.Free_Throw)
                                                 <p>Offensive Consistency</p>
@@ -131,14 +134,12 @@
                                     <div class="panel-body">
                                         <div class="row">
                                             <div class="col-md-4">
-                                                <p>Standing Shot Close</p>
-                                                @Html.SliderFor(m => m.Standing_Shot_Close)
-                                                <p>Moving Shot Close</p>
-                                                @Html.SliderFor(m => m.Moving_Shot_Close)
+                                                <p>Shot Close</p>
+                                                @Html.SliderFor(m => m.Shot_Close)
                                                 <p>Standing Layup</p>
                                                 @Html.SliderFor(m => m.Standing_Layup)
                                                 <p>Driving Layup</p>
-                                                @Html.SliderFor(m => m.Driving_Layup)
+                                                @Html.SliderFor(m => m.Driving_Layup)                                                
                                             </div>
                                             <div class="col-md-4">
                                                 <p>Standing Dunk</p>
@@ -206,23 +207,25 @@
                                         <div class="row">
                                             <div class="col-md-4">
                                                 <p>Speed</p>
-                                                @Html.SliderFor(m => m.Player_Speed)
+                                                @Html.SliderFor(m => m.Speed)
+                                                <p>Speed With Ball</p>
+                                                @Html.SliderFor(m => m.Speed_With_Ball)
                                                 <p>Acceleration</p>
                                                 @Html.SliderFor(m => m.Acceleration)
-                                                <p>Vertical</p>
-                                                @Html.SliderFor(m => m.Vertical)
                                             </div>
                                             <div class="col-md-4">
+                                                <p>Vertical</p>
+                                                @Html.SliderFor(m => m.Vertical)
                                                 <p>Strength</p>
-                                                @Html.SliderFor(m => m.Player_Strength)
+                                                @Html.SliderFor(m => m.Strength)
                                                 <p>Stamina</p>
                                                 @Html.SliderFor(m => m.Stamina)
                                             </div>
                                             <div class="col-md-4">
                                                 <p>Hustle</p>
                                                 @Html.SliderFor(m => m.Hustle)
-                                                <p>Misc Durability</p>
-                                                @Html.SliderFor(m => m.Misc_Durability)
+                                                <p>Reaction Time</p>
+                                                @Html.SliderFor(m => m.Reaction_Time)
                                             </div>
                                         </div>
                                     </div>
@@ -240,30 +243,30 @@
                                     <div class="panel-body">
                                         <div class="row">
                                             <div class="col-md-4">
-                                                <p>On-Ball Defense IQ</p>
-                                                @Html.SliderFor(m => m.On_Ball_Defense_IQ)
-                                                <p>Low Post Defense IQ</p>
-                                                @Html.SliderFor(m => m.Low_Post_Defense_IQ)
-                                                <p>Pick and Roll Defense IQ</p>
-                                                @Html.SliderFor(m => m.Pick_And_Roll_Defense_IQ)
-                                                <p>Help Defense IQ</p>
-                                                @Html.SliderFor(m => m.Help_Defense_IQ)
+                                                <p>Steal</p>
+                                                @Html.SliderFor(m => m.Steal)
+                                                <p>Pass Perception</p>
+                                                @Html.SliderFor(m => m.Pass_Perception)
+                                                <p>Block</p>
+                                                @Html.SliderFor(m => m.Block)
+                                                <p>Shot Contest</p>
+                                                @Html.SliderFor(m => m.Shot_Contest)                                                
                                             </div>
                                             <div class="col-md-4">
                                                 <p>Lateral Quickness</p>
                                                 @Html.SliderFor(m => m.Lateral_Quickness)
-                                                <p>Pass Perception</p>
-                                                @Html.SliderFor(m => m.Pass_Perception)
-                                                <p>Steal</p>
-                                                @Html.SliderFor(m => m.Steal)
-                                                <p>Block</p>
-                                                @Html.SliderFor(m => m.Player_Block)
-                                            </div>
-                                            <div class="col-md-4">
-                                                <p>Shot Contest</p>
-                                                @Html.SliderFor(m => m.Shot_Contest)
                                                 <p>Defensive Consistency</p>
                                                 @Html.SliderFor(m => m.Defensive_Consistency)
+                                                <p>On-Ball Defensive IQ</p>
+                                                @Html.SliderFor(m => m.On_Ball_Defensive_IQ)
+                                            </div>
+                                            <div class="col-md-4">
+                                                <p>Low Post Defensive IQ</p>
+                                                @Html.SliderFor(m => m.Low_Post_Defensive_IQ)
+                                                <p>Pick and Roll Defensive IQ</p>
+                                                @Html.SliderFor(m => m.Pick_And_Roll_Defensive_IQ)
+                                                <p>Help Defensive IQ</p>
+                                                @Html.SliderFor(m => m.Help_Defensive_IQ)
                                             </div>
                                         </div>
                                     </div>

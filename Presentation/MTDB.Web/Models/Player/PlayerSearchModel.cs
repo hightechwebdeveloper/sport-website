@@ -25,17 +25,18 @@ namespace MTDB.Models.Player
         public int? PriceMax { get; set; }
 
         // Outside Scoring
-        public string Standing_Shot_Mid { get; set; }
-        public string Standing_Shot_3pt { get; set; }
-        public string Moving_Shot_Mid { get; set; }
-        public string Moving_Shot_3pt { get; set; }
+        public string Open_Shot_Mid { get; set; }
+        public string Off_Dribble_Shot_Mid { get; set; }
+        public string Contested_Shot_Mid { get; set; }
+        public string Open_Shot_3PT { get; set; }
+        public string Off_Dribble_Shot_3PT { get; set; }
+        public string Contested_Shot_3PT { get; set; }
         public string Shot_IQ { get; set; }
         public string Free_Throw { get; set; }
         public string Offensive_Consistency { get; set; }
 
         // Inside Scoring
-        public string Standing_Shot_Close { get; set; }
-        public string Moving_Shot_Close { get; set; }
+        public string Shot_Close { get; set; }
         public string Standing_Layup { get; set; }
         public string Driving_Layup { get; set; }
         public string Standing_Dunk { get; set; }
@@ -54,27 +55,29 @@ namespace MTDB.Models.Player
         public string Passing_IQ { get; set; }
 
         //Athleticism
-        public string Player_Speed { get; set; }
+        public string Speed { get; set; }
+        public string Speed_With_Ball { get; set; }
         public string Acceleration { get; set; }
         public string Vertical { get; set; }
-        public string Player_Strength { get; set; }
+        public string Strength { get; set; }
         public string Stamina { get; set; }
         public string Hustle { get; set; }
-        public string Misc_Durability { get; set; }
+        public string Reaction_Time { get; set; }
 
         // Defending
-        public string On_Ball_Defense_IQ { get; set; }
-        public string Low_Post_Defense_IQ { get; set; }
-        public string Pick_And_Roll_Defense_IQ { get; set; }
-        public string Help_Defense_IQ { get; set; }
-        public string Lateral_Quickness { get; set; }
-        public string Pass_Perception { get; set; }
         public string Steal { get; set; }
-        public string Player_Block { get; set; }
+        public string Pass_Perception { get; set; }
+        public string Block { get; set; }
         public string Shot_Contest { get; set; }
+        public string Lateral_Quickness { get; set; }
         public string Defensive_Consistency { get; set; }
 
-        // Playmaking
+        public string On_Ball_Defensive_IQ { get; set; }
+        public string Low_Post_Defensive_IQ { get; set; }
+        public string Pick_And_Roll_Defensive_IQ { get; set; }
+        public string Help_Defensive_IQ { get; set; }
+
+        // REBOUNDING
         public string Offensive_Rebound { get; set; }
         public string Defensive_Rebound { get; set; }
         public string Boxout { get; set; }
