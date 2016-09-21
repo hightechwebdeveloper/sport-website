@@ -262,6 +262,24 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\IdentityConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Areas\NBA2K16\Controllers\BaseK16Controller.cs" />
+    <Compile Include="Areas\NBA2K16\Controllers\CollectionController.cs" />
+    <Compile Include="Areas\NBA2K16\Controllers\CommentsController.cs" />
+    <Compile Include="Areas\NBA2K16\Controllers\LineupController.cs" />
+    <Compile Include="Areas\NBA2K16\Controllers\PackController.cs" />
+    <Compile Include="Areas\NBA2K16\Controllers\PlayerController.cs" />
+    <Compile Include="Areas\NBA2K16\Controllers\PlayerUpdateController.cs" />
+    <Compile Include="Areas\NBA2K16\Models\Collection\CollectionDetailsModel.cs" />
+    <Compile Include="Areas\NBA2K16\Models\Collection\CollectionListModel.cs" />
+    <Compile Include="Areas\NBA2K16\Models\Player\CreatePlayerModel.cs" />
+    <Compile Include="Areas\NBA2K16\Models\Player\ManageEditModel.cs" />
+    <Compile Include="Areas\NBA2K16\Models\Player\ManageModel.cs" />
+    <Compile Include="Areas\NBA2K16\Models\Player\ManageType.cs" />
+    <Compile Include="Areas\NBA2K16\Models\Player\PlayerModel.cs" />
+    <Compile Include="Areas\NBA2K16\Models\Player\PlayerSearchModel.cs" />
+    <Compile Include="Areas\NBA2K16\Models\Player\UpdatePlayerModel.cs" />
+    <Compile Include="Areas\NBA2K16\Models\Shared\StatModel.cs" />
+    <Compile Include="Areas\NBA2K17\Controllers\BaseK17Controller.cs" />
     <Compile Include="Areas\NBA2K17\Controllers\CollectionController.cs" />
     <Compile Include="Areas\NBA2K17\Controllers\CommentsController.cs" />
     <Compile Include="Areas\NBA2K17\Controllers\LineupController.cs" />
@@ -269,16 +287,18 @@
     <Compile Include="Areas\NBA2K17\Controllers\PlayerController.cs" />
     <Compile Include="Areas\NBA2K17\Controllers\PlayerUpdateController.cs" />
     <Compile Include="Areas\NBA2K17\K17AreaRegistration.cs" />
+    <Compile Include="Areas\NBA2K17\Models\Collection\CollectionDetailsModel.cs" />
+    <Compile Include="Areas\NBA2K17\Models\Collection\CollectionListModel.cs" />
+    <Compile Include="Areas\NBA2K17\Models\Player\CreatePlayerModel.cs" />
+    <Compile Include="Areas\NBA2K17\Models\Player\ManageEditModel.cs" />
+    <Compile Include="Areas\NBA2K17\Models\Player\ManageModel.cs" />
+    <Compile Include="Areas\NBA2K17\Models\Player\ManageType.cs" />
+    <Compile Include="Areas\NBA2K17\Models\Player\PlayerModel.cs" />
     <Compile Include="Areas\NBA2K17\Models\Player\PlayerSearchModel.cs" />
+    <Compile Include="Areas\NBA2K17\Models\Player\UpdatePlayerModel.cs" />
     <Compile Include="Controllers\AccountController.cs" />
-    <Compile Include="Controllers\CollectionController.cs" />
-    <Compile Include="Controllers\CommentsController.cs" />
     <Compile Include="Controllers\MiscController.cs" />
-    <Compile Include="Controllers\PackController.cs" />
-    <Compile Include="Controllers\LineupController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
-    <Compile Include="Controllers\PlayerController.cs" />
-    <Compile Include="Controllers\PlayerUpdateController.cs" />
     <Compile Include="DependencyRegistrar.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -288,17 +308,7 @@
     <Compile Include="Helpers\SelectLists.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="Models\AccountViewModels.cs" />
-    <Compile Include="Models\Collection\CollectionDetailsModel.cs" />
-    <Compile Include="Models\Collection\CollectionListModel.cs" />
     <Compile Include="Models\ManageViewModels.cs" />
-    <Compile Include="Models\Player\CreatePlayerModel.cs" />
-    <Compile Include="Models\Player\ManageEditModel.cs" />
-    <Compile Include="Models\Player\ManageModel.cs" />
-    <Compile Include="Models\Player\ManageType.cs" />
-    <Compile Include="Models\Player\PlayerModel.cs" />
-    <Compile Include="Models\Player\PlayerSearchModel.cs" />
-    <Compile Include="Models\Player\UpdatePlayerModel.cs" />
-    <Compile Include="Models\Shared\StatModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
@@ -350,6 +360,7 @@
     <Content Include="Content\Images\card-guest.png" />
     <Content Include="Content\Images\cardback.jpg" />
     <Content Include="Content\Images\draftpack.jpg" />
+    <Content Include="Content\Images\forum-icon.png" />
     <Content Include="Content\Images\loading.gif" />
     <Content Include="Content\Images\mtdb-v2.png" />
     <Content Include="Content\Images\mtdbpack.jpg" />
@@ -526,19 +537,8 @@
     <Content Include="Scripts\ui-nav.js" />
     <Content Include="Scripts\ui-toggle.js" />
     <Content Include="Scripts\_references.js" />
-    <Content Include="Views\Pack\CreateDraft.cshtml" />
-    <Content Include="Views\Pack\DraftResults.cshtml" />
-    <Content Include="Views\Pack\DraftDetails.cshtml" />
-    <Content Include="Views\Player\Edit.cshtml" />
-    <Content Include="Views\Comments\Index.cshtml" />
-    <Content Include="Views\Shared\Comments.cshtml" />
-    <Content Include="Views\PlayerUpdate\Index.cshtml" />
-    <Content Include="Views\PlayerUpdate\Details.cshtml" />
     <Content Include="Views\Account\RegisterThankYou.cshtml" />
     <Content Include="Views\Account\ChangePassword.cshtml" />
-    <Content Include="Views\Collection\Index.cshtml" />
-    <Content Include="Views\Collection\Details.cshtml" />
-    <Content Include="Views\Lineup\Edit.cshtml" />
     <Content Include="Content\bootstrap-datepicker3.standalone.min.css.map" />
     <Content Include="Content\bootstrap-datepicker3.standalone.css.map" />
     <Content Include="Content\bootstrap-datepicker3.min.css.map" />
@@ -547,11 +547,8 @@
     <Content Include="Content\bootstrap-datepicker.standalone.css.map" />
     <Content Include="Content\bootstrap-datepicker.min.css.map" />
     <Content Include="Content\bootstrap-datepicker.css.map" />
-    <Content Include="Views\Player\Manage.cshtml" />
-    <Content Include="Views\Player\ManageCreatePopup.cshtml" />
     <Content Include="Views\Shared\_PopupLayout.cshtml" />
     <Content Include="Views\Shared\_BodyLayout.cshtml" />
-    <Content Include="Views\Player\ManageEditPopup.cshtml" />
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
@@ -581,7 +578,34 @@
     <Content Include="Areas\NBA2K17\Views\PlayerUpdate\Index.cshtml" />
     <Content Include="Areas\NBA2K17\Views\_ViewStart.cshtml" />
     <Content Include="Areas\NBA2K17\Views\Comments\Index.cshtml" />
-    <Content Include="Areas\NBA2K17\Views\Shared\Comments.cshtml" />
+    <Content Include="Areas\NBA2K17\Views\Comments\Comments.cshtml" />
+    <Content Include="Areas\NBA2K16\Views\Collection\Details.cshtml" />
+    <Content Include="Areas\NBA2K16\Views\Collection\Index.cshtml" />
+    <Content Include="Areas\NBA2K16\Views\Comments\Index.cshtml" />
+    <Content Include="Areas\NBA2K16\Views\Lineup\Create.cshtml" />
+    <Content Include="Areas\NBA2K16\Views\Lineup\Details.cshtml" />
+    <Content Include="Areas\NBA2K16\Views\Lineup\Edit.cshtml" />
+    <Content Include="Areas\NBA2K16\Views\Lineup\Index.cshtml" />
+    <Content Include="Areas\NBA2K16\Views\Pack\CreateDraft.cshtml" />
+    <Content Include="Areas\NBA2K16\Views\Pack\CreateMTDB.cshtml" />
+    <Content Include="Areas\NBA2K16\Views\Pack\DraftDetails.cshtml" />
+    <Content Include="Areas\NBA2K16\Views\Pack\DraftResults.cshtml" />
+    <Content Include="Areas\NBA2K16\Views\Pack\Index.cshtml" />
+    <Content Include="Areas\NBA2K16\Views\Pack\Leaderboard.cshtml" />
+    <Content Include="Areas\NBA2K16\Views\Pack\MtdbDetails.cshtml" />
+    <Content Include="Areas\NBA2K16\Views\PlayerUpdate\Details.cshtml" />
+    <Content Include="Areas\NBA2K16\Views\PlayerUpdate\Index.cshtml" />
+    <Content Include="Areas\NBA2K16\Views\Player\Compare.cshtml" />
+    <Content Include="Areas\NBA2K16\Views\Player\Create.cshtml" />
+    <Content Include="Areas\NBA2K16\Views\Player\Details.cshtml" />
+    <Content Include="Areas\NBA2K16\Views\Player\Edit.cshtml" />
+    <Content Include="Areas\NBA2K16\Views\Player\List.cshtml" />
+    <Content Include="Areas\NBA2K16\Views\Player\Manage.cshtml" />
+    <Content Include="Areas\NBA2K16\Views\Player\ManageCreatePopup.cshtml" />
+    <Content Include="Areas\NBA2K16\Views\Player\ManageEditPopup.cshtml" />
+    <Content Include="Areas\NBA2K16\Views\Comments\Comments.cshtml" />
+    <Content Include="Areas\NBA2K16\Views\Web.config" />
+    <Content Include="Areas\NBA2K16\Views\_ViewStart.cshtml" />
     <None Include="Properties\PublishProfiles\deploy directory.pubxml" />
     <None Include="Properties\PublishProfiles\mtdb - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\mtdb - Web Deploy.pubxml" />
@@ -621,8 +645,6 @@
     <Content Include="Views\Manage\SetPassword.cshtml" />
     <Content Include="Views\Manage\VerifyPhoneNumber.cshtml" />
     <Content Include="Views\Shared\Lockout.cshtml" />
-    <Content Include="Views\Player\List.cshtml" />
-    <Content Include="Views\Lineup\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -652,14 +674,6 @@
     <Content Include="libs\jquery\bootstrap\dist\css\bootstrap.min.css.map" />
     <Content Include="libs\jquery\bootstrap\dist\css\bootstrap-theme.css.map" />
     <Content Include="libs\jquery\bootstrap\dist\css\bootstrap.css.map" />
-    <Content Include="Views\Player\Details.cshtml" />
-    <Content Include="Views\Player\Create.cshtml" />
-    <Content Include="Views\Lineup\Create.cshtml" />
-    <Content Include="Views\Lineup\Details.cshtml" />
-    <Content Include="Views\Pack\CreateMTDB.cshtml" />
-    <Content Include="Views\Pack\Index.cshtml" />
-    <Content Include="Views\Pack\MtdbDetails.cshtml" />
-    <Content Include="Views\Pack\Leaderboard.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Libraries\MTDB.Data\MTDB.Data.csproj">
@@ -686,9 +700,6 @@
       <Project>{A026B4C1-456F-4AD1-BB35-1E731C2FBBB6}</Project>
       <Name>PagedList</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Player\Compare.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Misc\Legal.cshtml" />

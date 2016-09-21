@@ -12,8 +12,7 @@ using MTDB.Core.Domain;
 
 namespace MTDB.Areas.NBA2K17.Controllers
 {
-    [RouteArea("2K17", AreaPrefix = "17")]
-    public class LineupController : BaseController
+    public class LineupController : BaseK17Controller
     {
         private readonly LineupService _lineupService;
         private readonly IWorkContext _workContext;

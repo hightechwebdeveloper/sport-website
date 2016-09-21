@@ -12,8 +12,7 @@ using MTDB.Core.ViewModels.PlayerUpdates;
 
 namespace MTDB.Areas.NBA2K17.Controllers
 {
-    [RouteArea("2K17", AreaPrefix = "17")]
-    public class PlayerUpdateController : BaseController
+    public class PlayerUpdateController : BaseK17Controller
     {
         private readonly PlayerUpdateService _playerUpdateService;
 

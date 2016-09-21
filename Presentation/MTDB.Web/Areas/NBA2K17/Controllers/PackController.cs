@@ -13,8 +13,7 @@ using MTDB.Core.Domain;
 
 namespace MTDB.Areas.NBA2K17.Controllers
 {
-    [RouteArea("2K17", AreaPrefix = "17")]
-    public class PackController : BaseController
+    public class PackController : BaseK17Controller
     {
         private readonly PackService _packService;
         private readonly IWorkContext _workContext;
@@ -118,7 +117,7 @@ namespace MTDB.Areas.NBA2K17.Controllers
             if (pack == null)
                 return View("~/Areas/NBA2k17/Views/Pack/Index.cshtml");
 
-            return View(pack);
+            return View("~/Areas/NBA2k17/Views/Pack/MtdbDetails.cshtml", pack);
         }
 
         #endregion

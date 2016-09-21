@@ -2,7 +2,7 @@
 {
     public enum Location
     {
-        Default,
+        K16,
         K17
     }
 }

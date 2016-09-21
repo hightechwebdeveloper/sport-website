@@ -1,0 +1,19 @@
+﻿@model string
+
+@if (!string.IsNullOrWhiteSpace(Model))
+{
+    <div id="comments">
+        <script type="text/javascript">
+            var MTDB = (function (mtdb) {
+                var url = @Html.Raw(Json.Encode(Model));
+
+                mtdb.comments = {
+                    pageUrl: url,
+                    prefix: '16/'
+                };
+
+                return mtdb;
+            }(MTDB || {}));
+        </script>
+    </div>
+}

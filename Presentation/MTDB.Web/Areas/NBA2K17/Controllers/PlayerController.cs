@@ -7,6 +7,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using MTDB.Areas.NBA2K17.Models.Player;
 using MTDB.Controllers;
 using MTDB.Core;
 using MTDB.Core.Caching;
@@ -16,14 +17,11 @@ using MTDB.Core.ViewModels;
 using MTDB.Core.Domain;
 using MTDB.Core.Services.Common;
 using MTDB.Helpers;
-using MTDB.Models.Player;
 using MTDB.Models.Shared;
 
 namespace MTDB.Areas.NBA2K17.Controllers
 {
-    [RouteArea("2K17", AreaPrefix = "17")]
-    //[RoutePrefix("players")]
-    public class PlayerController : BaseController
+    public class PlayerController : BaseK17Controller
     {
         #region Fields
 
@@ -561,11 +559,11 @@ namespace MTDB.Areas.NBA2K17.Controllers
         public async Task<ActionResult> Edit(string playerUri, CancellationToken cancellationToken)
         {
             if (string.IsNullOrWhiteSpace(playerUri))
-                return RedirectToAction("Index");
+                return RedirectToAction("List");
 
             var player = await _playerService.GetPlayerByUri(playerUri, cancellationToken);
             if (player == null)
-                return RedirectToAction("Index");
+                return RedirectToAction("List");
 
             var model = new UpdatePlayerModel();
             await PrepareUpdatePlayerModel(model, player, cancellationToken, true);
@@ -648,7 +646,7 @@ namespace MTDB.Areas.NBA2K17.Controllers
                 await _playerService.DeletePlayer(player, cancellationToken);
             }
 
-            return RedirectToAction("Index");
+            return RedirectToAction("List");
         }
 
         [HttpGet]

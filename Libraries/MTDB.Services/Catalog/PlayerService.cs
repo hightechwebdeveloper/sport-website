@@ -401,7 +401,7 @@ namespace MTDB.Core.Services.Catalog
 
             //clear caches
             _memoryCacheManager.RemoveByPattern(PLAYERS_HEIGHTS);
-            _memoryCacheManager.RemoveByPattern(PLAYERS_AVERAGES_PATTERN_KEY);
+            _redisCacheManager.RemoveByPattern(PLAYERS_AVERAGES_PATTERN_KEY);
         }
 
         public async Task UpdatePlayer(Player player, CancellationToken token)
@@ -414,14 +414,24 @@ namespace MTDB.Core.Services.Catalog
                 player.UriName = GetUri(player.Id, player.Name, false);
             }
             _dbContext.Entry(oldPlayer).CurrentValues.SetValues(player);
+            foreach (var playerStat in player.PlayerStats)
+            {
+                var oldStat = oldPlayer.PlayerStats.FirstOrDefault(ps => ps.StatId == playerStat.StatId);
+                if (oldStat == null)
+                {
+                    oldStat = new PlayerStat { StatId = playerStat.StatId };
+                    oldPlayer.PlayerStats.Add(oldStat);
+                }
+                oldStat.Value = playerStat.Value;
+            }
             await _dbContext.SaveChangesAsync(token);
 
             //clear caches
             var keybyId = string.Format(PLAYER_BY_ID, player.Id);
-            _memoryCacheManager.RemoveByPattern(keybyId);
+            _redisCacheManager.RemoveByPattern(keybyId);
             var keyByUri = string.Format(PLAYER_BY_URI, player.UriName);
-            _memoryCacheManager.RemoveByPattern(keyByUri);
-            _memoryCacheManager.RemoveByPattern(PLAYERS_AVERAGES_PATTERN_KEY);
+            _redisCacheManager.RemoveByPattern(keyByUri);
+            _redisCacheManager.RemoveByPattern(PLAYERS_AVERAGES_PATTERN_KEY);
         }
 
         public async Task DeletePlayer(Player player, CancellationToken token)
@@ -429,33 +439,41 @@ namespace MTDB.Core.Services.Catalog
             if (player == null)
                 return;
 
+            var exPlayer = _dbContext.Set<Player>().First(p => p.Id == player.Id);
+
             var changes = await _dbContext.Set<PlayerUpdateChange>()
-                .Where(c => c.Player.Id == player.Id)
+                .Where(c => c.PlayerId == exPlayer.Id)
                 .ToListAsync(token);
             foreach (var change in changes)
                 _dbContext.Set<PlayerUpdateChange>().Remove(change);
 
             var cpPlayers = await _dbContext.Set<CardPackPlayer>()
-                .Where(c => c.Player.Id == player.Id)
+                .Where(c => c.PlayerId == exPlayer.Id)
                 .ToListAsync(token);
             foreach (var cpPlayer in cpPlayers)
                 _dbContext.Set<CardPackPlayer>().Remove(cpPlayer);
 
             var lineupPlayers = await _dbContext.Set<LineupPlayer>()
-                .Where(c => c.Player.Id == player.Id)
+                .Where(c => c.Player.Id == exPlayer.Id)
                 .ToListAsync(token);
             foreach (var lineupPlayer in lineupPlayers)
                 _dbContext.Set<LineupPlayer>().Remove(lineupPlayer);
 
-            player.PlayerStats.Clear();
-            _dbContext.Set<Player>().Remove(player);
+            var statPlayers = await _dbContext.Set<PlayerStat>()
+                .Where(c => c.PlayerId == exPlayer.Id)
+                .ToListAsync(token);
+            foreach (var statPlayer in statPlayers)
+                _dbContext.Set<PlayerStat>().Remove(statPlayer);
+
+            exPlayer.PlayerStats.Clear();
+            _dbContext.Set<Player>().Remove(exPlayer);
             
             //clear caches
-            var keybyId = string.Format(PLAYER_BY_ID, player.Id);
-            _memoryCacheManager.RemoveByPattern(keybyId);
-            var keyByUri = string.Format(PLAYER_BY_URI, player.UriName);
-            _memoryCacheManager.RemoveByPattern(keyByUri);
-            _memoryCacheManager.RemoveByPattern(PLAYERS_AVERAGES_PATTERN_KEY);
+            var keybyId = string.Format(PLAYER_BY_ID, exPlayer.Id);
+            _redisCacheManager.RemoveByPattern(keybyId);
+            var keyByUri = string.Format(PLAYER_BY_URI, exPlayer.UriName);
+            _redisCacheManager.RemoveByPattern(keyByUri);
+            _redisCacheManager.RemoveByPattern(PLAYERS_AVERAGES_PATTERN_KEY);
 
             await _dbContext.SaveChangesAsync(token);
         }

@@ -1,5 +1,5 @@
 ﻿@using MTDB.Core
-@model MTDB.Models.Player.PlayerModel
+@model MTDB.Areas.NBA2K17.Models.Player.PlayerModel
 <!-- player hero -->
 
 <section class="playerHero">
@@ -53,7 +53,7 @@
     </div>
     <!-- / player stats -->
 
-    @Html.Partial("~/Areas/NBA2K17/Views/Shared/Comments.cshtml", (string)ViewBag.CommentsPageUrl)
+    @Html.Partial("~/Areas/NBA2K17/Views/Comments/Comments.cshtml", (string)ViewBag.CommentsPageUrl)
 
 </div>
 

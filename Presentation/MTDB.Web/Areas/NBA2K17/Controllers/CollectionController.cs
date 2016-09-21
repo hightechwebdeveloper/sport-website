@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using MTDB.Areas.NBA2K17.Models.Collection;
 using MTDB.Controllers;
 using MTDB.Core;
 using MTDB.Core.Caching;
@@ -12,12 +13,10 @@ using MTDB.Core.Services.Extensions;
 using MTDB.Core.ViewModels;
 using MTDB.Core.Domain;
 using MTDB.Core.Services.Common;
-using MTDB.Models.Collection;
 
 namespace MTDB.Areas.NBA2K17.Controllers
 {
-    [RouteArea("2K17", AreaPrefix = "17")]
-    public class CollectionController : BaseController
+    public class CollectionController : BaseK17Controller
     {
         #region Fields
 

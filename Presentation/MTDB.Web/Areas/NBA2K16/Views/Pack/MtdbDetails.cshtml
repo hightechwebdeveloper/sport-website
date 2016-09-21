@@ -1,0 +1,47 @@
+﻿@model MTDB.Core.ViewModels.MtdbCardPackDto
+
+<div class="bg-light lter b-b wrapper-md">
+    <div class="row">
+        <div class="col-sm-6 col-xs-12">
+            <h1 class="m-n font-thin h3 text-black">@Model.Name - @Model.Points points</h1>
+        </div>
+        <div class="col-sm-6 text-right">
+            <div class="inline m-r text-left">
+                @Html.ActionLink("Open Packs", "Index", null, new { @class = "btn btn-primary" })
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid playerHero text-center">
+    <div class="row blackCover">
+        <div class="text-center">
+            <img src="~/content/images/pack.png" class="pack-title">
+        </div>
+        <div class="cardContainer">
+            <ul class="list-unstyled list-inline center-block text-center">
+                @for (int i = 1; i <= @Model.Cards.Count(); i++)
+                {
+                    var card = Model.Cards.ElementAt(i - 1);
+                    var cssId = string.Format("card-{0}", card.Tier.Name.ToLower());
+                    <li class="cardbg">
+                        <div id="card-@i" class="card">
+                            <div class="front">
+                                <img src="@card.PlayerImageUri" class="card-img" id="@cssId">
+                            </div>
+                        </div>
+                    </li>
+                }
+            </ul>
+        </div>
+        @*<div class="panel packNav">
+            <div class="panel-body text-center">
+                @Html.ActionLink("Leaderboard", "Index", "Pack", null, new { @class = "btn m-b-xs w-xs btn-primary" })
+            </div>
+        </div>*@
+    </div>
+</div>
+
+<div class="wrapper-lg">
+    @Html.Partial("~/Areas/NBA2k16/Views/Comments/Comments.cshtml", (string)ViewBag.CommentsPageUrl)
+</div>

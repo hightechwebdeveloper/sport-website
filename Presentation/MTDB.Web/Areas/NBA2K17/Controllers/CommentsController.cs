@@ -8,8 +8,7 @@ using MTDB.Core.Services.Common;
 
 namespace MTDB.Areas.NBA2K17.Controllers
 {
-    [RouteArea("2K17", AreaPrefix = "17")]
-    public class CommentsController : BaseController
+    public class CommentsController : BaseK17Controller
     {
         private readonly CommentService _commentService;
         private readonly IWorkContext _workContext;
@@ -27,7 +26,7 @@ namespace MTDB.Areas.NBA2K17.Controllers
         {
             var data = await _commentService.GetComments(pageUrl, cancellationToken);
 
-            return PartialView(data);
+            return PartialView("~/Areas/NBA2k17/Views/Comments/Index.cshtml", data);
         }
 
         [HttpPost]

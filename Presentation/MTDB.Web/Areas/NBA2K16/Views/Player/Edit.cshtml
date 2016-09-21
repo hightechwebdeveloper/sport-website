@@ -1,0 +1,219 @@
+﻿@using MTDB.Helpers
+@model MTDB.Areas.NBA2K16.Models.Player.UpdatePlayerModel
+@{
+    ViewBag.Title = "Create";
+}
+
+@using (Html.BeginForm("Edit", "Player", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    <div class="bg-light lter b-b wrapper-md">
+        <div class="row">
+            <div class="col-sm-6 col-xs-12">
+                <h1 class="m-n font-thin h3 text-black">Update Player</h1>
+            </div>
+        </div>
+    </div>
+
+    <div class="wrapper-md">
+        <!-- stats -->
+        <div class="panel panel-default">
+            <div class="panel-heading font-bold">
+                Player Form
+            </div>
+            <div class="panel-body">
+                @Html.HiddenFor(p => p.Id)
+
+                <div class="form-group">
+                    <div class="col-md-2">
+                        <img src="@Model.ImageUri" class="img-responsive center-block">
+                    </div>
+                </div>
+
+                <div class="line line-dashed b-b line-lg pull-in"></div>
+
+                <div class="form-group">
+                    <label class="control-label">Upload Player Image</label>
+                    @Html.UploadFileFor(p => p.Image)
+                    @Html.ThemedValidationMessageFor(m => m.Image)
+                </div>
+
+                <div class="line line-dashed b-b line-lg pull-in"></div>
+
+                <div class="form-group">
+                    <label>2K Id</label>
+                    @Html.TextBoxFor(p => p.NBA2K_ID, "form-control", "Enter NBA 2K ID")
+                    @Html.ThemedValidationMessageFor(m => m.NBA2K_ID)
+                </div>
+
+                <div class="line line-dashed b-b line-lg pull-in"></div>
+
+                <div class="form-group">
+                    <label>Player Name</label>
+                    @Html.TextBoxFor(p => p.Name, "form-control", "Enter Player Name")
+                    @Html.ThemedValidationMessageFor(m => m.Name)
+                </div>
+
+                <div class="line line-dashed b-b line-lg pull-in"></div>
+
+                <div class="form-group">
+                    <label>Overall</label>
+                    @Html.UpDownFor(p => p.Overall)
+                    @Html.ThemedValidationMessageFor(m => m.Overall)
+                </div>
+
+                @for (var i = 0; i < Model.Attributes.Count; i++)
+                {
+                    <div class="line line-dashed b-b line-lg pull-in"></div>
+
+                    <div class="form-group">
+                        <label>@Model.Attributes[i].Name</label>
+                        @Html.HiddenFor(m => m.Attributes[i].Id)
+                        @Html.UpDownFor(m => m.Attributes[i].Value)
+                    </div>
+                }
+
+                <div class="line line-dashed b-b line-lg pull-in"></div>
+
+                <div class="form-group">
+                    <label>Age</label>
+                    @Html.UpDownFor(p => p.Age)
+                    @Html.ThemedValidationMessageFor(m => m.Age)
+                </div>
+
+                <div class="line line-dashed b-b line-lg pull-in"></div>
+
+                <div class="form-group">
+                    <label>Height</label>
+                    @Html.ChosenDropBoxFor(p => p.Height, SelectLists.HeightSelectList, placeHolder: "Height")
+                    @Html.ThemedValidationMessageFor(m => m.Height)
+                </div>
+
+                <div class="line line-dashed b-b line-lg pull-in"></div>
+
+                <div class="form-group">
+                    <label>Weight</label>
+                    @Html.UpDownFor(p => p.Weight, "form-control", 0, 400)
+                    @Html.ThemedValidationMessageFor(m => m.Weight)
+                </div>
+
+                <div class="line line-dashed b-b line-lg pull-in"></div>
+
+                <div class="form-group">
+                    <label>Primary Position</label>
+                    @Html.ChosenDropBoxFor(p => p.PrimaryPosition, SelectLists.PositionsSelectList, placeHolder: "Primary Position")
+                    @Html.ThemedValidationMessageFor(m => m.PrimaryPosition)
+                </div>
+
+                <div class="line line-dashed b-b line-lg pull-in"></div>
+
+                <div class="form-group">
+                    <label>Secondary Position</label>
+                    @Html.ChosenDropBoxFor(p => p.SecondaryPosition, SelectLists.PositionsSelectList, placeHolder: "Secondary Position")
+                </div>
+
+                <div class="line line-dashed b-b line-lg pull-in">
+                </div>
+
+                <div class="form-group">
+                    <label>Xbox</label>
+                    @Html.UpDownFor(p => p.Xbox, "form-control", 0, 999999999)
+                    @Html.ThemedValidationMessageFor(m => m.Xbox)
+                </div>
+
+                <div class="line line-dashed b-b line-lg pull-in"></div>
+
+                <div class="form-group">
+                    <label>PS4</label>
+                    @Html.UpDownFor(p => p.PS4, "form-control", 0, 999999999)
+                    @Html.ThemedValidationMessageFor(m => m.PS4)
+                </div>
+
+                <div class="line line-dashed b-b line-lg pull-in"></div>
+
+                <div class="form-group">
+                    <label>PC</label>
+                    @Html.UpDownFor(p => p.PC, "form-control", 0, 999999999)
+                    @Html.ThemedValidationMessageFor(m => m.PC)
+                </div>
+
+                <div class="line line-dashed b-b line-lg pull-in"></div>
+                <div class="form-group">
+                    <label>Theme</label>
+                    <div class="input-group">
+                        @Html.ChosenDropBoxFor(p => p.ThemeId, new SelectList(Model.AvailableThemes, "Value", "Text"))
+                        <span class="input-group-btn">
+                            <a href="@Url.Action("Manage")" class="btn btn-default">Manage</a>
+                        </span>
+                    </div>
+                    @Html.ThemedValidationMessageFor(m => m.ThemeId)
+                </div>
+
+                <div class="line line-dashed b-b line-lg pull-in"></div>
+                <div class="form-group">
+                    <label>Team</label>
+                    <div class="input-group">
+                        @Html.ChosenDropBoxFor(p => p.TeamId, new SelectList(Model.AvailableTeams, "Value", "Text"))
+                        <span class="input-group-btn">
+                            <a href="@Url.Action("Manage")" class="btn btn-default">Manage</a>
+                        </span>
+                    </div>
+                    @Html.ThemedValidationMessageFor(m => m.TeamId)
+                </div>
+
+                <div class="line line-dashed b-b line-lg pull-in"></div>
+                <div class="form-group">
+                    <label>Tier</label>
+                    <div class="input-group">
+                        @Html.ChosenDropBoxFor(p => p.TierId, new SelectList(Model.AvailableTiers, "Value", "Text"))
+                        <span class="input-group-btn">
+                            <a href="@Url.Action("Manage")" class="btn btn-default">Manage</a>
+                        </span>
+                    </div>
+                    @Html.ThemedValidationMessageFor(m => m.TierId)
+                </div>
+
+                <div class="line line-dashed b-b line-lg pull-in"></div>
+                <div class="form-group">
+                    <label>Collection</label>
+                    <div class="input-group">
+                        @Html.ChosenDropBoxFor(p => p.CollectionId, new SelectList(Model.AvailableCollections, "Value", "Text"))
+                        <span class="input-group-btn">
+                            <a href="@Url.Action("Manage")" class="btn btn-default">Manage</a>
+                        </span>
+                    </div>
+                    @Html.ThemedValidationMessageFor(m => m.CollectionId)
+                </div>
+
+                <div class="line line-dashed b-b line-lg pull-in"></div>
+                <div class="form-group">
+                    <div class="checkbox">
+                        <label>@Html.CheckBoxFor(p => p.Private) Private</label>
+                    </div>
+                </div>
+
+                <div class="line line-dashed b-b line-lg pull-in"></div>
+                <div class="form-group">
+                    <label>Publish Date</label>
+                    @Html.TextBoxFor(p => p.PublishDate, "{0:MM/dd/yyyy}", new { data_provide = "datepicker", @class = "form-control" })
+                    @Html.ThemedValidationMessageFor(m => m.PublishDate)
+                </div>
+
+                <div class="line line-dashed b-b line-lg pull-in"></div>
+
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Update Player</button>
+                    @Html.ActionLink("Cancel", "Index", null, new { @class = "btn btn-default" })
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+}
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/datepicker")
+}

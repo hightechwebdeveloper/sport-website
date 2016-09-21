@@ -751,13 +751,13 @@ namespace MTDB.Core.Services.Catalog
             return true;
         }
 
-        public async Task DetermineChanges(Player oldPlayer, Player player, CancellationToken token)
+        public async Task DetermineChanges(Player oldPlayer, Player newPlayer, CancellationToken token)
         {
             var changes = new List<PlayerUpdateChange>();
             // Get existing update
             var existingUpdates = await _dbContext.Set<PlayerUpdate>()
                 .FilterByCreatedDate(DateTime.Today)
-                .Select(p => new { PlayerUpdate = p, Changes = p.Changes.Where(c => c.Player.Id == player.Id) })
+                .Select(p => new { PlayerUpdate = p, Changes = p.Changes.Where(c => c.Player.Id == newPlayer.Id) })
                 .FirstOrDefaultAsync(token);
 
             var performUpdate = true;
@@ -767,7 +767,7 @@ namespace MTDB.Core.Services.Catalog
             }
 
             bool shouldDelete;
-            var overallChange = DetermineChange(existingUpdates?.Changes, oldPlayer, nameof(oldPlayer.Overall), oldPlayer.Overall, player.Overall, PlayerUpdateType.Stat, out shouldDelete);
+            var overallChange = DetermineChange(existingUpdates?.Changes, oldPlayer, nameof(oldPlayer.Overall), oldPlayer.Overall, newPlayer.Overall, PlayerUpdateType.Stat, out shouldDelete);
             if (overallChange != null && shouldDelete)
             {
                 _dbContext.Set<PlayerUpdateChange>().Remove(overallChange);
@@ -777,14 +777,14 @@ namespace MTDB.Core.Services.Catalog
                 changes.Add(overallChange);
             }
 
-            foreach (var stat in player.PlayerStats)
+            foreach (var newStat in newPlayer.PlayerStats)
             {
-                var compareStat = oldPlayer.PlayerStats.First(ps => ps.Id == stat.Id);
-                var change = DetermineChange(existingUpdates?.Changes, oldPlayer, compareStat.Stat.Name, stat.Value.ToString(), compareStat.Value.ToString(), PlayerUpdateType.Stat, out shouldDelete);
+                var oldStat = oldPlayer.PlayerStats.First(ps => ps.Id == newStat.Id);
+                var change = DetermineChange(existingUpdates?.Changes, oldPlayer, oldStat.Stat.Name, oldStat.Value.ToString(), newStat.Value.ToString(), PlayerUpdateType.Stat, out shouldDelete);
 
-                if (compareStat.Value != stat.Value && performUpdate)
+                if (oldStat.Value != newStat.Value && performUpdate)
                 {
-                    compareStat.Value = stat.Value;
+                    oldStat.Value = newStat.Value;
                 }
 
                 if (change == null) continue;

@@ -197,46 +197,56 @@
                                 <span class="font-bold">Compare Players</span>
                             </a>
                         </li>
-                       
-                        <li class="hidden-folded padder m-t m-b-sm text-muted text-xs">
-                            <span>NBA 2K16</span>
-                        </li>
+
                         <li>
-                            <a href="@Url.Action("List", "Player", new { area = "" })">
-                                <i class="fa fa-user text-info-lter"></i>
-                                <span class="font-bold">Players</span>
+                            <a href="/forums">
+                                <i class="fa forums-icon"></i>
+                                <span class="font-bold">Forums</span>
                             </a>
                         </li>
-                        <li>
-                            <a href="@Url.Action("Index", "Collection", new { area = "" })">
-                                <i class="fa fa-list-ul text-info-lter"></i>
-                                <span class="font-bold">Collections</span>
-                            </a>
+                        
+                        <li class="hidden-folded padder m-t m-b-sm text-muted text-xs dropdown">
+                            <a class="data-toggle text-muted" href="#" onclick="toggle2k16Menu(this, event);"><span>NBA 2K16</span> <span class="caret"></span></a>
+                            <ul class="collapsed-menu nav">
+                                <li>
+                                    <a href="@Url.Action("List", "Player", new { area = "2K16" })">
+                                        <i class="fa fa-user text-info-lter"></i>
+                                        <span class="font-bold">Players</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="@Url.Action("Index", "Collection", new { area = "2K16" })">
+                                        <i class="fa fa-list-ul text-info-lter"></i>
+                                        <span class="font-bold">Collections</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="@Url.Action("Index", "Lineup", new { area = "2K16" })/">
+                                        <i class="fa fa-users text-info-lter"></i>
+                                        <span class="font-bold">Lineups</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="@Url.Action("Index", "Pack", new { area = "2K16" })/">
+                                        <i class="fa fa-gamepad text-info-lter"></i>
+                                        <span class="font-bold">Pack Simulator</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="@Url.Action("Index", "PlayerUpdate", new { area = "2K16" })">
+                                        <i class="fa fa-bell text-info-lter"></i>
+                                        <span class="font-bold">Player Updates</span>
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="@Url.Action("Compare", "Player", new { area = "2K16" })/">
+                                        <i class="glyphicon glyphicon-signal text-info-lter"></i>
+                                        <span class="font-bold">Compare Players</span>
+                                    </a>
+                                </li>
+                            </ul>
                         </li>
-                        <li>
-                            <a href="@Url.Action("Index", "Lineup", new { area = "" })/">
-                                <i class="fa fa-users text-info-lter"></i>
-                                <span class="font-bold">Lineups</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="@Url.Action("Index", "Pack", new { area = "" })/">
-                                <i class="fa fa-gamepad text-info-lter"></i>
-                                <span class="font-bold">Pack Simulator</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="@Url.Action("Index", "PlayerUpdate", new { area = "" })">
-                                <i class="fa fa-bell text-info-lter"></i>
-                                <span class="font-bold">Player Updates</span>
-                            </a>
-                        </li>
-                        <li>
-                            <a href="@Url.Action("Compare", "Player", new { area = "" })/">
-                                <i class="glyphicon glyphicon-signal text-info-lter"></i>
-                                <span class="font-bold">Compare Players</span>
-                            </a>
-                        </li>
+                        
                         @if (User.Identity.IsAuthenticated)
                         {
                             <li class="line dk hidden-folded"></li>
@@ -260,7 +270,7 @@
                                 </li> -->
 
                                 <li>
-                                    <a href="@Url.Action("Profile", "Account")/">
+                                    <a href="@Url.Action("Profile", "Account", new { area = "" })/">
                                         <i class="icon-bell icon text-info-lter"></i>
                                         <span class="font-bold">Profile</span>
                                     </a>
@@ -283,6 +293,20 @@
                         </li>
                     </ul>
                 </nav>
+
+                <script>                    
+                    if (localStorage.getItem('2k16MenuOpened') == 'true')
+                        $('.data-toggle').parent('.dropdown').addClass('open');
+
+                    function toggle2k16Menu(el, event)
+                    {
+                        var parent = $(el).parent('.dropdown');
+                        parent.toggleClass('open');
+                        localStorage.setItem('2k16MenuOpened', parent.hasClass('open'));
+
+                        event.stopPropagation();
+                    }                    
+                </script>
                 <!-- nav -->
             </div>
         </div>

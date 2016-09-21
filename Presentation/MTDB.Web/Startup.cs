@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNet.Identity;
+﻿using System.Linq;
+using Microsoft.AspNet.Identity;
 using Microsoft.Owin;
 using Microsoft.Owin.Security.Cookies;
 using Owin;
@@ -28,6 +29,27 @@ namespace MTDB
 
                     context.Response.StatusCode = 301;
                     context.Response.Headers.Set("Location", context.Request.Uri.AbsoluteUri.Replace(host, host.Substring(4)));
+                    return;
+                }
+                await next();
+            });
+
+            //redirect / to /17
+            app.Use(async (context, next) =>
+            {
+                var path = context.Request.Uri.AbsolutePath.TrimEnd('/');
+                if (path == "")
+                {
+                    context.Response.StatusCode = 302;
+                    context.Response.Headers.Set("Location", $"{context.Request.Uri.AbsoluteUri.TrimEnd('/')}/17");
+                    return;
+                }
+                string[] redirects = { "/collections", "/lineups", "/packs", "/playerupdates", "/players" };
+                if (redirects.Any(r => path.StartsWith(r)))
+                {
+                    context.Response.StatusCode = 301;
+                    context.Response.Headers.Set("Location", context.Request.Uri.AbsoluteUri.Replace(path, $"/17{path}"));
+                    return;
                 }
                 await next();
             });
