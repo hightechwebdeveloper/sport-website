@@ -3,9 +3,9 @@
 @using mvcForum.Web.Helpers;
 @{
 	ViewBag.Title = ForumHelper.GetString("PostReport.Title", new { Subject = Model.IsTopic ? Model.Title : Model.Subject });
-	Layout = "~/areas/forums/views/shared/forumlayout.cshtml";
+	Layout = "~/areas/Forums/Views/shared/forumlayout.cshtml";
 }
-@Html.Partial("Breadcrumb", new Dictionary<String, String> { { Url.Action("ReportList", "Moderate", new { area = "forum" }), ForumHelper.GetString("PostReport.Reports") } })
+@Html.Partial("Breadcrumb", new Dictionary<String, String> { { Url.Action("ReportList", "Moderate", new { area = "forums" }), ForumHelper.GetString("PostReport.Reports") } })
 <a name="start_here"></a>
 <h2>@ForumHelper.GetHtmlString("PostReport.TitleTop", new { Subject = Model.IsTopic ? Model.Title : Model.Subject })</h2>
 <div id="page-body">

@@ -2,7 +2,7 @@
 @using mvcForum.Web.Helpers;
 @{
 	ViewBag.Title = ForumHelper.GetString("CreateTopic.Title", new { Title = Model.Forum.Name });
-	Layout = "~/areas/forums/views/shared/forumlayout.cshtml";
+	Layout = "~/areas/Forums/Views/shared/forumlayout.cshtml";
 }
 <!-- Views/Forum/CreateTopic.cshtml -->
 @Html.Partial("Breadcrumb", Model.Path)

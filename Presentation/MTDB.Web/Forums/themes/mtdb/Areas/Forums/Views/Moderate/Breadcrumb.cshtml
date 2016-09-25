@@ -6,7 +6,7 @@
 									<div class="block-border block-block">
 										<div class="block-content">
 	<ul class="linklist navlinks">
-		<li class="icon-home"><a href="@Url.Action("index", "home", new { area = "forum" })" accesskey="h">@ForumHelper.GetString("Forum")</a>
+		<li class="icon-home"><a href="@Url.Action("index", "home", new { area = "forums" })" accesskey="h">@ForumHelper.GetString("Forum")</a>
 @if (Model != null) {
 	foreach (var pair in Model) {
 		<strong>&#8249; </strong><a href="@pair.Key">@pair.Value</a>

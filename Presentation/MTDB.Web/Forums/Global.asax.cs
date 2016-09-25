@@ -2,10 +2,9 @@
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
-using mvcForum.Web.Areas.Forum;
 using mvcForum.Web.Areas.ForumAdmin;
 using mvcForum.Web.Areas.ForumAPI;
-using MTDB.Areas.Forum;
+using MTDB.Forums.Areas.Forums;
 
 namespace MTDB.Forums
 {
@@ -29,10 +28,9 @@ namespace MTDB.Forums
         {
             mvcForum.Web.ApplicationConfiguration.Initialize();
 
-            RegisterArea<ExtraForumAreaRegistration>(RouteTable.Routes, null);
-            RegisterArea<ForumsAreaRegistration>(RouteTable.Routes, null);
-            RegisterArea<ForumAdminAreaRegistration>(RouteTable.Routes, null);
+            RegisterArea<AdminAreaRegistration>(RouteTable.Routes, null);
             RegisterArea<ForumAPIAreaRegistration>(RouteTable.Routes, null);
+            RegisterArea<ForumsAreaRegistration>(RouteTable.Routes, null);
         }
     }
 }

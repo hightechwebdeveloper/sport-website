@@ -2,7 +2,7 @@
 @using mvcForum.Web.Helpers;
 @{
     ViewBag.Title = ForumHelper.GetString("User.Title", new { Name = Model.Name });
-    Layout = Url.GetThemeBaseUrl() + "areas/forums/views/shared/_layout.cshtml";
+    Layout = Url.GetThemeBaseUrl() + "areas/Forums/Views/shared/_layout.cshtml";
 }
 @section complementary{
     @Html.Partial("Breadcrumb", Model.Path)

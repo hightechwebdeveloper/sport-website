@@ -2,9 +2,9 @@
 @using mvcForum.Web.Helpers;
 @{
     ViewBag.Title = ForumHelper.GetString("EditMessage.Title", new { Subject = Model.Subject });
-    Layout = Url.GetThemeBaseUrl() + "areas/forums/views/shared/_ModerateLayout.cshtml";
+    Layout = Url.GetThemeBaseUrl() + "areas/Forums/Views/shared/_ModerateLayout.cshtml";
 }
-@Html.Partial(Url.GetThemeBaseUrl() + "areas/forums/views/Moderate/Breadcrumb.cshtml", Model.Path)
+@Html.Partial(Url.GetThemeBaseUrl() + "areas/Forums/Views/Moderate/Breadcrumb.cshtml", Model.Path)
 <a name="start_here"></a>
 <div id="page-body">
 	<div id="content-start"></div>

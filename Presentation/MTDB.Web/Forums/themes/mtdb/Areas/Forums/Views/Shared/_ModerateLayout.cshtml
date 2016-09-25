@@ -57,7 +57,7 @@
                     <div id="middle5">
                         <a id="top" name="top" accesskey="t"></a>
                         <div id="search-box">
-                            @using (Html.BeginForm("Index", "Search", new {area = "forum"}, FormMethod.Post, new {id = "search"}))
+                            @using (Html.BeginForm("Index", "Search", new {area = "forums"}, FormMethod.Post, new {id = "search"}))
                             {
                                 <fieldset>
                                     @Html.TextBox("Query", initialValue, new {@class = "inputbox search", title = ForumHelper.GetString("SearchTitle", null, ns), onclick = "if(this.value=='" + initialValue + "')this.value='';", onblur = "if(this.value=='')this.value='" + initialValue + "';"})
@@ -73,7 +73,7 @@
                             }
                         </ul>
                         <div id="logo">
-                            <a href="@Url.Action("Index", "Home", new {area = "Forum"})">
+                            <a href="@Url.Action("Index", "Home", new {area = "forums"})">
                                 MTDB
                             </a>
                         </div>

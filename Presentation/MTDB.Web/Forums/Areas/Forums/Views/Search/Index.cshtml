@@ -3,7 +3,7 @@
 @using mvcForum.Web.Helpers;
 @{
 	ViewBag.Title = ForumHelper.GetString("Title", null, "mvcForum.Web.Search");
-	Layout = "~/areas/forums/views/shared/forumlayout.cshtml";
+	Layout = "~/areas/Forums/Views/shared/forumlayout.cshtml";
 }
 @Html.Partial("Breadcrumb", new Dictionary<String, String>())
 <a name="start_here"></a>
@@ -11,7 +11,7 @@
 	<div id="content-start"> </div>
 @if (Model.Results != null && Model.Results.Any()) {
 		<h2>@ForumHelper.GetHtmlString("FoundTitle", "mvcForum.Web.Search", new { Query = Model.Query, Results = Model.Results.Count() })</h2>
-		<p>@Html.ActionLink(ForumHelper.GetLinkText("BackToAdvanced", null, "mvcForum.Web.Search"), "Index", "Search", new { area = "forum" }, new { @class = "left", title = ForumHelper.GetString("Search.BackToAdvancedTitle") })</p>
+		<p>@Html.ActionLink(ForumHelper.GetLinkText("BackToAdvanced", null, "mvcForum.Web.Search"), "Index", "Search", new { area = "forums" }, new { @class = "left", title = ForumHelper.GetString("Search.BackToAdvancedTitle") })</p>
 		<div class="forumbg">
 			<div class="block-border block-block">
 				<div class="block-content">

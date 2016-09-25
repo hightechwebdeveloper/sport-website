@@ -8,7 +8,7 @@
     else {
         ViewBag.Title = ForumHelper.GetString("Moderate.TitleMain");
     }
-    Layout = Url.GetThemeBaseUrl() + "areas/forums/views/shared/_ModerateLayout.cshtml";
+    Layout = Url.GetThemeBaseUrl() + "areas/Forums/Views/shared/_ModerateLayout.cshtml";
 }
 <!-- Views/Moderate/Index.cshtml -->
 @Html.Partial("Breadcrumb", new Dictionary<String, String>())
@@ -17,7 +17,7 @@
 <div id="page-body">
     <div id="content-start"> </div>
     <h2>@ForumHelper.GetHtmlString("Moderator.TopTitle")</h2>
-    @using (Html.BeginForm("Index", "Moderate", new { area = "forum" })) {
+    @using (Html.BeginForm("Index", "Moderate", new { area = "forums" })) {
         @Html.DropDownList("id", Model.AccessibleForums.ToSelectList(Model.SelectedForum))
         <input type="submit" value="@ForumHelper.GetString("Moderate.Button")" />
     }
@@ -25,7 +25,7 @@
 		@Html.Partial("ForumPagingPartial", Model.SelectedForum.Paging)
 		<div class="search-box"></div>
 	</div>
-    @using (Html.BeginForm("execute", "moderate", new { area = "forum" })) {
+    @using (Html.BeginForm("execute", "moderate", new { area = "forums" })) {
 	<input type="hidden" name="id" value="@Model.SelectedForum.Id" />
     <div class="forumbg">
         <div class="block-border block-block">

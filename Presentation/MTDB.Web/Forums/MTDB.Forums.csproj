@@ -624,10 +624,22 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="App_Start\IdentityConfig.cs" />
+    <Compile Include="Areas\ForumAdmin\AdminAreaRegistration.cs" />
+    <Compile Include="Areas\Forums\Controllers\AccountController.cs" />
+    <Compile Include="Areas\Forums\Controllers\AuthController.cs" />
+    <Compile Include="Areas\Forums\Controllers\BoardController.cs" />
+    <Compile Include="Areas\Forums\Controllers\CategoryController.cs" />
     <Compile Include="Areas\Forums\Controllers\ExtraIdentityController.cs" />
     <Compile Include="Areas\Forums\Controllers\ExtraMessageController.cs" />
+    <Compile Include="Areas\Forums\Controllers\FileController.cs" />
+    <Compile Include="Areas\Forums\Controllers\ForumController.cs" />
+    <Compile Include="Areas\Forums\Controllers\HomeController.cs" />
+    <Compile Include="Areas\Forums\Controllers\MessageController.cs" />
+    <Compile Include="Areas\Forums\Controllers\ModerateController.cs" />
+    <Compile Include="Areas\Forums\Controllers\NoAccessController.cs" />
     <Compile Include="Areas\Forums\Controllers\ProfileController.cs" />
-    <Compile Include="Areas\Forums\ExtraForumAreaRegistration.cs" />
+    <Compile Include="Areas\Forums\Controllers\SearchController.cs" />
+    <Compile Include="Areas\Forums\Controllers\TopicController.cs" />
     <Compile Include="Areas\Forums\ForumsAreaRegistration.cs" />
     <Compile Include="Areas\Forums\Models\UserPreferencesModel.cs" />
     <Compile Include="Global.asax.cs">

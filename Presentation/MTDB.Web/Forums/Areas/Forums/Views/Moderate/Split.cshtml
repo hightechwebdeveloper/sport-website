@@ -2,10 +2,10 @@
 @using mvcForum.Web.Helpers;
 @{
 	ViewBag.Title = ForumHelper.GetString("SplitTopic.Title", new { Title = Model.Topic.Title });
-	Layout = "~/areas/forums/views/shared/forumlayout.cshtml";
+	Layout = "~/areas/Forums/Views/shared/forumlayout.cshtml";
 }
 	<!-- Views/Moderate/Split.aspx -->
-@using (Html.BeginForm("split", "moderate", new { area = "forum" })) {
+@using (Html.BeginForm("split", "moderate", new { area = "forums" })) {
 	@Html.Hidden("ForumId", Model.Forum.Id)
 	@Html.Hidden("TopicId", Model.Topic.Id)
 	<div class="panel" id="postingbox">

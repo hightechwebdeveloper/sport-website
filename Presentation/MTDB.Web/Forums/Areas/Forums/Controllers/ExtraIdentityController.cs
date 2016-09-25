@@ -4,7 +4,7 @@ using mvcForum.Web.Controllers;
 using mvcForum.Web.Extensions;
 using mvcForum.Web.Interfaces;
 
-namespace mvcForum.Web.Areas.Forum.Controllers
+namespace MTDB.Forums.Areas.Forums.Controllers
 {
     public class ExtraIdentityController : ForumBaseController
     {

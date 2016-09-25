@@ -8,7 +8,7 @@
 
 <header class="main" role="banner">                
 
-    @using (Html.BeginForm("Index", "Search", new { area = "forum" }, FormMethod.Post, new { id = "search", role = "search", @class = "primary-search b-search b-search-a", novalidate = "novalidate" }))
+    @using (Html.BeginForm("Index", "Search", new { area = "forums" }, FormMethod.Post, new { id = "search", role = "search", @class = "primary-search b-search b-search-a", novalidate = "novalidate" }))
     {
         <input type="search" name="Query" placeholder="@ForumHelper.GetString("InitialSearchValue", null, ns)" title="@ForumHelper.GetString("SearchTitle", null, ns)" class="b-search-input ac_input">        
         <input type="submit" value="@ForumHelper.GetLinkText("SearchButton", null, ns)" />

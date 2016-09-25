@@ -4,14 +4,15 @@ using System.Web.Mvc;
 using ApplicationBoilerplate.DataProvider;
 using mvcForum.Core;
 using mvcForum.Core.Abstractions.Interfaces;
+using mvcForum.Web;
 using mvcForum.Web.Controllers;
 using mvcForum.Web.Extensions;
 using mvcForum.Web.Helpers;
+using mvcForum.Web.Interfaces;
 using mvcForum.Web.ViewModels;
 using mvcForum.Web.ViewModels.Create;
-using mvcForum.Web.Interfaces;
 
-namespace mvcForum.Web.Areas.Forum.Controllers
+namespace MTDB.Forums.Areas.Forums.Controllers
 {
     public class ExtraMessageController : ForumBaseController
     {
@@ -76,7 +77,7 @@ namespace mvcForum.Web.Areas.Forum.Controllers
             }
             model.Path = new Dictionary<string, string>();
             // Let's create the breadcrumb path!
-            mvcForum.Web.Areas.Forum.Controllers.HomeController.BuildPath(topic, model.Path, this.Url);
+            HomeController.BuildPath(topic, model.Path, this.Url);
             model.Path.Add("/", "New reply");
 
 

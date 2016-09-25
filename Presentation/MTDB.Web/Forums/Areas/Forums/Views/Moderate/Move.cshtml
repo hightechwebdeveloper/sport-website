@@ -2,11 +2,11 @@
 @using mvcForum.Web.Helpers;
 @{
 	ViewBag.Title = ForumHelper.GetString("Moderate.Title", new { Name = Model.Forum.Name });
-	Layout = "~/areas/forums/views/shared/forumlayout.cshtml";
+	Layout = "~/areas/Forums/Views/shared/forumlayout.cshtml";
 }
 <!-- Views/Moderate/Move.cshtml -->
 <p class="right">@ForumHelper.GetString("CurrentTime", new Object[] { DateTime.UtcNow })</p>
-@using (Html.BeginForm("move", "moderate", new { area = "forum" })) {
+@using (Html.BeginForm("move", "moderate", new { area = "forums" })) {
 	foreach (Int32 id in Model.Topics.Select(t => t.Id)) {
 		<input type="hidden" name="topics" value="@id" />
 	}

@@ -3,7 +3,7 @@
 @using mvcForum.Web.Helpers;
 @{
     ViewBag.Title = ForumHelper.GetString("Title", null, "mvcForum.Web.Search");
-    Layout = Url.GetThemeBaseUrl() + "areas/forums/views/shared/_ForumLayout.cshtml";
+    Layout = Url.GetThemeBaseUrl() + "areas/Forums/Views/shared/_ForumLayout.cshtml";
 }
 @section complementary{
     @Html.Partial("Breadcrumb", new Dictionary<string, string>())
@@ -75,7 +75,7 @@
         </tbody>
     </table>
 
-    @*<p>@Html.ActionLink(ForumHelper.GetLinkText("BackToAdvanced", null, "mvcForum.Web.Search"), "Index", "Search", new { area = "forum" }, new { @class = "left", title = ForumHelper.GetString("Search.BackToAdvancedTitle") })</p>*@
+    @*<p>@Html.ActionLink(ForumHelper.GetLinkText("BackToAdvanced", null, "mvcForum.Web.Search"), "Index", "Search", new { area = "forums" }, new { @class = "left", title = ForumHelper.GetString("Search.BackToAdvancedTitle") })</p>*@
 
 }
 else
