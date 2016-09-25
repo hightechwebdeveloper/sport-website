@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
 using System.Web;
@@ -42,7 +41,7 @@ namespace MTDB.Forums.Areas.Forums.Controllers
         public ActionResult LogOff()
         {
             this._authService.SignOut();
-            return (ActionResult)this.RedirectToAction("index", "home");
+            return this.RedirectToAction("index", "home");
         }
 
         [HttpGet]
@@ -50,8 +49,8 @@ namespace MTDB.Forums.Areas.Forums.Controllers
         public ActionResult Register()
         {
             if (!this._config.UseForumAccountController || !this._config.AllowLocalUsers || !this._config.AllowSignUp)
-                return (ActionResult)new HttpNotFoundResult();
-            return (ActionResult)this.View((object)new RegisterModel()
+                return new HttpNotFoundResult();
+            return this.View(new RegisterModel
             {
                 RequireRulesAccept = this._config.RequireRulesAccept,
                 SignUpRules = this._config.SignUpRules
@@ -63,7 +62,7 @@ namespace MTDB.Forums.Areas.Forums.Controllers
         public ActionResult Register(RegisterModel model)
         {
             if (!this._config.UseForumAccountController || !this._config.AllowLocalUsers || !this._config.AllowSignUp)
-                return (ActionResult)new HttpNotFoundResult();
+                return new HttpNotFoundResult();
             if (this.ModelState.IsValid)
             {
                 if (this._config.RequireRulesAccept && model.RulesAccepted || !this._config.RequireRulesAccept)
@@ -73,27 +72,28 @@ namespace MTDB.Forums.Areas.Forums.Controllers
                     {
                         if (this._config.RequireEmailValidation)
                         {
-                            IAccount account = this._membershipService.GetAccount((object)model.Username);
-                            string data = string.Format("{1}#|#{0}#|#{2}", (object)account.AccountName, (object)account.EmailAddress, account.ProviderUserKey);
-                            PrivatePrivateCrypto privatePrivateCrypto = new PrivatePrivateCrypto();
+                            var account = this._membershipService.GetAccount(model.Username);
+                            var data = string.Format("{1}#|#{0}#|#{2}", account.AccountName, account.EmailAddress, account.ProviderUserKey);
+                            var privatePrivateCrypto = new PrivatePrivateCrypto();
                             privatePrivateCrypto.Phrase = this._config.DefaultTimezone;
-                            string siteUrl = this._config.SiteURL;
+                            var siteUrl = this._config.SiteURL;
                             if (!siteUrl.EndsWith("/"))
                                 siteUrl += "/";
-                            string newValue = string.Format("{0}forums/account/activate?code={1}", (object)siteUrl, (object)HttpUtility.UrlEncode(privatePrivateCrypto.Encrypt(data)));
-                            this._mailService.Send(new MailAddress(this._config.RobotEmailAddress, this._config.RobotName), (IList<MailAddress>)((IEnumerable<MailAddress>)new MailAddress[1]
+                            var newValue =
+                                $"{siteUrl}forums/account/activate?code={HttpUtility.UrlEncode(privatePrivateCrypto.Encrypt(data))}";
+                            this._mailService.Send(new MailAddress(this._config.RobotEmailAddress, this._config.RobotName), new MailAddress[1]
                             {
-                new MailAddress(model.EmailAddress, model.Username)
-                            }).ToList<MailAddress>(), this._config.ValidationSubject, this._config.ValidationBody.Replace("{Email}", model.EmailAddress).Replace("{Password}", model.Password).Replace("{Url}", newValue));
-                            this.TempData.Add("Status", (object)ForumHelper.GetString<ForumConfigurator>("Register.EmailActivation"));
+                                new MailAddress(model.EmailAddress, model.Username)
+                            }.ToList(), this._config.ValidationSubject, this._config.ValidationBody.Replace("{Email}", model.EmailAddress).Replace("{Password}", model.Password).Replace("{Url}", newValue));
+                            this.TempData.Add("Status", ForumHelper.GetString<ForumConfigurator>("Register.EmailActivation"));
                         }
                         else
                         {
-                            this.Context.GetRepository<ForumUser>().ReadOne((ISpecification<ForumUser>)new ForumUserSpecifications.SpecificEmailAddress(model.EmailAddress)).Active = true;
+                            this.Context.GetRepository<ForumUser>().ReadOne(new ForumUserSpecifications.SpecificEmailAddress(model.EmailAddress)).Active = true;
                             this.Context.SaveChanges();
-                            this.TempData.Add("Status", (object)ForumHelper.GetString<ForumConfigurator>("Register.AccountReady"));
+                            this.TempData.Add("Status", ForumHelper.GetString<ForumConfigurator>("Register.AccountReady"));
                         }
-                        return (ActionResult)this.RedirectToAction("success", "account", (object)new { area = "forum" });
+                        return this.RedirectToAction("success", "account", new { area = "forum" });
                     }
                     this.ModelState.AddModelError("", errorMessage);
                 }
@@ -102,7 +102,7 @@ namespace MTDB.Forums.Areas.Forums.Controllers
             }
             model.RequireRulesAccept = this._config.RequireRulesAccept;
             model.SignUpRules = this._config.SignUpRules;
-            return (ActionResult)this.View((object)model);
+            return this.View(model);
         }
 
         [ConfigurationControlled(ConfigurationArea.AccountController, "LocalOrOpenAuth")]
@@ -110,16 +110,16 @@ namespace MTDB.Forums.Areas.Forums.Controllers
         public ActionResult LogOn()
         {
             if (!this._config.UseForumAccountController || !this._config.AllowLocalUsers && !this._config.AllowOpenAuthUsers)
-                return (ActionResult)new HttpNotFoundResult();
-            if (this._bipRepo.ReadOne((ISpecification<BannedIP>)new BannedIPSpecifications.SpecificIP(this.Request.UserHostAddress)) != null)
+                return new HttpNotFoundResult();
+            if (this._bipRepo.ReadOne(new BannedIPSpecifications.SpecificIP(this.Request.UserHostAddress)) != null)
             {
-                this.TempData.Add("Reason", (object)ForumHelper.GetString<ForumConfigurator>("NoAccess.BannedIP", (object)new
+                this.TempData.Add("Reason", ForumHelper.GetString<ForumConfigurator>("NoAccess.BannedIP", new
                 {
                     IPAddress = this.Request.UserHostAddress
                 }));
-                return (ActionResult)this.RedirectToRoute("NoAccess");
+                return this.RedirectToRoute("NoAccess");
             }
-            return (ActionResult)this.View((object)new LogOnModel()
+            return this.View(new LogOnModel
             {
                 AllowLocalUsers = this._config.AllowLocalUsers,
                 AllowSignUp = this._config.AllowSignUp,
@@ -132,26 +132,26 @@ namespace MTDB.Forums.Areas.Forums.Controllers
         public ActionResult LogOn(LogOnModel model, string returnUrl)
         {
             if (!this._config.UseForumAccountController || !this._config.AllowLocalUsers)
-                return (ActionResult)new HttpNotFoundResult();
+                return new HttpNotFoundResult();
             if (this.ModelState.IsValid)
             {
-                if (this._bipRepo.ReadOne((ISpecification<BannedIP>)new BannedIPSpecifications.SpecificIP(this.Request.UserHostAddress)) != null)
+                if (this._bipRepo.ReadOne(new BannedIPSpecifications.SpecificIP(this.Request.UserHostAddress)) != null)
                 {
-                    this.TempData.Add("Reason", (object)ForumHelper.GetString<ForumConfigurator>("NoAccess.BannedIP"));
-                    return (ActionResult)this.RedirectToRoute("NoAccess");
+                    this.TempData.Add("Reason", ForumHelper.GetString<ForumConfigurator>("NoAccess.BannedIP"));
+                    return this.RedirectToRoute("NoAccess");
                 }
-                string nameByEmailAddress = this._membershipService.GetAccountNameByEmailAddress(model.EmailAddress);
+                var nameByEmailAddress = this._membershipService.GetAccountNameByEmailAddress(model.EmailAddress);
                 if (!string.IsNullOrWhiteSpace(nameByEmailAddress) && this._membershipService.ValidateAccount(nameByEmailAddress, model.Password))
                 {
-                    ForumUser forumUser = this.ForumUserRepository.ReadOne((ISpecification<ForumUser>)new ForumUserSpecifications.SpecificUsername(nameByEmailAddress));
+                    var forumUser = this.ForumUserRepository.ReadOne(new ForumUserSpecifications.SpecificUsername(nameByEmailAddress));
                     if (forumUser != null)
                     {
                         if (!forumUser.ExternalAccount)
                         {
                             this._authService.SignIn(this._membershipService.GetAccountByName(nameByEmailAddress), model.RememberMe);
                             if (this.Url.IsLocalUrl(returnUrl))
-                                return (ActionResult)this.Redirect(returnUrl);
-                            return (ActionResult)this.RedirectToAction("Index", "Home", (object)new { area = "forum" });
+                                return this.Redirect(returnUrl);
+                            return this.RedirectToAction("Index", "Home", new { area = "forum" });
                         }
                         this.ModelState.AddModelError(string.Empty, "The account is an external account, please log on using the right provider.");
                     }
@@ -162,7 +162,7 @@ namespace MTDB.Forums.Areas.Forums.Controllers
             model.AllowLocalUsers = this._config.AllowLocalUsers;
             model.AllowSignUp = this._config.AllowSignUp;
             model.AllowOpenAuthUsers = this._config.AllowOpenAuthUsers;
-            return (ActionResult)this.View((object)model);
+            return this.View(model);
         }
 
         [HttpPost]
@@ -171,42 +171,42 @@ namespace MTDB.Forums.Areas.Forums.Controllers
         {
             if (this.ModelState.IsValid)
             {
-                IAccount accountByEmailAddress = this._membershipService.GetAccountByEmailAddress(model.EmailAddress);
-                string newValue = accountByEmailAddress.ResetPassword();
+                var accountByEmailAddress = this._membershipService.GetAccountByEmailAddress(model.EmailAddress);
+                var newValue = accountByEmailAddress.ResetPassword();
                 this._membershipService.UpdateAccount(accountByEmailAddress);
-                this._mailService.Send(new MailAddress(this._config.RobotEmailAddress, this._config.RobotName), (IList<MailAddress>)((IEnumerable<MailAddress>)new MailAddress[1]
+                this._mailService.Send(new MailAddress(this._config.RobotEmailAddress, this._config.RobotName), new MailAddress[1]
                 {
-          new MailAddress(accountByEmailAddress.EmailAddress, accountByEmailAddress.AccountName)
-                }).ToList<MailAddress>(), this._config.ForgottenPasswordSubject, this._config.ForgottenPasswordBody.Replace("{Email}", model.EmailAddress).Replace("{Password}", newValue));
-                this.TempData.Add("ForgottenStatus", (object)ForumHelper.GetString("PasswordChanged", (object)null, "mvcForum.Web.ForgottenPassword"));
+                    new MailAddress(accountByEmailAddress.EmailAddress, accountByEmailAddress.AccountName)
+                }.ToList(), this._config.ForgottenPasswordSubject, this._config.ForgottenPasswordBody.Replace("{Email}", model.EmailAddress).Replace("{Password}", newValue));
+                this.TempData.Add("ForgottenStatus", ForumHelper.GetString("PasswordChanged", null, "mvcForum.Web.ForgottenPassword"));
             }
-            return (ActionResult)this.RedirectToAction("logon");
+            return this.RedirectToAction("logon");
         }
 
         public ActionResult External()
         {
-            return (ActionResult)this.View();
+            return this.View();
         }
 
         public ActionResult Success()
         {
-            return (ActionResult)this.View();
+            return this.View();
         }
 
         [ConfigurationControlled(ConfigurationArea.AccountController, "SignUp")]
         public ActionResult Activate(string code)
         {
-            bool flag = false;
+            var flag = false;
             if (!string.IsNullOrWhiteSpace(code))
             {
-                PrivatePrivateCrypto privatePrivateCrypto = new PrivatePrivateCrypto();
+                var privatePrivateCrypto = new PrivatePrivateCrypto();
                 privatePrivateCrypto.Phrase = this._config.DefaultTimezone;
                 try
                 {
-                    string[] strArray = privatePrivateCrypto.Decrypt(code).Split(new string[1] { "#|#" }, StringSplitOptions.RemoveEmptyEntries);
+                    var strArray = privatePrivateCrypto.Decrypt(code).Split(new string[1] { "#|#" }, StringSplitOptions.RemoveEmptyEntries);
                     if (strArray.Length == 3)
                     {
-                        IAccount account = this._membershipService.GetAccount((object)strArray[1]);
+                        var account = this._membershipService.GetAccount(strArray[1]);
                         if (account != null)
                         {
                             if (account.EmailAddress == strArray[0])
@@ -216,7 +216,7 @@ namespace MTDB.Forums.Areas.Forums.Controllers
                                     account.IsApproved = true;
                                     this._membershipService.UpdateAccount(account);
                                     flag = true;
-                                    this.ForumUserRepository.ReadOne((ISpecification<ForumUser>)new ForumUserSpecifications.SpecificProviderUserKey(account.ProviderUserKey.ToString())).Active = true;
+                                    this.ForumUserRepository.ReadOne(new ForumUserSpecifications.SpecificProviderUserKey(account.ProviderUserKey.ToString())).Active = true;
                                     this.Context.SaveChanges();
                                 }
                             }
@@ -227,7 +227,7 @@ namespace MTDB.Forums.Areas.Forums.Controllers
                 {
                 }
             }
-            return (ActionResult)this.View((object)flag);
+            return this.View(flag);
         }
     }
 }

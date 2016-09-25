@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Web.Mvc;
@@ -35,30 +34,30 @@ namespace MTDB.Forums.Areas.Forums.Controllers
         [ActionName("Active Topics")]
         public ActionResult ActiveTopics()
         {
-            return (ActionResult)this.View();
+            return this.View();
         }
 
         [ActionName("Unanswered Posts")]
         public ActionResult UnansweredPosts()
         {
-            return (ActionResult)this.RedirectToAction("Unanswered Topics");
+            return this.RedirectToAction("Unanswered Topics");
         }
 
         [ActionName("Unanswered Topics")]
         public ActionResult UnansweredTopics([DefaultValue(1)] int page)
         {
-            List<int> accessibleForums = ForumHelper.GetAccessibleForums().Select<mvcForum.Core.Forum, int>((Func<mvcForum.Core.Forum, int>)(x => x.Id)).ToList<int>();
-            IEnumerable<Topic> source = (IEnumerable<Topic>)this.GetRepository<Topic>().ReadMany((ISpecification<Topic>)new TopicSpecifications.EmptyTopic()).Where<Topic>((Func<Topic, bool>)(t => accessibleForums.Contains(t.ForumId))).OrderByDescending<Topic, DateTime>((Func<Topic, DateTime>)(x => x.Posted)).Skip<Topic>((page - 1) * this._config.TopicsPerPage).Take<Topic>(this._config.TopicsPerPage).ToList<Topic>();
-            UnansweredTopicsViewModel unansweredTopicsViewModel = new UnansweredTopicsViewModel();
+            var accessibleForums = ForumHelper.GetAccessibleForums().Select(x => x.Id).ToList();
+            var source = (IEnumerable<Topic>)this.GetRepository<Topic>().ReadMany(new TopicSpecifications.EmptyTopic()).Where(t => accessibleForums.Contains(t.ForumId)).OrderByDescending(x => x.Posted).Skip((page - 1) * this._config.TopicsPerPage).Take(this._config.TopicsPerPage).ToList();
+            var unansweredTopicsViewModel = new UnansweredTopicsViewModel();
             unansweredTopicsViewModel.Path = new Dictionary<string, string>();
-            unansweredTopicsViewModel.Path.Add("/forums/search/unanswered topics", ForumHelper.GetString("SearchUnanswered.Breadcrumb", (object)null, "mvcForum.Web"));
-            unansweredTopicsViewModel.Topics = source.Select<Topic, TopicViewModel>((Func<Topic, TopicViewModel>)(t => new TopicViewModel(t, (IEnumerable<MessageViewModel>)new MessageViewModel[0], 0, 1, false)));
-            return (ActionResult)this.View((object)unansweredTopicsViewModel);
+            unansweredTopicsViewModel.Path.Add("/forums/search/unanswered topics", ForumHelper.GetString("SearchUnanswered.Breadcrumb", null, "mvcForum.Web"));
+            unansweredTopicsViewModel.Topics = source.Select(t => new TopicViewModel(t, new MessageViewModel[0], 0, 1, false));
+            return this.View(unansweredTopicsViewModel);
         }
 
         public ActionResult Index()
         {
-            return (ActionResult)this.View((object)new SearchViewModel()
+            return this.View(new SearchViewModel
             {
                 Forums = new int[0]
             });
@@ -69,30 +68,30 @@ namespace MTDB.Forums.Areas.Forums.Controllers
         {
             if (this.ModelState.IsValid)
             {
-                IList<int> forums = model.Forums != null ? (IList<int>)((IEnumerable<int>)model.Forums).ToList<int>() : (IList<int>)ForumHelper.GetAccessibleForums().Select<mvcForum.Core.Forum, int>((Func<mvcForum.Core.Forum, int>)(x => x.Id)).ToList<int>();
-                IEnumerable<SearchResult> searchResults = (IEnumerable<SearchResult>)new List<SearchResult>();
-                foreach (ISearcher searcher in this._searchers)
-                    searchResults = searchResults.Concat<SearchResult>(searcher.Search(model.Query, forums));
-                model.Results = (IEnumerable<TopicViewModel>)new List<TopicViewModel>();
-                if (searchResults.Any<SearchResult>())
+                var forums = model.Forums?.ToList() ?? (IList<int>)ForumHelper.GetAccessibleForums().Select(x => x.Id).ToList();
+                var searchResults = (IEnumerable<SearchResult>)new List<SearchResult>();
+                foreach (var searcher in this._searchers)
+                    searchResults = searchResults.Concat(searcher.Search(model.Query, forums));
+                model.Results = new List<TopicViewModel>();
+                if (searchResults.Any())
                 {
                     this.GetRepository<Post>();
                     try
                     {
-                        List<TopicViewModel> source = new List<TopicViewModel>();
-                        using (IEnumerator<SearchResult> enumerator = searchResults.OrderByDescending<SearchResult, float>((Func<SearchResult, float>)(r => r.Score)).GetEnumerator())
+                        var source = new List<TopicViewModel>();
+                        using (var enumerator = searchResults.OrderByDescending(r => r.Score).GetEnumerator())
                         {
                             while (enumerator.MoveNext())
                             {
-                                SearchResult result = enumerator.Current;
-                                if (!source.Where<TopicViewModel>((Func<TopicViewModel, bool>)(vm => vm.Id == result.TopicId)).Any<TopicViewModel>())
+                                var result = enumerator.Current;
+                                if (source.All(vm => vm.Id != result.TopicId))
                                 {
-                                    Topic topic = this._topicRepo.ReadOneOptimizedWithPosts(result.TopicId);
-                                    source.Add(new TopicViewModel(topic, (IEnumerable<MessageViewModel>)new MessageViewModel[0], topic.Posts.Visible(this._config).Count<Post>() - 1, this._config.MessagesPerPage, false));
+                                    var topic = this._topicRepo.ReadOneOptimizedWithPosts(result.TopicId);
+                                    source.Add(new TopicViewModel(topic, new MessageViewModel[0], topic.Posts.Visible(this._config).Count() - 1, this._config.MessagesPerPage, false));
                                 }
                             }
                         }
-                        model.Results = (IEnumerable<TopicViewModel>)source;
+                        model.Results = source;
                     }
                     catch
                     {
@@ -101,7 +100,7 @@ namespace MTDB.Forums.Areas.Forums.Controllers
             }
             if (model.Forums == null)
                 model.Forums = new int[0];
-            return (ActionResult)this.View((object)model);
+            return this.View(model);
         }
     }
 }

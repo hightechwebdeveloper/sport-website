@@ -8,7 +8,7 @@ namespace MTDB.Forums.Areas.Forums.Controllers
     {
         public ActionResult Index()
         {
-            return (ActionResult)this.View();
+            return View();
         }
     }
 }

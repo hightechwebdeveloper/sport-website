@@ -34,62 +34,62 @@ namespace MTDB.Forums.Areas.Forums.Controllers
 
         public ActionResult Index()
         {
-            Board board = (Board)null;
-            string s = string.Empty;
+            var board = (Board)null;
+            var s = string.Empty;
             int result;
             if (!string.IsNullOrWhiteSpace(s) && int.TryParse(s, out result))
-                board = this._boardRepo.ReadOneOptimized((ISpecification<Board>)new BoardSpecifications.ById(result));
+                board = this._boardRepo.ReadOneOptimized(new BoardSpecifications.ById(result));
             if (board == null)
             {
-                IEnumerable<Board> source = this._boardRepo.ReadManyOptimized((ISpecification<Board>)new BoardSpecifications.Enabled());
-                if (!source.Any<Board>())
-                    return (ActionResult)this.RedirectToAction("index", "basicinstall", (object)new { area = "forumadmin" });
-                board = source.First<Board>();
+                var source = this._boardRepo.ReadManyOptimized(new BoardSpecifications.Enabled());
+                if (!source.Any())
+                    return this.RedirectToAction("index", "basicinstall", new { area = "forumadmin" });
+                board = source.First();
             }
-            BoardViewModel boardViewModel = new BoardViewModel(board);
+            var boardViewModel = new BoardViewModel(board);
             boardViewModel.Path = new Dictionary<string, string>();
             boardViewModel.ShowOnline = this._config.ShowOnlineUsers;
             if (boardViewModel.ShowOnline)
             {
-                IEnumerable<ForumUser> onlineUsers = this._userService.GetOnlineUsers();
-                boardViewModel.OnlineUsers = (IEnumerable<ForumUser>)onlineUsers.OrderBy<ForumUser, string>((Func<ForumUser, string>)(u =>
+                var onlineUsers = this._userService.GetOnlineUsers();
+                boardViewModel.OnlineUsers = onlineUsers.OrderBy(u =>
                 {
                     if (!u.UseFullName)
                         return u.Name;
                     return u.FullName;
-                }));
+                });
             }
-            List<CategoryViewModel> categoryViewModelList = new List<CategoryViewModel>();
-            foreach (Category category in (IEnumerable<Category>)board.Categories.OrderBy<Category, int>((Func<Category, int>)(c => c.SortOrder)))
+            var categoryViewModelList = new List<CategoryViewModel>();
+            foreach (var category in board.Categories.OrderBy(c => c.SortOrder))
             {
-                CategoryViewModel categoryViewModel = new CategoryViewModel(category);
+                var categoryViewModel = new CategoryViewModel(category);
                 categoryViewModelList.Add(categoryViewModel);
-                IEnumerable<mvcForum.Core.Forum> source = this._forumRepo.ReadManyOptimized((ISpecification<mvcForum.Core.Forum>)new ForumSpecifications.SpecificCategoryNoParentForum(category));
-                categoryViewModel.Forums = source.OrderBy<mvcForum.Core.Forum, int>((Func<mvcForum.Core.Forum, int>)(f => f.SortOrder)).Select<mvcForum.Core.Forum, ForumViewModel>((Func<mvcForum.Core.Forum, ForumViewModel>)(f => new ForumViewModel(f, this._config.TopicsPerPage)
+                var source = this._forumRepo.ReadManyOptimized(new ForumSpecifications.SpecificCategoryNoParentForum(category));
+                categoryViewModel.Forums = source.OrderBy(f => f.SortOrder).Select(f => new ForumViewModel(f, this._config.TopicsPerPage)
                 {
-                    SubForums = f.SubForums.Select<mvcForum.Core.Forum, ForumViewModel>((Func<mvcForum.Core.Forum, ForumViewModel>)(sf => new ForumViewModel(sf, this._config.TopicsPerPage)))
-                }));
+                    SubForums = f.SubForums.Select(sf => new ForumViewModel(sf, this._config.TopicsPerPage))
+                });
             }
-            boardViewModel.Categories = new ReadOnlyCollection<CategoryViewModel>((IList<CategoryViewModel>)categoryViewModelList);
-            return (ActionResult)this.View((object)boardViewModel);
+            boardViewModel.Categories = new ReadOnlyCollection<CategoryViewModel>(categoryViewModelList);
+            return this.View(boardViewModel);
         }
 
         [NonAction]
-        public static void BuildPath(mvcForum.Core.Forum forum, Dictionary<string, string> path, UrlHelper urlHelper)
+        public static void BuildPath(Forum forum, Dictionary<string, string> path, UrlHelper urlHelper)
         {
             if (forum.ParentForum != null)
-                HomeController.BuildPath(forum.ParentForum, path, urlHelper);
+                BuildPath(forum.ParentForum, path, urlHelper);
             else
-                HomeController.BuildPath(forum.Category, path, urlHelper);
-            string key = urlHelper.RouteUrl("ShowForum", new RouteValueDictionary()
-      {
+                BuildPath(forum.Category, path, urlHelper);
+            var key = urlHelper.RouteUrl("ShowForum", new RouteValueDictionary
+            {
         {
           "id",
-          (object) forum.Id
+          forum.Id
         },
         {
           "title",
-          (object) forum.Name.ToSlug()
+          forum.Name.ToSlug()
         }
       });
             path.Add(key, forum.Name);
@@ -98,15 +98,15 @@ namespace MTDB.Forums.Areas.Forums.Controllers
         [NonAction]
         public static void BuildPath(Category category, Dictionary<string, string> path, UrlHelper urlHelper)
         {
-            string key = urlHelper.RouteUrl("ShowCategory", new RouteValueDictionary()
-      {
+            var key = urlHelper.RouteUrl("ShowCategory", new RouteValueDictionary
+            {
         {
           "id",
-          (object) category.Id
+          category.Id
         },
         {
           "title",
-          (object) category.Name.ToSlug()
+          category.Name.ToSlug()
         }
       });
             path.Add(key, category.Name);
@@ -115,16 +115,16 @@ namespace MTDB.Forums.Areas.Forums.Controllers
         [NonAction]
         public static void BuildPath(Topic topic, Dictionary<string, string> path, UrlHelper urlHelper)
         {
-            HomeController.BuildPath(topic.Forum, path, urlHelper);
-            string key = urlHelper.RouteUrl("ShowTopic", new RouteValueDictionary()
-      {
+            BuildPath(topic.Forum, path, urlHelper);
+            var key = urlHelper.RouteUrl("ShowTopic", new RouteValueDictionary
+            {
         {
           "id",
-          (object) topic.Id
+          topic.Id
         },
         {
           "title",
-          (object) topic.Title.ToSlug()
+          topic.Title.ToSlug()
         }
       });
             path.Add(key, topic.Title);
@@ -134,15 +134,15 @@ namespace MTDB.Forums.Areas.Forums.Controllers
         [ActionName("Mark As Read")]
         public ActionResult MarkAsRead(int id)
         {
-            foreach (Category category in (IEnumerable<Category>)this.GetRepository<Board>().Read(id).Categories)
+            foreach (var category in this.GetRepository<Board>().Read(id).Categories)
             {
-                foreach (mvcForum.Core.Forum forum in (IEnumerable<mvcForum.Core.Forum>)category.Forums)
+                foreach (var forum in category.Forums)
                 {
                     if (forum.HasAccess(AccessFlag.Read))
                         forum.Track();
                 }
             }
-            return (ActionResult)this.RedirectToAction("index");
+            return this.RedirectToAction("index");
         }
     }
 }

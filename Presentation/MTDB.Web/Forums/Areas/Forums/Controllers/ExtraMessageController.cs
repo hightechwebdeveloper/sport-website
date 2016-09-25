@@ -35,7 +35,7 @@ namespace MTDB.Forums.Areas.Forums.Controllers
             if (!topic.Forum.HasAccess(AccessFlag.Post))
                 return
                     Content(ForumHelper.GetString<ForumConfigurator>("NoAccess.ForumPosting",
-                        new {Name = topic.Forum.Name}));
+                        new {topic.Forum.Name}));
 
             Post replyToMessage = null;
             // Is this a reply to an existing post or just another post as a reply to the topic?
@@ -60,7 +60,7 @@ namespace MTDB.Forums.Areas.Forums.Controllers
                     // Yes, so let's limit the number of posts.
                     messages = messages.Take(this._config.PostsOnReply);
                 }
-                foreach (Post p in messages)
+                foreach (var p in messages)
                 {
                     model.Posts.Add(new MessageViewModel(p));
                 }

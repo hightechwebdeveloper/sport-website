@@ -16,7 +16,7 @@ namespace MTDB.Forums.Areas.Forums.Controllers
 
         public ActionResult GimmeVersion()
         {
-            return (ActionResult)new JsonPResult((object)new
+            return new JsonPResult(new
             {
                 Version = ForumHelper.GetVersion()
             });

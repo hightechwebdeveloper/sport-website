@@ -48,17 +48,17 @@ namespace MTDB.Forums.Areas.Forums.Controllers
         [Authorize]
         public ActionResult Create(int id)
         {
-            mvcForum.Core.Forum forum = this.GetRepository<mvcForum.Core.Forum>().Read(id);
+            var forum = this.GetRepository<Forum>().Read(id);
             if (forum.HasAccess(AccessFlag.Post))
             {
-                CreateTopicViewModel createTopicViewModel = new CreateTopicViewModel(forum, this._config.TopicsPerPage);
+                var createTopicViewModel = new CreateTopicViewModel(forum, this._config.TopicsPerPage);
                 createTopicViewModel.Path = new Dictionary<string, string>();
-                MTDB.Forums.Areas.Forums.Controllers.HomeController.BuildPath(forum, createTopicViewModel.Path, this.Url);
+                HomeController.BuildPath(forum, createTopicViewModel.Path, this.Url);
                 createTopicViewModel.Path.Add("/", "New topic");
-                return (ActionResult)this.View((object)createTopicViewModel);
+                return this.View(createTopicViewModel);
             }
-            this.TempData.Add("Reason", (object)ForumHelper.GetString<ForumConfigurator>("NoAccess.ForumPosting", (object)new { Name = forum.Name }));
-            return (ActionResult)this.RedirectToRoute("NoAccess");
+            this.TempData.Add("Reason", ForumHelper.GetString<ForumConfigurator>("NoAccess.ForumPosting", new {forum.Name }));
+            return this.RedirectToRoute("NoAccess");
         }
 
         [NotBanned]
@@ -67,11 +67,11 @@ namespace MTDB.Forums.Areas.Forums.Controllers
         [ValidateInput(false)]
         public ActionResult Create(CreateTopicViewModel newTopic, HttpPostedFileBase[] files)
         {
-            mvcForum.Core.Forum forum = this.GetRepository<mvcForum.Core.Forum>().Read(newTopic.ForumId);
+            var forum = this.GetRepository<Forum>().Read(newTopic.ForumId);
             if (this.ModelState.IsValid)
             {
-                List<string> stringList = new List<string>();
-                Topic topic = this._topicService.Create(this.ActiveUser, forum, newTopic.Subject, newTopic.Type, newTopic.Body, this.Request.UserHostAddress, this.Request.UserAgent, this.Url.RouteUrl("ShowForum", (object)new
+                var stringList = new List<string>();
+                var topic = this._topicService.Create(this.ActiveUser, forum, newTopic.Subject, newTopic.Type, newTopic.Body, this.Request.UserHostAddress, this.Request.UserAgent, this.Url.RouteUrl("ShowForum", new
                 {
                     id = forum.Id,
                     title = forum.Name.ToSlug(),
@@ -83,67 +83,65 @@ namespace MTDB.Forums.Areas.Forums.Controllers
                     {
                         if (files != null && files.Length > 0)
                         {
-                            foreach (HttpPostedFileBase file in files)
+                            foreach (var file in files)
                             {
                                 if (file != null)
                                 {
-                                    AttachStatusCode attachStatusCode = this._attachmentService.AttachFile(this.ActiveUser, topic, file.FileName, file.ContentType, file.ContentLength, file.InputStream);
+                                    var attachStatusCode = this._attachmentService.AttachFile(this.ActiveUser, topic, file.FileName, file.ContentType, file.ContentLength, file.InputStream);
                                     if (attachStatusCode != AttachStatusCode.Success)
-                                        stringList.Add(ForumHelper.GetString(attachStatusCode.ToString(), (object)new
+                                        stringList.Add(ForumHelper.GetString(attachStatusCode.ToString(), new
                                         {
                                             File = file.FileName,
-                                            Size = file.ContentLength,
-                                            MaxFileSize = this._config.MaxFileSize,
-                                            MaxAttachmentsSize = this._config.MaxAttachmentsSize,
+                                            Size = file.ContentLength, this._config.MaxFileSize, this._config.MaxAttachmentsSize,
                                             Extensions = this._config.AllowedExtensions
                                         }, "mvcForum.Web.AttachmentErrors"));
                                 }
                             }
                         }
                         else if (newTopic.AttachFile)
-                            return (ActionResult)this.RedirectToAction("Attach", "File", new RouteValueDictionary()
-              {
-                {
-                  "id",
-                  (object) topic.Posts.OrderBy<Post, DateTime>((Func<Post, DateTime>) (p => p.Posted)).First<Post>().Id
-                }
-              });
+                            return this.RedirectToAction("Attach", "File", new RouteValueDictionary
+                            {
+                                {
+                                    "id",
+                                    topic.Posts.OrderBy(p => p.Posted).First().Id
+                                }
+                            });
                     }
-                    if (stringList.Any<string>())
-                        this.TempData.Add("Feedback", (object)stringList.Select<string, MvcHtmlString>((Func<string, MvcHtmlString>)(f => new MvcHtmlString(f))));
-                    return (ActionResult)this.RedirectToRoute("ShowForum", new RouteValueDictionary()
-          {
-            {
-              "id",
-              (object) forum.Id
-            },
-            {
-              "title",
-              (object) forum.Name.ToSlug()
-            }
-          });
+                    if (stringList.Any())
+                        this.TempData.Add("Feedback", stringList.Select(f => new MvcHtmlString(f)));
+                    return this.RedirectToRoute("ShowForum", new RouteValueDictionary
+                    {
+                        {
+                            "id",
+                            forum.Id
+                        },
+                        {
+                            "title",
+                            forum.Name.ToSlug()
+                        }
+                    });
                 }
             }
             newTopic = new CreateTopicViewModel(forum, this._config.TopicsPerPage);
             newTopic.Path = new Dictionary<string, string>();
-            MTDB.Forums.Areas.Forums.Controllers.HomeController.BuildPath(forum, newTopic.Path, this.Url);
+            HomeController.BuildPath(forum, newTopic.Path, this.Url);
             newTopic.Path.Add("/", "New topic");
-            return (ActionResult)this.View((object)newTopic);
+            return this.View(newTopic);
         }
 
         public ActionResult Index(int id, string title, int? page, string additional)
         {
-            Topic topic = this._topicService.Read(this.ActiveUser, id);
+            var topic = this._topicService.Read(this.ActiveUser, id);
             if (topic != null)
             {
                 if (title != topic.Title.ToSlug())
-                    return (ActionResult)this.RedirectPermanent(this.Url.RouteUrl("ShowTopic", (object)new
+                    return this.RedirectPermanent(this.Url.RouteUrl("ShowTopic", new
                     {
                         area = "forum",
                         title = topic.Title.ToSlug(),
                         id = topic.Id
                     }));
-                Post lastReadPost = (Post)null;
+                var lastReadPost = (Post)null;
                 IEnumerable<Post> source;
                 if (!string.IsNullOrWhiteSpace(additional) && this.Authenticated && this.ActiveUser != null)
                 {
@@ -151,50 +149,50 @@ namespace MTDB.Forums.Areas.Forums.Controllers
                     DateTime? lastRead;
                     source = this._postRepo.ReadSinceLast(this.ActiveUser, topic, this._config.MessagesPerPage, this._config.ShowDeletedMessages, out lastRead, out showingPage);
                     if (lastRead.HasValue)
-                        lastReadPost = source.Where<Post>((Func<Post, bool>)(p => p.Posted > lastRead.Value)).OrderBy<Post, DateTime>((Func<Post, DateTime>)(p => p.Posted)).FirstOrDefault<Post>();
-                    page = new int?(showingPage);
+                        lastReadPost = source.Where(p => p.Posted > lastRead.Value).OrderBy(p => p.Posted).FirstOrDefault();
+                    page = showingPage;
                 }
                 else
                     source = this._postRepo.Read(this.ActiveUser, topic, page.HasValue ? (page.Value > 0 ? page.Value : 1) : 1, this._config.MessagesPerPage, this._config.ShowDeletedMessages);
                 topic.TrackAndView();
-                TopicViewModel topicViewModel = new TopicViewModel(topic, source.Select<Post, MessageViewModel>((Func<Post, MessageViewModel>)(p => new MessageViewModel(p)
+                var topicViewModel = new TopicViewModel(topic, source.Select(p => new MessageViewModel(p)
                 {
                     LastRead = lastReadPost != null && p.Id == lastReadPost.Id,
-                    Attachments = p.Attachments.Select<Attachment, AttachmentViewModel>((Func<Attachment, AttachmentViewModel>)(a => new AttachmentViewModel(a)))
-                })), this._postRepo.ReadAll(this.ActiveUser, topic, this._config.ShowDeletedMessages).Count<Post>() - 1, this._config.MessagesPerPage, this._config.ShowDeletedMessages);
+                    Attachments = p.Attachments.Select(a => new AttachmentViewModel(a))
+                }), this._postRepo.ReadAll(this.ActiveUser, topic, this._config.ShowDeletedMessages).Count() - 1, this._config.MessagesPerPage, this._config.ShowDeletedMessages);
                 topicViewModel.Page = !page.HasValue || page.Value <= 0 ? 1 : page.Value;
                 topicViewModel.Path = new Dictionary<string, string>();
-                MTDB.Forums.Areas.Forums.Controllers.HomeController.BuildPath(topic, topicViewModel.Path, this.Url);
-                return (ActionResult)this.View((object)topicViewModel);
+                HomeController.BuildPath(topic, topicViewModel.Path, this.Url);
+                return this.View(topicViewModel);
             }
-            this.TempData.Add("Reason", (object)ForumHelper.GetString<ForumConfigurator>("NoAccess.Forum", (object)new
+            this.TempData.Add("Reason", ForumHelper.GetString<ForumConfigurator>("NoAccess.Forum", new
             {
-                Name = this.context.GetRepository<Topic>().Read(id).Forum.Name
+                this.context.GetRepository<Topic>().Read(id).Forum.Name
             }));
-            return (ActionResult)this.RedirectToRoute("NoAccess");
+            return this.RedirectToRoute("NoAccess");
         }
 
         [Authorize]
         public ActionResult Moderate(int id)
         {
-            Topic topic = this.GetRepository<Topic>().Read(id);
+            var topic = this.GetRepository<Topic>().Read(id);
             if (topic.Forum.HasAccess(AccessFlag.Moderator))
             {
-                Dictionary<string, string> path = new Dictionary<string, string>();
-                MTDB.Forums.Areas.Forums.Controllers.HomeController.BuildPath(topic, path, this.Url);
-                UpdateTopicViewModel updateTopicViewModel = new UpdateTopicViewModel();
+                var path = new Dictionary<string, string>();
+                HomeController.BuildPath(topic, path, this.Url);
+                var updateTopicViewModel = new UpdateTopicViewModel();
                 updateTopicViewModel.Id = topic.Id;
                 updateTopicViewModel.Title = topic.Title;
-                updateTopicViewModel.Body = topic.Posts.OrderBy<Post, int>((Func<Post, int>)(p => p.Position)).First<Post>().Body;
+                updateTopicViewModel.Body = topic.Posts.OrderBy(p => p.Position).First().Body;
                 updateTopicViewModel.Flag = topic.Flag;
                 updateTopicViewModel.Type = topic.Type;
                 updateTopicViewModel.Path = path;
                 updateTopicViewModel.IsModerator = topic.Forum.HasAccess(AccessFlag.Moderator);
-                updateTopicViewModel.Reason = topic.Posts.OrderBy<Post, int>((Func<Post, int>)(p => p.Position)).First<Post>().EditReason;
-                return (ActionResult)this.View((object)updateTopicViewModel);
+                updateTopicViewModel.Reason = topic.Posts.OrderBy(p => p.Position).First().EditReason;
+                return this.View(updateTopicViewModel);
             }
-            this.TempData.Add("Reason", (object)ForumHelper.GetString("NoAccess.ModeratorForum", (object)new { Name = topic.Forum.Name }));
-            return (ActionResult)this.RedirectToRoute("NoAccess");
+            this.TempData.Add("Reason", ForumHelper.GetString("NoAccess.ModeratorForum", new {topic.Forum.Name }));
+            return this.RedirectToRoute("NoAccess");
         }
 
         [ValidateInput(false)]
@@ -205,48 +203,48 @@ namespace MTDB.Forums.Areas.Forums.Controllers
         {
             if (this.ModelState.IsValid)
             {
-                Topic topic = this.GetRepository<Topic>().Read(model.Id);
-                if (this._topicService.Update(this.ActiveUser, topic, model.Title, model.Body, model.Type, model.Flag, model.Reason, this.Url.RouteUrl("ShowForum", (object)new
+                var topic = this.GetRepository<Topic>().Read(model.Id);
+                if (this._topicService.Update(this.ActiveUser, topic, model.Title, model.Body, model.Type, model.Flag, model.Reason, this.Url.RouteUrl("ShowForum", new
                 {
                     id = topic.Forum.Id,
                     title = topic.Forum.Name.ToSlug(),
                     area = "forum"
                 })))
-                    return (ActionResult)this.RedirectToAction("index", "moderate", new RouteValueDictionary()
-          {
-            {
-              "id",
-              (object) topic.Forum.Id
-            },
-            {
-              "area",
-              (object) "forum"
+                    return this.RedirectToAction("index", "moderate", new RouteValueDictionary
+                    {
+                        {
+                            "id",
+                            topic.Forum.Id
+                        },
+                        {
+                            "area",
+                            "forum"
+                        }
+                    });
             }
-          });
-            }
-            return (ActionResult)this.View((object)model);
+            return this.View(model);
         }
 
         [Authorize]
         public ActionResult Edit(int id)
         {
-            Topic topic = this.GetRepository<Topic>().Read(id);
+            var topic = this.GetRepository<Topic>().Read(id);
             if (topic.Forum.HasAccess(AccessFlag.Edit) && this.ActiveUser.Id == topic.Author.Id || topic.Forum.HasAccess(AccessFlag.Moderator))
             {
-                Dictionary<string, string> path = new Dictionary<string, string>();
-                MTDB.Forums.Areas.Forums.Controllers.HomeController.BuildPath(topic, path, this.Url);
-                UpdateTopicViewModel updateTopicViewModel = new UpdateTopicViewModel();
+                var path = new Dictionary<string, string>();
+                HomeController.BuildPath(topic, path, this.Url);
+                var updateTopicViewModel = new UpdateTopicViewModel();
                 updateTopicViewModel.Id = topic.Id;
                 updateTopicViewModel.Title = topic.Title;
-                updateTopicViewModel.Body = topic.Posts.OrderBy<Post, int>((Func<Post, int>)(p => p.Position)).First<Post>().Body;
+                updateTopicViewModel.Body = topic.Posts.OrderBy(p => p.Position).First().Body;
                 updateTopicViewModel.Flag = topic.Flag;
                 updateTopicViewModel.Type = topic.Type;
                 updateTopicViewModel.Path = path;
                 updateTopicViewModel.IsModerator = topic.Forum.HasAccess(AccessFlag.Moderator);
-                return (ActionResult)this.View((object)updateTopicViewModel);
+                return this.View(updateTopicViewModel);
             }
-            this.TempData.Add("Reason", (object)ForumHelper.GetString("NoAccess.EditTopic"));
-            return (ActionResult)this.RedirectToRoute("NoAccess");
+            this.TempData.Add("Reason", ForumHelper.GetString("NoAccess.EditTopic"));
+            return this.RedirectToRoute("NoAccess");
         }
 
         [Authorize]
@@ -257,75 +255,75 @@ namespace MTDB.Forums.Areas.Forums.Controllers
         {
             if (this.ModelState.IsValid)
             {
-                Topic topic = this.GetRepository<Topic>().Read(model.Id);
-                if (this._topicService.Update(this.ActiveUser, topic, model.Title, model.Body, this.Url.RouteUrl("ShowForum", (object)new
+                var topic = this.GetRepository<Topic>().Read(model.Id);
+                if (this._topicService.Update(this.ActiveUser, topic, model.Title, model.Body, this.Url.RouteUrl("ShowForum", new
                 {
                     id = topic.Forum.Id,
                     title = topic.Forum.Name.ToSlug(),
                     area = "forum"
                 })))
-                    return (ActionResult)this.RedirectToRoute("ShowTopic", new RouteValueDictionary()
-          {
-            {
-              "id",
-              (object) topic.Id
-            },
-            {
-              "title",
-              (object) topic.Title.ToSlug()
+                    return this.RedirectToRoute("ShowTopic", new RouteValueDictionary
+                    {
+                        {
+                            "id",
+                            topic.Id
+                        },
+                        {
+                            "title",
+                            topic.Title.ToSlug()
+                        }
+                    });
             }
-          });
-            }
-            return (ActionResult)this.View((object)model);
+            return this.View(model);
         }
 
         [Authorize]
         public ActionResult Follow(int topicId)
         {
-            Topic topic = this.GetRepository<Topic>().Read(topicId);
+            var topic = this.GetRepository<Topic>().Read(topicId);
             if (this.Authenticated)
             {
                 this.GetRepository<FollowTopic>().Create(new FollowTopic(topic, this.ActiveUser));
                 this.Context.SaveChanges();
             }
-            return (ActionResult)this.RedirectToRoute("ShowTopic", new RouteValueDictionary()
-      {
-        {
-          "id",
-          (object) topic.Id
-        },
-        {
-          "title",
-          (object) topic.Title.ToSlug()
-        }
-      });
+            return this.RedirectToRoute("ShowTopic", new RouteValueDictionary
+            {
+                {
+                    "id",
+                    topic.Id
+                },
+                {
+                    "title",
+                    topic.Title.ToSlug()
+                }
+            });
         }
 
         [Authorize]
         public ActionResult UnFollow(int topicId)
         {
-            Topic topic = this.GetRepository<Topic>().Read(topicId);
+            var topic = this.GetRepository<Topic>().Read(topicId);
             if (this.Authenticated)
             {
-                IRepository<FollowTopic> repository = this.GetRepository<FollowTopic>();
-                FollowTopic entity = repository.ReadOne((ISpecification<FollowTopic>)new FollowTopicSpecifications.SpecificTopicAndUser(topic, this.ActiveUser));
+                var repository = this.GetRepository<FollowTopic>();
+                var entity = repository.ReadOne(new FollowTopicSpecifications.SpecificTopicAndUser(topic, this.ActiveUser));
                 if (entity != null)
                 {
                     repository.Delete(entity);
                     this.Context.SaveChanges();
                 }
             }
-            return (ActionResult)this.RedirectToRoute("ShowTopic", new RouteValueDictionary()
-      {
-        {
-          "id",
-          (object) topic.Id
-        },
-        {
-          "title",
-          (object) topic.Title.ToSlug()
-        }
-      });
+            return this.RedirectToRoute("ShowTopic", new RouteValueDictionary
+            {
+                {
+                    "id",
+                    topic.Id
+                },
+                {
+                    "title",
+                    topic.Title.ToSlug()
+                }
+            });
         }
     }
 }

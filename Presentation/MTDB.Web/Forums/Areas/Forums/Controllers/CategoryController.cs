@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Web.Mvc;
@@ -29,47 +28,46 @@ namespace MTDB.Forums.Areas.Forums.Controllers
 
         public ActionResult Index(int id, string title)
         {
-            Category category = this.GetRepository<Category>().Read(id);
+            var category = this.GetRepository<Category>().Read(id);
             if (title != category.Name.ToSlug())
-                return (ActionResult)this.RedirectPermanent(this.Url.RouteUrl("ShowCategory", (object)new
+                return this.RedirectPermanent(this.Url.RouteUrl("ShowCategory", new
                 {
                     area = "forum",
                     title = category.Name.ToSlug(),
                     id = category.Id
                 }));
-            CategoryViewModel categoryViewModel = new CategoryViewModel(category);
-            List<ForumViewModel> forumViewModelList1 = new List<ForumViewModel>();
-            foreach (mvcForum.Core.Forum forum1 in (IEnumerable<mvcForum.Core.Forum>)this._forumRepo.ReadManyOptimized((ISpecification<mvcForum.Core.Forum>)new ForumSpecifications.SpecificCategoryNoParentForum(category)).OrderBy<mvcForum.Core.Forum, int>((Func<mvcForum.Core.Forum, int>)(f => f.SortOrder)))
+            var categoryViewModel = new CategoryViewModel(category);
+            var forumViewModelList1 = new List<ForumViewModel>();
+            foreach (var forum1 in this._forumRepo.ReadManyOptimized(new ForumSpecifications.SpecificCategoryNoParentForum(category)).OrderBy(f => f.SortOrder))
             {
-                List<ForumViewModel> forumViewModelList2 = new List<ForumViewModel>();
-                foreach (mvcForum.Core.Forum forum2 in (IEnumerable<mvcForum.Core.Forum>)forum1.SubForums.OrderBy<mvcForum.Core.Forum, int>((Func<mvcForum.Core.Forum, int>)(f => f.SortOrder)))
+                var forumViewModelList2 = new List<ForumViewModel>();
+                foreach (var forum2 in forum1.SubForums.OrderBy(f => f.SortOrder))
                     forumViewModelList2.Add(new ForumViewModel(forum2, this._config.TopicsPerPage));
                 forumViewModelList1.Add(new ForumViewModel(forum1, this._config.TopicsPerPage)
                 {
-                    SubForums = (IEnumerable<ForumViewModel>)new ReadOnlyCollection<ForumViewModel>((IList<ForumViewModel>)forumViewModelList2),
+                    SubForums = new ReadOnlyCollection<ForumViewModel>(forumViewModelList2),
                     Category = categoryViewModel
                 });
             }
-            categoryViewModel.Forums = (IEnumerable<ForumViewModel>)new ReadOnlyCollection<ForumViewModel>((IList<ForumViewModel>)forumViewModelList1);
+            categoryViewModel.Forums = new ReadOnlyCollection<ForumViewModel>(forumViewModelList1);
             categoryViewModel.Path = new Dictionary<string, string>();
             HomeController.BuildPath(category, categoryViewModel.Path, this.Url);
-            return (ActionResult)this.View((object)categoryViewModel);
+            return this.View(categoryViewModel);
         }
 
         [Authorize]
         [ActionName("Mark As Read")]
         public ActionResult MarkAsRead(int id)
         {
-            Category category = this.GetRepository<Category>().Read(id);
-            foreach (mvcForum.Core.Forum forum in (IEnumerable<mvcForum.Core.Forum>)category.Forums)
+            var category = this.GetRepository<Category>().Read(id);
+            foreach (var forum in category.Forums)
             {
                 if (forum.HasAccess(AccessFlag.Read))
                     forum.Track();
             }
-            return (ActionResult)this.RedirectToAction("index", (object)new
+            return this.RedirectToAction("index", new
             {
-                area = "forum",
-                id = id,
+                area = "forum", id,
                 title = category.Name.ToSlug()
             });
         }

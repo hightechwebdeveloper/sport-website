@@ -4,7 +4,6 @@ using System.Web;
 using System.Web.Mvc;
 using ApplicationBoilerplate.DataProvider;
 using mvcForum.Core;
-using mvcForum.Core.Interfaces.Services;
 using mvcForum.Core.Specifications;
 using MVCBootstrap.Web.Mvc.Interfaces;
 using SimpleAuthentication.Mvc;
@@ -26,22 +25,22 @@ namespace MTDB.Forums.Areas.Forums.Controllers
 
         public ActionResult OnRedirectToAuthenticationProviderError(HttpContextBase context, string errorMessage)
         {
-            ViewResult viewResult = new ViewResult();
+            var viewResult = new ViewResult();
             viewResult.ViewName = "AuthenticateCallback";
-            viewResult.ViewData = new ViewDataDictionary((object)new
+            viewResult.ViewData = new ViewDataDictionary(new
             {
                 ErrorMessage = errorMessage
             });
-            return (ActionResult)viewResult;
+            return viewResult;
         }
 
         public ActionResult Process(HttpContextBase context, AuthenticateCallbackData model)
         {
-            string str = string.Format("[{0}][{1}]", (object)model.AuthenticatedClient.ProviderName, (object)model.AuthenticatedClient.UserInformation.Id);
-            IAccount account1 = this._memberService.GetAccount((object)str);
+            var str = $"[{model.AuthenticatedClient.ProviderName}][{model.AuthenticatedClient.UserInformation.Id}]";
+            var account1 = this._memberService.GetAccount(str);
             if (account1 == null)
             {
-                MailAddress mailAddress = new MailAddress(string.Format("{0:ddMMyyyy-hhmmss}repl@ce.this", (object)DateTime.UtcNow));
+                var mailAddress = new MailAddress($"{DateTime.UtcNow:ddMMyyyy-hhmmss}repl@ce.this");
                 try
                 {
                     mailAddress = new MailAddress(model.AuthenticatedClient.UserInformation.Email);
@@ -51,12 +50,12 @@ namespace MTDB.Forums.Areas.Forums.Controllers
                 }
                 string errorMessage;
                 if (!this._memberService.CreateAccount(str, new Guid().ToString(), mailAddress.Address, out errorMessage))
-                    return (ActionResult)new HttpStatusCodeResult(500);
-                IAccount account2 = this._memberService.GetAccount((object)str);
+                    return new HttpStatusCodeResult(500);
+                var account2 = this._memberService.GetAccount(str);
                 if (account2 == null)
-                    return (ActionResult)new HttpStatusCodeResult(500);
-                IRepository<ForumUser> repository = this._context.GetRepository<ForumUser>();
-                ForumUser entity = repository.ReadOne((ISpecification<ForumUser>)new ForumUserSpecifications.SpecificProviderUserKey(account2.ProviderUserKey.ToString()));
+                    return new HttpStatusCodeResult(500);
+                var repository = this._context.GetRepository<ForumUser>();
+                var entity = repository.ReadOne(new ForumUserSpecifications.SpecificProviderUserKey(account2.ProviderUserKey.ToString()));
                 if (entity != null)
                 {
                     entity.Name = model.AuthenticatedClient.UserInformation.UserName;
@@ -72,14 +71,14 @@ namespace MTDB.Forums.Areas.Forums.Controllers
             }
             else
             {
-                ForumUser forumUser = this._context.GetRepository<ForumUser>().ReadOne((ISpecification<ForumUser>)new ForumUserSpecifications.SpecificProviderUserKey(account1.ProviderUserKey.ToString()));
+                var forumUser = this._context.GetRepository<ForumUser>().ReadOne(new ForumUserSpecifications.SpecificProviderUserKey(account1.ProviderUserKey.ToString()));
                 if (forumUser == null)
-                    return (ActionResult)new HttpStatusCodeResult(500);
+                    return new HttpStatusCodeResult(500);
                 if (!forumUser.ExternalAccount || forumUser.ExternalAccount && forumUser.ExternalProvider != model.AuthenticatedClient.ProviderName)
-                    return (ActionResult)new RedirectResult("/forums/account/external");
+                    return new RedirectResult("/forums/account/external");
             }
             this._forms.SignIn(str, false);
-            return (ActionResult)new RedirectResult("/forums");
+            return new RedirectResult("/forums");
         }
     }
 }

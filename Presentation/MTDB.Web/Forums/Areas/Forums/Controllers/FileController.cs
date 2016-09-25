@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -32,18 +31,18 @@ namespace MTDB.Forums.Areas.Forums.Controllers
         [Authorize]
         public ActionResult Attach(int id)
         {
-            Post message = this.GetRepository<Post>().Read(id);
+            var message = this.GetRepository<Post>().Read(id);
             if (message.Topic.Forum.HasAccess(AccessFlag.Upload) && this.ActiveUser.Id == message.Author.Id)
             {
-                Dictionary<string, string> path = new Dictionary<string, string>();
+                var path = new Dictionary<string, string>();
                 HomeController.BuildPath(message.Topic, path, this.Url);
-                MessageViewModel messageViewModel = new MessageViewModel(message);
+                var messageViewModel = new MessageViewModel(message);
                 messageViewModel.Path = path;
-                messageViewModel.Topic = new TopicViewModel(message.Topic, (IEnumerable<MessageViewModel>)new MessageViewModel[0], 0, 1, false);
-                return (ActionResult)this.View((object)messageViewModel);
+                messageViewModel.Topic = new TopicViewModel(message.Topic, new MessageViewModel[0], 0, 1, false);
+                return this.View(messageViewModel);
             }
-            this.TempData.Add("Reason", (object)ForumHelper.GetString("NoAccess.NoUpload"));
-            return (ActionResult)this.RedirectToRoute("NoAccess");
+            this.TempData.Add("Reason", ForumHelper.GetString("NoAccess.NoUpload"));
+            return this.RedirectToRoute("NoAccess");
         }
 
         [HttpPost]
@@ -51,42 +50,40 @@ namespace MTDB.Forums.Areas.Forums.Controllers
         [NotBanned]
         public ActionResult Attach(int id, HttpPostedFileBase[] files)
         {
-            Post post = this.GetRepository<Post>().Read(id);
+            var post = this.GetRepository<Post>().Read(id);
             if (post.Topic.Forum.HasAccess(AccessFlag.Upload) && this.ActiveUser.Id == post.Author.Id)
             {
-                List<string> source = new List<string>();
-                foreach (HttpPostedFileBase file in files)
+                var source = new List<string>();
+                foreach (var file in files)
                 {
                     if (file != null)
                     {
-                        AttachStatusCode attachStatusCode = this._attachmentService.AttachFile(this.ActiveUser, post, file.FileName, file.ContentType, file.ContentLength, file.InputStream);
+                        var attachStatusCode = this._attachmentService.AttachFile(this.ActiveUser, post, file.FileName, file.ContentType, file.ContentLength, file.InputStream);
                         if (attachStatusCode != AttachStatusCode.Success)
-                            source.Add(ForumHelper.GetString(attachStatusCode.ToString(), (object)new
+                            source.Add(ForumHelper.GetString(attachStatusCode.ToString(), new
                             {
                                 File = file.FileName,
-                                Size = file.ContentLength,
-                                MaxFileSize = this._config.MaxFileSize,
-                                MaxAttachmentsSize = this._config.MaxAttachmentsSize,
+                                Size = file.ContentLength, this._config.MaxFileSize, this._config.MaxAttachmentsSize,
                                 Extensions = this._config.AllowedExtensions
                             }, "mvcForum.Web.AttachmentErrors"));
                     }
                 }
-                if (source.Any<string>())
-                    this.TempData.Add("Feedback", (object)source.Select<string, MvcHtmlString>((Func<string, MvcHtmlString>)(f => new MvcHtmlString(f))));
-                return (ActionResult)new RedirectToRouteResult("ShowTopic", new RouteValueDictionary()
-        {
-          {
-            "id",
-            (object) post.Topic.Id
-          },
-          {
-            "title",
-            (object) post.Topic.Title.ToSlug()
-          }
-        });
+                if (source.Any())
+                    this.TempData.Add("Feedback", source.Select(f => new MvcHtmlString(f)));
+                return new RedirectToRouteResult("ShowTopic", new RouteValueDictionary
+                {
+                    {
+                        "id",
+                        post.Topic.Id
+                    },
+                    {
+                        "title",
+                        post.Topic.Title.ToSlug()
+                    }
+                });
             }
-            this.TempData.Add("Reason", (object)ForumHelper.GetString("NoAccess.NoUpload"));
-            return (ActionResult)this.RedirectToRoute("NoAccess");
+            this.TempData.Add("Reason", ForumHelper.GetString("NoAccess.NoUpload"));
+            return this.RedirectToRoute("NoAccess");
         }
     }
 }

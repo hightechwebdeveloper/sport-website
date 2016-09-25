@@ -54,11 +54,11 @@
                                         <td>
                                             @if (pack.PackType == CardPackType.Mtdb)
                                             {
-                                                @Html.ActionLink(pack.Name, "MtdbDetails", new { controller = "Pack", id = pack.Id })
-                                            }
+                                                @Html.ActionLink(pack.Name, "MtdbDetails", new { controller = "Pack", id = pack.Id, area = "2K17" })
+                                           }
                                             else
                                             {
-                                                @Html.ActionLink(pack.Name, "DraftDetails", new { controller = "Pack", id = pack.Id })
+                                                @Html.ActionLink(pack.Name, "DraftDetails", new { controller = "Pack", id = pack.Id, area = "2K17" })
                                             }
                                         </td>
 
@@ -117,7 +117,7 @@
                             {
                                 <tr>
                                     <td>
-                                        @Html.ActionLink(lineup.Name, "Details", new { controller = "Lineup", id = lineup.Id })
+                                        @Html.ActionLink(lineup.Name, "Details", new { controller = "Lineup", id = lineup.Id, area = "2K17" })
                                     </td>
                                     <td>
                                         @lineup.PlayerCount
